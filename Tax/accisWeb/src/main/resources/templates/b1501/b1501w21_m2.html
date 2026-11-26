@@ -1,0 +1,414 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<!--/*
+   システム名:AP総合管理システム
+   機能名:請求入金照会
+*/-->
+</head>
+
+<!--/*
+<%
+//------------------------------------------------------------------
+// 明細部("M2")
+//------------------------------------------------------------------
+%>
+*/-->
+<body>
+    <div th:fragment="detail">
+        <!--/*
+        <% //----- 明細セクションヘッダ ----- %>
+        */-->
+        <div class="listheader">
+        </div>
+        <div class="listbodyheader">
+            <!--/*
+            <% //----- 明細テーブル ----- %>
+            */-->
+            <div id="list" class="list" style="margin-top: 3px">
+                <div class="aci-sticky-table-wrapper" style="width: 1266px;">
+                    <div th:replace="commons/ajaxPagenation.html :: pagenationForBtnSpecify('b1501w21_m2_meisai_body', 'btnkensaku')" />
+                    <div class="aci-sticky-table-dataarea scrollmeisai" style="height: 365px; width: 1266px;">
+                        <template id="b1501w21_m2_meisai_template">
+                            <tr style="height: 18px;">
+                                <td class="date">
+                                    <!--/*
+                                    <% // 「日付明細」ラベル %>
+                                    */-->
+                                    <span style="color: #1f1f1f!important;">{ymdmei}</span>
+                                </td>
+                                <td align="center">
+                                    <!--/*
+                                    <% // 「照会伝票番号明細」リンク %>
+                                    */-->
+                                    <span style="text-decoration: underline;">
+                                        <a class="dnpyonomei" id="m2MeisaiBeanList[{index}].dnpyonomei" href="javascript:void(0)"
+                                            data-urikinmei="{urikinmei}"
+                                            data-nyknkin2mei="{nyknkin2mei}"
+                                            data-dnpynomei="{dnpynomei}"
+                                            data-edanomei="{edanomei}"
+                                            >{dnpynomei}</a>
+                                    </span>
+                                    <input type="hidden" id="m2MeisaiBeanList[{index}].edanomei"value="{edanomei}">
+                                </td>
+                                <td class="code">
+                                    <!--/* 商品コード */-->
+                                    <span>{shncdmei}</span>
+                                </td>
+                                <td >
+                                    <!--/*
+                                    <% // 「商品名称略称明細」ラベル %>
+                                    */-->
+                                    <span style="margin-left: 2px;">{shnnmryakushomei}</span>
+                                </td>
+                                <td>
+                                    <!--/*
+                                    <% // 「計上区分名称明細」ラベル %>
+                                    */-->
+                                    <span style="margin-left: 2px;">{keijokbnnmmei}</span>
+                                </td>
+                                <td class="num" style="width: 51px;">
+                                    <!--/* 数量 */-->
+                                    <span class="aci-format-label">{suryomei}</span>
+                                </td>
+                                <td class="code">
+                                    <!--/*
+                                    <% // 「単位明細」ラベル %>
+                                    */-->
+                                    <span>{tanimei}</span>
+                                </td>
+                                <td class="num">
+                                    <span class="aci-format-label">{irisu}</span>
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「総数」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label">{sokazu}</span>
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「単価明細」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label">{untmei}</span>
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「売上金額明細」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label">{urikinmei}</span>
+                                </td>
+                                <td class="num taxrate">
+                                    <!--/*
+                                    <% // 「税率明細」ラベル %>
+                                    <% //税率が表示される場合、%を追加 %>
+                                    */-->
+                                    <span>{taxratemei}</span
+                                    ><span class="taxratemei_percent">%</span>
+                                    
+                                    <!--/*
+                                    <% //子明細商品（税率が表示されないが、消費税が表示されている）の場合、★を表示 %>
+                                    */-->
+                                    <span class="taxratemei_star">★</span>
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    消費税額
+                                    */-->
+                                    <span class="aci-format-label">{shohitaxkin2mei}</span>
+                                </td>
+                                <td class="num">
+                                    <!--/* 入金金額 */-->
+                                    <span class="aci-format-label">{nyknkin2mei}</span>
+                                </td>
+                                <td>
+                                    <!--/*
+                                    <% // 「備考明細」ラベル %>
+                                    */-->
+                                    <span>{bikomei}</span>
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「売上ポイント明細」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label">{uripoint}</span>
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「特別ポイント明細」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label">{tkbtpoint}</span>
+                                </td>
+                                <td>
+                                    <!--/*
+                                    <% // 「ポイント内訳明細」ラベル %>
+                                    */-->
+                                    <span>{pointutwk}</span>
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「合計ポイント明細」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label">{smpoint}</span>
+                                </td>
+                                <td class="date">
+                                    <!--/*
+                                    <% // 「ポイント連携日付明細」ラベル %>
+                                    */-->
+                                    <span style="color: #1f1f1f!important;">{pointrenkeidd}</span>
+                                </td>
+                                <td>
+                                    <!--/*
+                                    <% // 「色名称明細」ラベル %>
+                                    */-->
+                                    <span style="margin-left: 2px;">{ironmmei}</span>
+                                </td>
+                                <td>
+                                    <!--/*
+                                    <% // 「サイズ名称明細」ラベル %>
+                                    */-->
+                                    <span style="margin-left: 2px;">{sznmmei}</span>
+                                </td>
+                                <td>
+                                    <!--/*
+                                    <% // 「型式明細」ラベル %>
+                                    */-->
+                                    <span style="margin-left: 2px;">{katasikimei}</span>
+                                </td>
+                                <td class="code">
+                                    <!--/*
+                                    <% // 「得意先コード明細」ラベル %>
+                                    */-->
+                                    <span>{tokuisakicdmei}</span>
+                                </td>
+                                <td>
+                                    <!--/*
+                                    <% // 「得意先名称明細」ラベル %>
+                                    */-->
+                                    <span style="margin-left: 2px;">{tokuisakinmmei}</span>
+                                </td>
+                                <td>
+                                    <!--/*
+                                    <% // 「登録システム日付明細」ラベル %> <% // 「登録システム時間明細」ラベル %><% // 「登録者ａｐ基本コード明細」ラベル %><% // 「登録者ショップコード明細」ラベル %><% // 「登録者コード明細」ラベル %>
+                                    */-->
+                                    <span style="margin-left: 2px;">{inptsystmymdmei}&nbsp;{inptsystmjikanmei}&nbsp;</span
+                                    ><span class="toshainfo">{toshaapkihoncdmei}-{toshashopcdmei}-{toshacdmei}&nbsp;{toshameimei}</span
+                                    >
+                                </td>
+                            </tr>
+                        </template>
+                        <table border="0" cellspacing="0" cellpadding="2" class="grid border aci-sticky-table aci-table-data" style="table-layout:fixed;width:2537px;">
+                            <col width="65">
+                            <col width="70">
+                            <col width="49">
+                            <col width="168">
+                            <col width="55">
+                            <col width="45">
+                            <col width="35">
+                            <col width="70">
+                            <col width="70">
+                            <col width="70">
+                            <col width="70">
+                            <col width="35">
+                            <col width="65">
+                            <!--/*
+                            <col width="65">
+                            */-->
+                            <col width="65">
+                            <col width="215">
+                            <col width="65">
+                            <col width="65">
+                            <col width="250">
+                            <col width="65">
+                            <col width="90">
+                            <col width="45">
+                            <col width="45">
+                            <col width="90">
+                            <col width="75">
+                            <col width="275">
+                            <col width="325">
+                            <thead>
+                                <tr style="height: 18px;">
+                                    <th>日付</th>
+                                    <th>伝票番号</th>
+                                    <th>商品ｺｰﾄﾞ</th>
+                                    <th>商品略称名</th>
+                                    <th>計上区分</th>
+                                    <th>数量</th>
+                                    <th>単位</th>
+                                    <th>入数</th>
+                                    <th>総数</th>
+                                    <th>単価</th>
+                                    <th>売上金額</th>
+                                    <th>税率</th>
+                                    <th>
+                                        <th:block th:if="*{baseBean.shohitaxkomokumei == '1'}">
+                                            内消費税額
+                                        </th:block>
+                                        <th:block th:if="*{baseBean.shohitaxkomokumei != '1'}">
+                                            消費税額
+                                        </th:block>
+                                    </th>
+                                    <!--/*
+                                    <th>税込売上金額</th>
+                                    */-->
+                                    <th>入金金額</th>
+                                    <th>備考</th>
+                                    <th>売上ポイント</th>
+                                    <th>特別ポイント</th>
+                                    <th>ポイント内訳</th>
+                                    <th>合計ポイント</th>
+                                    <th>ポイント連携日付</th>
+                                    <th>色</th>
+                                    <th>サイズ</th>
+                                    <th>型式</th>
+                                    <th>得意先コード</th>
+                                    <th>得意先名</th>
+                                    <th>登録者</th>
+                                </tr>
+                            </thead>
+                            <tbody id="b1501w21_m2_meisai_body"
+                                data-template="b1501w21_m2_meisai_template"
+                                data-data_property="content"
+                            >
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="aci-sticky-table-dataarea scrollsummary" style="margin-top: 1px; height: 56px; width: 1266px;">
+                        <!--<table border="0" cellspacing="0" cellpadding="2" id="orderdetailtail" class="border uriage" style="margin-top: -0px" > -->
+                        <table class="grid border" style="height: 18px; width:2022px;">
+                            <col width="627">
+                            <col width="70">
+                            <col width="105">
+                            <col width="65">
+                            <col width="65">
+                            <col width="5">
+                            <col width="75">
+                            <col width="65">
+                            <col width="*">
+                            <tr style="height: 18px;">
+                                <td style="border: none;background-color: #ffffee;">
+                                    &nbsp;
+                                </td>
+                                <th>
+                                    8%合計
+                                </th>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「8%の売上金額合計」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label" id="footerBean.n8peruri" th:text="*{footerBean.n8peruri}" />
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「8%の消費税額合計」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label" id="footerBean.n8pershohzei" th:text="*{footerBean.n8pershohzei}" />
+                                </td>
+                                <!--/*
+                                <td class="num">
+                                    <% // 「8%の税込売上金額合計」ラベル %>
+                                </td>
+                                */-->
+                                <td class="num">
+                                    &nbsp;
+                                </td>
+                                <td style="border: none;background-color: #ffffee;">
+                                    &nbsp;
+                                </td>
+                                <th>
+                                    ポイント合計
+                                </th>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「ポイント合計」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label" id="footerBean.pointsm" th:text="*{footerBean.pointsm}" />
+                                </td>
+                                <td style="border: none;background-color: #ffffee;">
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr style="height: 18px;">
+                                <td style="border: none;background-color: #ffffee;">
+                                    &nbsp;
+                                </td>
+                                <th>
+                                    10%合計
+                                </th>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「10%の売上金額合計」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label" id="footerBean.n10peruri" th:text="*{footerBean.n10peruri}" />
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「10%の消費税額合計」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label" id="footerBean.n10pershohzei" th:text="*{footerBean.n10pershohzei}" />
+                                </td>
+                                <!--/*
+                                <td class="num">
+                                    <% // 「10%の税込売上金額合計」ラベル %>
+                                </td>
+                                */-->
+                                <td class="num">
+                                    &nbsp;
+                                </td>
+                                <td style="border: none;background-color: #ffffee;">
+                                    &nbsp;
+                                </td>
+                                <th>
+                                    <span style="text-decoration: underline;">
+                                        <a class="ifm-mode-enable" id="tokutenpoint" href="javascript:void(0)"
+                                        >特典ポイント</a>
+                                    </span>
+                                </th>
+                                <td colspan="2" style="border: none;background-color: #ffffee;">
+                                    &nbsp;
+                                </td>
+                            </tr>
+                            <tr style="height: 18px;">
+                                <td style="border: none;background-color: #ffffee;">
+                                    &nbsp;
+                                </td>
+                                <th>合計</th>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「金額合計１」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label" id="footerBean.kinsm1" th:text="*{footerBean.kinsm1}" />
+                                </td>
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「金額合計２」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label" id="footerBean.kinsm2" th:text="*{footerBean.kinsm2}" />
+                                </td>
+                                <!--/*
+                                <td class="num">
+                                    <% // 「金額合計４」ラベル %>
+                                </td>
+                                */-->
+                                <td class="num">
+                                    <!--/*
+                                    <% // 「金額合計３」ラベル %>
+                                    */-->
+                                    <span class="aci-format-label" id="footerBean.kinsm3" th:text="*{footerBean.kinsm3}" />
+                                </td>
+                                <td colspan="4" style="border: none;background-color: #ffffee;">
+                                    &nbsp;
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+   </div>
+</body>
+</html>

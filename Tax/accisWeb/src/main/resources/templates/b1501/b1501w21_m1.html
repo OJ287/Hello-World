@@ -1,0 +1,159 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+</head>
+
+<!--/*
+   システム名:AP総合管理システム
+   機能名:請求入金照会
+*/-->
+
+<!--/*
+<%
+//------------------------------------------------------------------
+// 明細部("M1")
+//------------------------------------------------------------------
+%>
+*/-->
+<body>
+    <div th:fragment="detail">
+        <!--/*
+        <% //----- 明細セクションヘッダ ----- %>
+        */-->
+        <div class="aci-sticky-table-wrapper" style="width: 1212px;">
+            <div class="aci-sticky-table-dataarea" style="height: 98px; width: 1212px;">
+                <template id="b1501w21_m1_meisai_template">
+                    <tr style="height: 25px;">
+                        <td class="code">
+                            <!--/*
+                            年月日
+                            */-->
+                            <span>{dydmmei}</span>
+                        </td>
+                        <td>
+                            <!--/*
+                            <% // 「得意先状態名称」ラベル %>
+                            */-->
+                            <span>{tokuisakijotainm}</span>
+                        </td>
+                        <td>
+                            <!--/*
+                            <% // 「状態ステータス名称」ラベル %>
+                            */-->
+                            <span>{jotaistsnm}</span>
+                        </td>
+                        <td align="left">
+                            <!--/*
+                            <% // 「請求先名称１明細」ラベル %>
+                            */-->
+                            <span>{skysakicdmei}</span
+                            ><span>&nbsp;{skysakinmn1mei}</span
+                            >
+                            <input type="hidden" id="m1MeisaiBeanList[{index}].skysakicdmei" name="m1MeisaiBeanList[{index}].skysakicdmei" value="{skysakicdmei}" />
+                        </td>
+                        <td class="num">
+                            <!--/*
+                            前回ご請求額
+                            */-->
+                            <span class="aci-format-label">{znkskykinmei}</span>
+                        </td>
+                        <td class="num">
+                            <!--/*
+                            ご入金額
+                            */-->
+                            <span class="aci-format-label">{nyknkin1mei}</span>
+                        </td>
+                        <td class="num">
+                            <!--/*
+                            今回ご利用額
+                            */-->
+                            <span class="aci-format-label">{konkairiyokinmei}</span>
+                        </td>
+                        <td class="num">
+                            <!--/*
+                            (内)消費税額
+                            */-->
+                            <span class="aci-format-label">{shohitaxkin1mei}</span>
+                        </td>
+                        <td class="num">
+                            <!--/*
+                            <% // 「税込ご利用額計明細」ラベル %>
+                            */-->
+                            <span class="aci-format-label">{taxkomiskyzdkinmei}</span>
+                        </td>
+                        <td class="num">
+                            <!--/*
+                            <% // 「8%税込ご利用額計」ラベル %>
+                            */-->
+                            <span class="aci-format-label">{n8perzeikomiriyogakumei}</span>
+                        </td>
+                        <td class="num">
+                            <!--/*
+                            <% // 「10%税込ご利用額計」ラベル %>
+                            */-->
+                            <span class="aci-format-label">{n10perzeikomiriyogakumei}</span>
+                        </td>
+                        <td class="num">
+                            <!--/*
+                            <% // 「今回請求金額明細」ラベル %>
+                            */-->
+                            <span class="aci-format-label">{konkaiskykinmei}</span>
+                        </td>
+                        <td style="padding-left: 5px">
+                            <!--/*
+                            <% // 「選択明細」チェックボックス %>
+                            */-->
+                            <input type="checkbox" id="m1MeisaiBeanList[{index}].sentakumei" name="m1MeisaiBeanList[{index}].sentakumei" class="sentakumei" data-tablerow="{index}" value="1" />
+                        </td>
+                    </tr>
+                </template>
+                <table border="0" cellspacing="0" cellpadding="2"
+                    class="grid border  aci-sticky-table aci-table-data table02_m1_header" style="margin-top: 3px;width:1195px;">
+                    <col width="65">
+                    <col width="75">
+                    <col width="80">
+                    <col width="294">
+                    <col width="65">
+                    <col width="65">
+                    <col width="65">
+                    <col width="65">
+                    <col width="85">
+                    <col width="95">
+                    <col width="100">
+                    <col width="100">
+                    <col width="20">
+                    <thead>
+                        <tr style="height: 20px">
+                            <th style="width: 60px">年月日</th>
+                            <th>得意先状態</th>
+                            <th>状態ステータス</th>
+                            <th>請求先 / 得意先</th>
+                            <th>前回ご請求額</th>
+                            <th>ご入金額</th>
+                            <th>今回ご利用額</th>
+                            <th>
+                                <th:block th:if="*{baseBean.shohitaxkomokumei == '1'}">
+                                    内消費税額
+                                </th:block>
+                                <th:block th:if="*{baseBean.shohitaxkomokumei != '1'}">
+                                    消費税額
+                                </th:block>
+                            </th>
+                            <th>税込ご利用額計</th>
+                            <th>8%税込ご利用額計</th>
+                            <th>10%税込ご利用額計</th>
+                            <th>今回ご請求額</th>
+                            <th style="width: 22px"><br></th>
+                        </tr>
+                    </thead>
+                    <tbody id="b1501w21_m1_meisai_body"
+                        data-template="b1501w21_m1_meisai_template"
+                        data-data_property="content">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+</head>
+<!--/*
+   システム名:AP総合管理システム
+   機能名:得意先情報確認画面
+*/-->
+
+<body>
+    <div th:fragment="detail">
+        <!--
+            //------------------------------------------------------------------
+            // 明細部("M2")
+            //------------------------------------------------------------------
+        -->
+        <!-- ----- 明細セクションヘッダ ----- -->
+            <!-- ----- 明細テーブル ----- -->
+            <div id="seikyu" class="block blockright" style="position: relative; height: 75px; margin-top: 0;">
+                <h4 style="position: relative; top: 0px;">
+                    <th:block th:if="*{baseBean.kengentokuisakitotsukiumjh == '0' || baseBean.skysakicd == null || baseBean.skysakicd == ''}">
+                        請求情報
+                    </th:block>
+                    <th:block th:if="*{baseBean.kengentokuisakitotsukiumjh != '0' && baseBean.skysakicd != null && baseBean.skysakicd != ''}">
+                        <a class="ifm-mode-enable" id="b1501w11Link" href="javascript:void(0)" data-code-type="cod">請求情報</a>
+                    </th:block>
+                </h4>
+                <table class="border seikyu" style="table-layout: fixed">
+                    <col width="85px">
+                    <col width="80px">
+                    <col width="80px">
+                    <col width="80px">
+                    <col width="80px">
+                    <col width="80px">
+                    <col width="80px">
+                    <col width="80px">
+                    <tr>
+                        <th>
+                            請求締日
+                        </th>
+                        <th>
+                            前回請求額
+                        </th>
+                        <th>
+                            入金額
+                        </th>
+                        <th>
+                            売上額
+                        </th>
+                        <th>
+                            <th:block th:if="*{baseBean.shohitaxkinlabel == '1'}">
+                                内消費税
+                            </th:block>
+                            <th:block th:if="*{baseBean.shohitaxkinlabel != '1'}">
+                                消費税
+                            </th:block>
+                        </th>
+                        <th>
+                            8%税込売上額計
+                        </th>
+                        <th>
+                            10%税込売上額計
+                        </th>
+                        <th>請求額</th>
+                    </tr>
+                </table>
+                <div style="position: relative;">
+                    <div class="listframe" style="height:47px; width:653px;"></div>
+                    <table class="border seikyu" style="position: absolute; top: 0; z-index: 2; table-layout: fixed">
+                        <col width="85px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <col width="80px">
+                        <tr style="height:16px;" th:each="row, item: *{meisai2BeanList}" name="items">
+                            <!-- 「照会請求締日明細」リンク -->
+                            <!-- 「請求締日明細」ラベル -->
+                            <td align="center">
+                                <th:block th:if="${c0501W02Form.baseBean.skysakicd != null && c0501W02Form.baseBean.skysakicd != ''}">
+                                        <span th:text="${row.skyshimeddmei == null} ? '現在' : ${row.skyshimeddmei}" />
+                                </th:block>
+                            </td>
+                            <input type="hidden" th:name="'mskyshimeddmei_mno' + ${item.index}" th:value="${row.skyshimeddmei}" />
+                            <!-- 「前回請求金額明細」ラベル -->
+                            <td class="num">
+                                <span th:text="${row.znkskykinmei == null} ? '0' : ${row.znkskykinmei}" />
+                            </td>
+                            <!-- 「入金金額明細」ラベル -->
+                            <td class="num">
+                                <span th:text="${row.nyknkinmei == null} ? '0' : ${row.nyknkinmei}" />
+                            </td>
+                            <!-- 「売上金額明細」ラベル -->
+                            <td class="num">
+                                <span th:text="${row.urikinmei == null} ? '0' : ${row.urikinmei}" />
+                            </td>
+                            <!-- 「内消費税金額明細」ラベル -->
+                            <td class="num">
+                                <span th:text="${row.uchishohitaxkinmei == null} ? '0' : ${row.uchishohitaxkinmei}" />
+                            </td>
+                            <!-- 「８％税込売上額計明細」ラベル -->
+                            <td class="num">
+                                <span th:text="${row.n8persiirekinmei == null} ? '0' : ${row.n8persiirekinmei}" />
+                            </td>
+                            <!-- 「１０％税込売上額計明細」ラベル -->
+                            <td class="num">
+                                <span th:text="${row.n10persiirekinmei == null} ? '0' : ${row.n10persiirekinmei}" />
+                            </td>
+                            <!-- 「請求金額明細」ラベル -->
+                            <td class="num">
+                                <span th:text="${row.skykinmei == null} ? '0' : ${row.skykinmei}" />
+                            </td>
+                            <!-- 「請求処理実施区分」hidden -->
+                            <input type="hidden" th:name="'skyprcsjissikbnmei_mno' + ${item.index}" th:value="${row.skyprcsjissikbnmei}" />
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
