@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+  <!-- {defaultModelType}について、Entityクラスはテーブル毎に1個ずつに自動生成したいが、そのために"flat"を指定すると
+    Dao.javaでSelect文の引数がEntityではなくて、個別項目(String shopCdなど)を引数としてもらう構成に自動生成される問題があります。
+    なので、仕方なくEntityKeyまで生成する"hierarchical"を設定しています。
+    "conditional"だと、あるテーブルはEntityクラスが2つ、あるテーブルはEntityクラスが1つになるなど、一貫性がなくなります。
+    
+    "flat": このモデルは、任意のテーブルに対して1つのドメインクラスのみを生成します。クラスは、テーブル内のすべてのフィールドを保持します。
+    "conditional"[default]: このモデルは"hierarchical"モデルに似ていますが、EntityKeyクラスなどの別のクラスにフィールドが1つしかない場合、その別のクラスは生成されません。
+    "hierarchical": テーブルに主キーがある場合、主キークラス、テーブル内のBLOB列を保持する別のクラス、および残りのフィールドを保持する別のクラスを生成します。
+  -->
+  <context id="local" targetRuntime="MyBatis3" defaultModelType="hierarchical">
+
+
+    <!-- DB接続時に必要な情報(ID,Passwordなど)や、Entity, Daoファイルの保存先が
+      現在このconfigファイルにべた書きになっているので、プロパティーファイルとして分離する必要があると思います。[※環境毎に切り替える必要があれば] -->
+
+
+    <!-- この文字コード設定がないと、Mybatis Generatorの自動コメント作成機能の利用時に、コメントが文字化けするため、追加しました。 -->
+    <property name="javaFileEncoding" value="UTF-8"/>
+    
+    <!-- *Entity.javaでLombokを使用するためのプラグイン -->
+    <plugin type="com.softwareloop.mybatis.generator.plugins.LombokPlugin">
+    <!-- hasLombokをtrueにしないと、Entityクラス自動生成時にgetterとsetterメソッドが作成されます。(@Getter,@Setterアノテーションを付ける設定をONにしてもGet,Setメソッドが作成されます。)
+      このhasLombokの設定だけでも、現在必要なアノテーションは全部自動的に付けてくれている認識です。(※他に必要なアノテーションはないか確認したいです。) -->
+      <property name="hasLombok" value="true"/>
+<!--  <property name="@Builder" value="false" />
+      <property name="@AllArgsConstructor" value="true" />
+      <property name="@NoArgsConstructor" value="true" />
+      <property name="@Accessors(chain = true)" value="false" />
+      <property name="supportSuperBuilderForIdea" value="false" />
+      <property name="@Data" value="true" /> -->
+    </plugin>
+
+    <!-- EntityクラスにtoStringメソッドを生成するプラグイン -->
+    <plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
+
+    <!-- *Dao.javaのアノテーションを制御するためのプラグイン -->
+    <plugin type="org.mybatis.generator.plugins.MapperAnnotationPlugin">
+      <!-- @Mapper以外にも必要なアノテーションがあれば、調査します。 -->
+      <property name="@Mapper" value="true"/>
+      <property name="@Repository" value="false"/>
+    </plugin>
+   
+    <!-- RowBoundsプラグインは、org.apache.ibatis.session.RowBoundsクラスにlimit、offsetを指定することで、
+      検索結果のうち、特定の範囲を取り出すことができます。-->
+    <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin" />
+   
+    <!-- Serializableプラグインは、モデルクラスにSerializableインターフェースを追加します。 -->
+    <plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+    
+    <!-- コメントの自動生成:項目の論理名をコメントとして生成してくれる。
+      生成される Java ファイルのコメントにカラムや自動生成した日付情報を付与する/しない 
+      true: 付与しない / false: 付与する  -->
+    <commentGenerator>
+      <!-- "suppressAllComments"が、trueになっているとコメント自体が生成されなくなるので、他のプロパティー設定は自動的に無効となります。 -->      
+      <property name="suppressAllComments" value="false"/>
+      
+      <!-- コメントに自動生成した日付情報を付与する -->
+      <property name="suppressDate" value="true" />
+      
+      <!-- テーブル上、各カラムの"comment"を読み込んで、コメントに追加する [※カラムの論理名を自動生成することに利用可能] -->
+      <property name="addRemarkComments" value="true" />
+    </commentGenerator>
+   
+    <!-- スキーマ情報を取得する DB への接続設定 -->
+    <jdbcConnection driverClass="oracle.jdbc.driver.OracleDriver"
+      connectionURL="jdbc:oracle:thin:@accis2023-stg-rds.cniy2noj9v81.ap-northeast-1.rds.amazonaws.com:1521:ORCL"
+      userId="EDU"
+      password="EDU">
+      <!-- mysqlの場合はDBのcatalog機能がないそうで、詳細までは知りませんが、公式サイトに必要だと書いてあったため、追加しました。 -->
+      <property name="nullCatalogMeansCurrent" value="true"/>
+      <property name="remarksReporting" value="true"/>
+    </jdbcConnection>
+    
+    <!-- DBカラムをjavaのタイプに合わせて変換する時に効く設定です。 -->
+    <javaTypeResolver>
+      <!-- "useJSR310Types"は、DBの日付タイプをjava8のDateTime型に変換してくれます。 -->
+      <property name="useJSR310Types" value="true" />
+      <!-- "forceBigDecimals"は、DBの数字型をすべてBigDecimalに統一するか、整数部と小数部の桁数に応じてShort,Interger,Long,Bigdecimalに変換するかの設定です。 -->
+      <!-- Short型は要らない認識ですが、個別で設定はできないみたいでこのまま[整数部と小数部の桁数に応じてShort,Interger,Long,Bigdecimalに変換]にしています。 -->
+      <property name="forceBigDecimals" value="false" />
+    </javaTypeResolver>
+    
+    <!-- *Entity.java -->
+    <!-- *Example.java -->
+    <javaModelGenerator targetPackage="jp.co.aquaclara.accis.common.domain.repository.entity" targetProject="accisCommon/src/main/java">
+      <property name="exampleTargetPackage" value="jp.co.aquaclara.accis.common.domain.repository.entity" />
+      
+      <!-- "enableSubPackages"は、後でドメインごとにパッケージを分ける時に使用されます。 -->
+      <!-- <property name="enableSubPackages" value="true" /> -->
+    </javaModelGenerator>
+
+    <!-- *Dao.xml -->
+    <!-- 特に必要なプロパティー設定はない認識です。 -->
+    <sqlMapGenerator targetPackage="jp.co.aquaclara.accis.common.domain.repository.dao" targetProject="accisCommon/src/main/resources">
+      <!-- "enableSubPackages"は、後でドメインごとにパッケージを分ける時に使用されます。 -->
+      <!-- <property name="enableSubPackages" value="true" /> -->
+    </sqlMapGenerator>
+    
+    <!-- *Dao.java -->
+    <!-- 特に必要なプロパティー設定はない認識です。 -->
+    <javaClientGenerator type="XMLMAPPER" targetPackage="jp.co.aquaclara.accis.common.domain.repository.dao" targetProject="accisCommon/src/main/java">
+      <!-- "enableSubPackages"は、後でドメインごとにパッケージを分ける時に使用されます。 -->
+      <!-- <property name="enableSubPackages" value="true" /> -->
+    </javaClientGenerator>
+
+    <!-- コードを生成するテーブル指定 -->
+    <table tableName="S01M004T" mapperName="S01M004TDao" domainObjectName="S01M004TEntity" />
+    <table tableName="C01M003T" mapperName="C01M003TDao" domainObjectName="C01M003TEntity" />
+    <table tableName="C02M003T" mapperName="C02M003TDao" domainObjectName="C02M003TEntity" />
+    <table tableName="C02M006T" mapperName="C02M006TDao" domainObjectName="C02M006TEntity" />
+    <table tableName="C02M013T" mapperName="C02M013TDao" domainObjectName="C02M013TEntity" />
+    <table tableName="C01T001T" mapperName="C01T001TDao" domainObjectName="C01T001TEntity" />
+    <table tableName="C01T002T" mapperName="C01T002TDao" domainObjectName="C01T002TEntity" />
+    <table tableName="C01T003T" mapperName="C01T003TDao" domainObjectName="C01T003TEntity" />
+    <table tableName="C03T001T" mapperName="C03T001TDao" domainObjectName="C03T001TEntity" />
+    <table tableName="C02W003T" mapperName="C02W003TDao" domainObjectName="C02W003TEntity" />
+    <table tableName="C02W013T" mapperName="C02W013TDao" domainObjectName="C02W013TEntity" />
+    <table tableName="C03W001T" mapperName="C03W001TDao" domainObjectName="C03W001TEntity" />
+    <table tableName="S01M002T" mapperName="S01M002TDao" domainObjectName="S01M002TEntity" />
+    <table tableName="S01M003T" mapperName="S01M003TDao" domainObjectName="S01M003TEntity" />
+    <table tableName="S01T001T" mapperName="S01T001TDao" domainObjectName="S01T001TEntity" />
+    <table tableName="S01T002T" mapperName="S01T002TDao" domainObjectName="S01T002TEntity" />
+    <table tableName="S01T003T" mapperName="S01T003TDao" domainObjectName="S01T003TEntity" />
+    <table tableName="S01T004T" mapperName="S01T004TDao" domainObjectName="S01T004TEntity" />
+    <table tableName="S01T005T" mapperName="S01T005TDao" domainObjectName="S01T005TEntity" />
+    <table tableName="S01T006T" mapperName="S01T006TDao" domainObjectName="S01T006TEntity" />
+    <table tableName="S01T007T" mapperName="S01T007TDao" domainObjectName="S01T007TEntity" />
+    <table tableName="S01T008T" mapperName="S01T008TDao" domainObjectName="S01T008TEntity" />
+    <table tableName="S01T009T" mapperName="S01T009TDao" domainObjectName="S01T009TEntity" />
+    <table tableName="S01T010T" mapperName="S01T010TDao" domainObjectName="S01T010TEntity" />
+    <table tableName="S02M001T" mapperName="S02M001TDao" domainObjectName="S02M001TEntity" />
+    <table tableName="S02M002T" mapperName="S02M002TDao" domainObjectName="S02M002TEntity" />
+    <table tableName="S02M003T" mapperName="S02M003TDao" domainObjectName="S02M003TEntity" />
+    <table tableName="S02M005T" mapperName="S02M005TDao" domainObjectName="S02M005TEntity" />
+    <table tableName="S02M006T" mapperName="S02M006TDao" domainObjectName="S02M006TEntity" />
+    <table tableName="S02M007T" mapperName="S02M007TDao" domainObjectName="S02M007TEntity" />
+    <table tableName="S02M008T" mapperName="S02M008TDao" domainObjectName="S02M008TEntity" />
+    <table tableName="S02M009T" mapperName="S02M009TDao" domainObjectName="S02M009TEntity" />
+    <table tableName="S02M011T" mapperName="S02M011TDao" domainObjectName="S02M011TEntity" />
+    <table tableName="S02M012T" mapperName="S02M012TDao" domainObjectName="S02M012TEntity" />
+    <table tableName="S02M013T" mapperName="S02M013TDao" domainObjectName="S02M013TEntity" />
+    <table tableName="S02M014T" mapperName="S02M014TDao" domainObjectName="S02M014TEntity" />
+    <table tableName="S02M015T" mapperName="S02M015TDao" domainObjectName="S02M015TEntity" />
+    <table tableName="S02M016T" mapperName="S02M016TDao" domainObjectName="S02M016TEntity" />
+    <table tableName="S02M017T" mapperName="S02M017TDao" domainObjectName="S02M017TEntity" />
+    <table tableName="S02M018T" mapperName="S02M018TDao" domainObjectName="S02M018TEntity" />
+    <table tableName="S02M019T" mapperName="S02M019TDao" domainObjectName="S02M019TEntity" />
+    <table tableName="S02M020T" mapperName="S02M020TDao" domainObjectName="S02M020TEntity" />
+    <table tableName="S02M021T" mapperName="S02M021TDao" domainObjectName="S02M021TEntity" />
+    <table tableName="S02M023T" mapperName="S02M023TDao" domainObjectName="S02M023TEntity" />
+    <table tableName="S02M024T" mapperName="S02M024TDao" domainObjectName="S02M024TEntity" />
+    <table tableName="S02M025T" mapperName="S02M025TDao" domainObjectName="S02M025TEntity" />
+    <table tableName="S02M027T" mapperName="S02M027TDao" domainObjectName="S02M027TEntity" />
+    <table tableName="S02M029T" mapperName="S02M029TDao" domainObjectName="S02M029TEntity" />
+    <table tableName="S02M031T" mapperName="S02M031TDao" domainObjectName="S02M031TEntity" />
+    <table tableName="S02M033T" mapperName="S02M033TDao" domainObjectName="S02M033TEntity" />
+    <table tableName="S02M035T" mapperName="S02M035TDao" domainObjectName="S02M035TEntity" />
+    <table tableName="S02M036T" mapperName="S02M036TDao" domainObjectName="S02M036TEntity" />
+    <table tableName="S02M039T" mapperName="S02M039TDao" domainObjectName="S02M039TEntity" />
+    <table tableName="S02M041T" mapperName="S02M041TDao" domainObjectName="S02M041TEntity" />
+    <table tableName="S02M042T" mapperName="S02M042TDao" domainObjectName="S02M042TEntity" />
+    <table tableName="S02M043T" mapperName="S02M043TDao" domainObjectName="S02M043TEntity" />
+    <table tableName="S02M044T" mapperName="S02M044TDao" domainObjectName="S02M044TEntity" />
+    <table tableName="S02M045T" mapperName="S02M045TDao" domainObjectName="S02M045TEntity" />
+    <table tableName="S02M046T" mapperName="S02M046TDao" domainObjectName="S02M046TEntity" />
+    <table tableName="S02M047T" mapperName="S02M047TDao" domainObjectName="S02M047TEntity" />
+    <table tableName="S02M048T" mapperName="S02M048TDao" domainObjectName="S02M048TEntity" />
+    <table tableName="S02M049T" mapperName="S02M049TDao" domainObjectName="S02M049TEntity" />
+    <table tableName="S02M050T" mapperName="S02M050TDao" domainObjectName="S02M050TEntity" />
+    <table tableName="S02M051T" mapperName="S02M051TDao" domainObjectName="S02M051TEntity" />
+    <table tableName="S02M052T" mapperName="S02M052TDao" domainObjectName="S02M052TEntity" />
+    <table tableName="S02M053T" mapperName="S02M053TDao" domainObjectName="S02M053TEntity" />
+    <table tableName="S02M054T" mapperName="S02M054TDao" domainObjectName="S02M054TEntity" />
+    <table tableName="S02M055T" mapperName="S02M055TDao" domainObjectName="S02M055TEntity" />
+    <table tableName="S02M056T" mapperName="S02M056TDao" domainObjectName="S02M056TEntity" />
+    <table tableName="S02M057T" mapperName="S02M057TDao" domainObjectName="S02M057TEntity" />
+    <table tableName="S02M058T" mapperName="S02M058TDao" domainObjectName="S02M058TEntity" />
+    <table tableName="S02M059T" mapperName="S02M059TDao" domainObjectName="S02M059TEntity" />
+    <table tableName="S02M060T" mapperName="S02M060TDao" domainObjectName="S02M060TEntity" />
+    <table tableName="S02M061T" mapperName="S02M061TDao" domainObjectName="S02M061TEntity" />
+    <table tableName="S02M062T" mapperName="S02M062TDao" domainObjectName="S02M062TEntity" />
+    <table tableName="S02M063T" mapperName="S02M063TDao" domainObjectName="S02M063TEntity" />
+    <table tableName="S02M064T" mapperName="S02M064TDao" domainObjectName="S02M064TEntity" />
+    <table tableName="S02M065T" mapperName="S02M065TDao" domainObjectName="S02M065TEntity" />
+    <table tableName="S02M066T" mapperName="S02M066TDao" domainObjectName="S02M066TEntity" />
+    <table tableName="S02M067T" mapperName="S02M067TDao" domainObjectName="S02M067TEntity" />
+    <table tableName="S02M079T" mapperName="S02M079TDao" domainObjectName="S02M079TEntity" />
+    <table tableName="S02M081T" mapperName="S02M081TDao" domainObjectName="S02M081TEntity" />
+    <table tableName="S02M082T" mapperName="S02M082TDao" domainObjectName="S02M082TEntity" />
+    <table tableName="S02M083T" mapperName="S02M083TDao" domainObjectName="S02M083TEntity" />
+    <table tableName="S02M084T" mapperName="S02M084TDao" domainObjectName="S02M084TEntity" />
+    <table tableName="S02M085T" mapperName="S02M085TDao" domainObjectName="S02M085TEntity" />
+    <table tableName="S02M086T" mapperName="S02M086TDao" domainObjectName="S02M086TEntity" />
+    <table tableName="S02M087T" mapperName="S02M087TDao" domainObjectName="S02M087TEntity" />
+    <table tableName="S02M088T" mapperName="S02M088TDao" domainObjectName="S02M088TEntity" />
+    <table tableName="S02M089T" mapperName="S02M089TDao" domainObjectName="S02M089TEntity" />
+    <table tableName="S02M090T" mapperName="S02M090TDao" domainObjectName="S02M090TEntity" />
+    <table tableName="S02M091T" mapperName="S02M091TDao" domainObjectName="S02M091TEntity" />
+    <table tableName="S02W001T" mapperName="S02W001TDao" domainObjectName="S02W001TEntity" />
+    <table tableName="S02W002T" mapperName="S02W002TDao" domainObjectName="S02W002TEntity" />
+    <table tableName="S02W003T" mapperName="S02W003TDao" domainObjectName="S02W003TEntity" />
+    <table tableName="S03T001T" mapperName="S03T001TDao" domainObjectName="S03T001TEntity" />
+    <table tableName="S03T002T" mapperName="S03T002TDao" domainObjectName="S03T002TEntity" />
+    <table tableName="S03T003T" mapperName="S03T003TDao" domainObjectName="S03T003TEntity" />
+    <table tableName="S03T004T" mapperName="S03T004TDao" domainObjectName="S03T004TEntity" />
+    <table tableName="S03T005T" mapperName="S03T005TDao" domainObjectName="S03T005TEntity" />
+    <table tableName="S03T006T" mapperName="S03T006TDao" domainObjectName="S03T006TEntity" />
+    <table tableName="S03T017T" mapperName="S03T017TDao" domainObjectName="S03T017TEntity" />
+    <table tableName="S03T018T" mapperName="S03T018TDao" domainObjectName="S03T018TEntity" />
+    <table tableName="S03T019T" mapperName="S03T019TDao" domainObjectName="S03T019TEntity" />
+    <table tableName="S03T022T" mapperName="S03T022TDao" domainObjectName="S03T022TEntity" />
+    <table tableName="S03T023T" mapperName="S03T023TDao" domainObjectName="S03T023TEntity" />
+    <table tableName="S03W001T" mapperName="S03W001TDao" domainObjectName="S03W001TEntity" />
+    <table tableName="S03W005T" mapperName="S03W005TDao" domainObjectName="S03W005TEntity" />
+    <table tableName="S03W018T" mapperName="S03W018TDao" domainObjectName="S03W018TEntity" />
+    <table tableName="S03W024T" mapperName="S03W024TDao" domainObjectName="S03W024TEntity" />
+    <table tableName="S04T001T" mapperName="S04T001TDao" domainObjectName="S04T001TEntity" />
+    <table tableName="S04T002T" mapperName="S04T002TDao" domainObjectName="S04T002TEntity" />
+    <table tableName="S04T004T" mapperName="S04T004TDao" domainObjectName="S04T004TEntity" />
+    <table tableName="S04T005T" mapperName="S04T005TDao" domainObjectName="S04T005TEntity" />
+    <table tableName="S04T006T" mapperName="S04T006TDao" domainObjectName="S04T006TEntity" />
+    <table tableName="S04T007T" mapperName="S04T007TDao" domainObjectName="S04T007TEntity" />
+    <table tableName="S04T008T" mapperName="S04T008TDao" domainObjectName="S04T008TEntity" />
+    <table tableName="S04T010T" mapperName="S04T010TDao" domainObjectName="S04T010TEntity" />
+    <table tableName="S04T011T" mapperName="S04T011TDao" domainObjectName="S04T011TEntity" />
+    <table tableName="S04W001T" mapperName="S04W001TDao" domainObjectName="S04W001TEntity" />
+    <table tableName="S04W002T" mapperName="S04W002TDao" domainObjectName="S04W002TEntity" />
+    <table tableName="S04W003T" mapperName="S04W003TDao" domainObjectName="S04W003TEntity" />
+    <table tableName="S05T001T" mapperName="S05T001TDao" domainObjectName="S05T001TEntity" />
+    <table tableName="S05T002T" mapperName="S05T002TDao" domainObjectName="S05T002TEntity" />
+    <table tableName="S05T022T" mapperName="S05T022TDao" domainObjectName="S05T022TEntity" />
+    <table tableName="S05W001T" mapperName="S05W001TDao" domainObjectName="S05W001TEntity" />
+    <table tableName="S05W002T" mapperName="S05W002TDao" domainObjectName="S05W002TEntity" />
+    <table tableName="S06T001T" mapperName="S06T001TDao" domainObjectName="S06T001TEntity" />
+    <table tableName="S06T002T" mapperName="S06T002TDao" domainObjectName="S06T002TEntity" />
+    <table tableName="S06T003T" mapperName="S06T003TDao" domainObjectName="S06T003TEntity" />
+    <table tableName="S06W001T" mapperName="S06W001TDao" domainObjectName="S06W001TEntity" />
+    <table tableName="S06W002T" mapperName="S06W002TDao" domainObjectName="S06W002TEntity" />
+    <table tableName="S06W003T" mapperName="S06W003TDao" domainObjectName="S06W003TEntity" />
+    <table tableName="S06W004T" mapperName="S06W004TDao" domainObjectName="S06W004TEntity" />
+    <table tableName="S07T001T" mapperName="S07T001TDao" domainObjectName="S07T001TEntity" />
+    <table tableName="S07T002T" mapperName="S07T002TDao" domainObjectName="S07T002TEntity" />
+    <table tableName="S07T002TCHK" mapperName="S07T002TCHKDao" domainObjectName="S07T002TCHKEntity" />
+    <table tableName="S07T004T" mapperName="S07T004TDao" domainObjectName="S07T004TEntity" />
+    <table tableName="S07T005T" mapperName="S07T005TDao" domainObjectName="S07T005TEntity" />
+    <table tableName="S07T006T" mapperName="S07T006TDao" domainObjectName="S07T006TEntity" />
+    <table tableName="S07W003T" mapperName="S07W003TDao" domainObjectName="S07W003TEntity" />
+    <table tableName="S07W004T" mapperName="S07W004TDao" domainObjectName="S07W004TEntity" />
+    <table tableName="S07W004TNA" mapperName="S07W004TNADao" domainObjectName="S07W004TNAEntity" />
+    <table tableName="S07W005T" mapperName="S07W005TDao" domainObjectName="S07W005TEntity" />
+    <table tableName="S07W005TNA" mapperName="S07W005TNADao" domainObjectName="S07W005TNAEntity" />
+    <table tableName="S07W006T" mapperName="S07W006TDao" domainObjectName="S07W006TEntity" />
+    <table tableName="S07W007T" mapperName="S07W007TDao" domainObjectName="S07W007TEntity" />
+    <table tableName="S07W008T" mapperName="S07W008TDao" domainObjectName="S07W008TEntity" />
+    <table tableName="S07W101T" mapperName="S07W101TDao" domainObjectName="S07W101TEntity" />
+    <table tableName="S09T001T" mapperName="S09T001TDao" domainObjectName="S09T001TEntity" />
+    <table tableName="S09T002T" mapperName="S09T002TDao" domainObjectName="S09T002TEntity" />
+    <table tableName="S09W003T" mapperName="S09W003TDao" domainObjectName="S09W003TEntity" />
+    <table tableName="S09W004T" mapperName="S09W004TDao" domainObjectName="S09W004TEntity" />
+    <table tableName="S09W005T" mapperName="S09W005TDao" domainObjectName="S09W005TEntity" />
+    <table tableName="S09W006T" mapperName="S09W006TDao" domainObjectName="S09W006TEntity" />
+    <table tableName="S09W007T" mapperName="S09W007TDao" domainObjectName="S09W007TEntity" />
+    <table tableName="S10T001T" mapperName="S10T001TDao" domainObjectName="S10T001TEntity" />
+    <table tableName="S10T002T" mapperName="S10T002TDao" domainObjectName="S10T002TEntity" />
+    <table tableName="S10T003T" mapperName="S10T003TDao" domainObjectName="S10T003TEntity" />
+    <table tableName="S10T004T" mapperName="S10T004TDao" domainObjectName="S10T004TEntity" />
+    <table tableName="S10W001T" mapperName="S10W001TDao" domainObjectName="S10W001TEntity" />
+    <table tableName="S10W002T" mapperName="S10W002TDao" domainObjectName="S10W002TEntity" />
+    <table tableName="S10W003T" mapperName="S10W003TDao" domainObjectName="S10W003TEntity" />
+    <table tableName="S11T001T" mapperName="S11T001TDao" domainObjectName="S11T001TEntity" />
+    <table tableName="S11T002T" mapperName="S11T002TDao" domainObjectName="S11T002TEntity" />
+    <table tableName="S11T003T" mapperName="S11T003TDao" domainObjectName="S11T003TEntity" />
+    <table tableName="S11T004T" mapperName="S11T004TDao" domainObjectName="S11T004TEntity" />
+    <table tableName="S11T005T" mapperName="S11T005TDao" domainObjectName="S11T005TEntity" />
+    <table tableName="S12T001T" mapperName="S12T001TDao" domainObjectName="S12T001TEntity" />
+    <table tableName="S12T002T" mapperName="S12T002TDao" domainObjectName="S12T002TEntity" />
+    <table tableName="S12W001T" mapperName="S12W001TDao" domainObjectName="S12W001TEntity" />
+    <table tableName="S13T001T" mapperName="S13T001TDao" domainObjectName="S13T001TEntity" />
+    <table tableName="S13T002T" mapperName="S13T002TDao" domainObjectName="S13T002TEntity" />
+    <table tableName="S13T003T" mapperName="S13T003TDao" domainObjectName="S13T003TEntity" />
+    <table tableName="S13T004T" mapperName="S13T004TDao" domainObjectName="S13T004TEntity" />
+    <table tableName="S14T001T" mapperName="S14T001TDao" domainObjectName="S14T001TEntity" />
+    <table tableName="S14T004T" mapperName="S14T004TDao" domainObjectName="S14T004TEntity" />
+    <table tableName="S14T005T" mapperName="S14T005TDao" domainObjectName="S14T005TEntity" />
+    <table tableName="S14W001T" mapperName="S14W001TDao" domainObjectName="S14W001TEntity" />
+    <table tableName="S16T001T" mapperName="S16T001TDao" domainObjectName="S16T001TEntity" />
+    <table tableName="S16T002T" mapperName="S16T002TDao" domainObjectName="S16T002TEntity" />
+    <table tableName="S16T003T" mapperName="S16T003TDao" domainObjectName="S16T003TEntity" />
+    <table tableName="S16W001T" mapperName="S16W001TDao" domainObjectName="S16W001TEntity" />
+    <table tableName="S18T001T" mapperName="S18T001TDao" domainObjectName="S18T001TEntity" />
+    <table tableName="S18T002T" mapperName="S18T002TDao" domainObjectName="S18T002TEntity" />
+    <table tableName="S18T003T" mapperName="S18T003TDao" domainObjectName="S18T003TEntity" />
+    <table tableName="S18T004T" mapperName="S18T004TDao" domainObjectName="S18T004TEntity" />
+    <table tableName="S18T005T" mapperName="S18T005TDao" domainObjectName="S18T005TEntity" />
+    <table tableName="S18T006T" mapperName="S18T006TDao" domainObjectName="S18T006TEntity" />
+    <table tableName="S19T001T" mapperName="S19T001TDao" domainObjectName="S19T001TEntity" />
+    <table tableName="S99CHKLOG" mapperName="S99CHKLOGDao" domainObjectName="S99CHKLOGEntity" />
+    <table tableName="S99JSERR" mapperName="S99JSERRDao" domainObjectName="S99JSERREntity" />
+    <table tableName="S99TOKJCHK" mapperName="S99TOKJCHKDao" domainObjectName="S99TOKJCHKEntity" />
+    <table tableName="S02V001T" mapperName="S02V001TDao" domainObjectName="S02V001TEntity" />
+    <table tableName="S02V002T" mapperName="S02V002TDao" domainObjectName="S02V002TEntity" />
+    <table tableName="S02V003T" mapperName="S02V003TDao" domainObjectName="S02V003TEntity" />
+    <table tableName="S02V004T" mapperName="S02V004TDao" domainObjectName="S02V004TEntity" />
+    <table tableName="S02V005T" mapperName="S02V005TDao" domainObjectName="S02V005TEntity" />
+    <table tableName="S02V006T" mapperName="S02V006TDao" domainObjectName="S02V006TEntity" />
+    <table tableName="S02V007T" mapperName="S02V007TDao" domainObjectName="S02V007TEntity" />
+    <table tableName="S02V008T" mapperName="S02V008TDao" domainObjectName="S02V008TEntity" />
+    <table tableName="S02V009T" mapperName="S02V009TDao" domainObjectName="S02V009TEntity" />
+    <table tableName="S02M013TCHK" mapperName="S02M013TCHKDao" domainObjectName="S02M013TCHKEntity" />
+    <table tableName="S02M050TZANCHK" mapperName="S02M050TZANCHKDao" domainObjectName="S02M050TZANCHKEntity" />
+    <table tableName="S02M050TZANREC" mapperName="S02M050TZANRECDao" domainObjectName="S02M050TZANRECEntity" />
+  </context>
+</generatorConfiguration>
