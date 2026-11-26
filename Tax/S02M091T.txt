@@ -1,0 +1,9 @@
+税区分	適用開始日	適用終了日	消費税率	有効区分	登録者ＡＰ基本コード	登録者ショップコード	登録者コード	登録システム日付	登録システム時間	登録運用日付	登録ＩＰアドレス	登録プログラムＩＤ	更新者ＡＰ基本コード	更新者ショップコード	更新者コード	更新システム日付	更新システム時間	更新運用日付	更新ＩＰアドレス	更新プログラムＩＤ
+1	19000101	20140331	5.0	1	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »
+1	20140401	20190930	8.0	1	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »
+1	20191001	29991231	10.0	1	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »
+4	19000101	20270331	8.0	1	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »
+4	20270401	20290331	1.0	1	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »
+4	20290401	29991231	8.0	1	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »
+5	19000101	29991231	8.0	1	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »
+6	19000101	29991231	1.0	1	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »	« NULL »
