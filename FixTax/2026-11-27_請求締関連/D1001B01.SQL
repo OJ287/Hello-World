@@ -1034,6 +1034,7 @@ CREATE OR REPLACE PACKAGE BODY        D1001B01
          AND URGT.GETSUJISHIMEDD     = vRecordS07T002T.SHIMEDD
          AND URGT.GETSUJIPRCSJISSIDD = vRecordS07T002T.SHIMEPRCSJISSIDD -- 月次処理実施日
          AND URMT.TANPINMEISAIFLG = '1'
+         -- modify 軽減税率変更対応_LI 20261127 Start
          -- 消費税改修：軽減（税区分4/6/7）のうち、売上日時点の税率が月次締日時点の税区分4税率と一致する分（新枠）
          AND URMT.TAXKBN IN ('4','6','7')
          AND ( SELECT SHOHITAX FROM S02M091T TAX
@@ -1042,6 +1043,7 @@ CREATE OR REPLACE PACKAGE BODY        D1001B01
            = ( SELECT SHOHITAX FROM S02M091T TAX4
                 WHERE TAX4.TAXKBN = '4'
                   AND vRecordS07T002T.KONKAISHIMEDD BETWEEN TAX4.TEKIYOSTRTDD AND TAX4.TEKIYOSHRYDD )
+         -- modify 軽減税率変更対応_LI 20261127 End
        GROUP BY URGT.APKIHONCD, URGT.SHOPCD, URGT.TOKUISAKICD -- 得意先コード
        ORDER BY URGT.APKIHONCD, URGT.SHOPCD, URGT.TOKUISAKICD; -- 得意先コード
   BEGIN
@@ -1101,6 +1103,7 @@ CREATE OR REPLACE PACKAGE BODY        D1001B01
 
   END Select10URGT;
   --ADD E N D 20190520 TJS)takio
+-- add 軽減税率変更対応_LI 20261127 Start
 
   -- 消費税改修で追加
   /*****************************************************************************/
@@ -1152,6 +1155,7 @@ CREATE OR REPLACE PACKAGE BODY        D1001B01
     CLOSE SELECT_OLDKEIGENURGT;
 
   END SelectOldKeigenURGT;
+-- add 軽減税率変更対応_LI 20261127 End
 
   /*****************************************************************************/
   /* ファンクション名 ：入金明細テーブル抽出                                   */
@@ -1214,11 +1218,13 @@ CREATE OR REPLACE PACKAGE BODY        D1001B01
        N8PERSHOHITAXKIN,    -- ８％消費税金額
        N10PERZEINUKIURIKIN, -- １０％税抜売上金額
        N10PERSHOHITAXKIN,   -- １０％消費税金額
+       -- add 軽減税率変更対応_LI 20261127 Start
        -- 消費税改修で追加
        OLDKEIGENZEINUKIURIKIN, -- 軽減旧枠税抜売上金額
        OLDKEIGENSHOHITAXKIN,   -- 軽減旧枠消費税金額
        OLDIPPANZEINUKIURIKIN,  -- 一般旧枠税抜売上金額
        OLDIPPANSHOHITAXKIN,    -- 一般旧枠消費税金額
+       -- add 軽減税率変更対応_LI 20261127 End
        --ADD E N D 20190520 TJS)takio
 
        KURIKOSHIKIN, -- 繰越金額
@@ -1301,10 +1307,12 @@ CREATE OR REPLACE PACKAGE BODY        D1001B01
        vRecordS07T002T.N8PERSHOHITAXKIN,    -- ８％消費税金額
        vRecordS07T002T.N10PERZEINUKIURIKIN, -- １０％税抜売上金額
        vRecordS07T002T.N10PERSHOHITAXKIN,   -- １０％消費税金額
+       -- add 軽減税率変更対応_LI 20261127 Start
        vRecordS07T002T.OLDKEIGENZEINUKIURIKIN, -- 軽減旧枠税抜売上金額
        vRecordS07T002T.OLDKEIGENSHOHITAXKIN,   -- 軽減旧枠消費税金額
        vRecordS07T002T.OLDIPPANZEINUKIURIKIN,  -- 一般旧枠税抜売上金額
        vRecordS07T002T.OLDIPPANSHOHITAXKIN,    -- 一般旧枠消費税金額
+       -- add 軽減税率変更対応_LI 20261127 End
        --ADD E N D 20190520 TJS)takio
        vRecordS07T002T.KURIKOSHIKIN, -- 繰越金額
 
@@ -1604,7 +1612,9 @@ CREATE OR REPLACE PACKAGE BODY        D1001B01
         -- 消費税集計額抽出
         Select8URGT;
         Select10URGT;
+        -- add 軽減税率変更対応_LI 20261127 Start
         SelectOldKeigenURGT;
+        -- add 軽減税率変更対応_LI 20261127 End
         --ADD E N D 20190520 TJS)takio
         -- 売上明細テーブル抽出
         SelectUMST;

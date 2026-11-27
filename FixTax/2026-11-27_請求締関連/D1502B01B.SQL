@@ -271,10 +271,12 @@ AS
     vRecordS07T001T.N8PERSHOHITAXKIN        := 0;                                       -- ８％消費税金額
     vRecordS07T001T.N10PERZEINUKIURIKIN     := 0;                                       -- １０％税抜売上金額
     vRecordS07T001T.N10PERSHOHITAXKIN       := 0;                                       -- １０％消費税金額
+    -- add 軽減税率変更対応_LI 20261127 Start
     vRecordS07T001T.OLDKEIGENZEINUKIURIKIN  := 0;                                       -- 軽減旧枠税抜売上金額（消費税改修）
     vRecordS07T001T.OLDKEIGENSHOHITAXKIN    := 0;                                       -- 軽減旧枠消費税金額（消費税改修）
     vRecordS07T001T.OLDIPPANZEINUKIURIKIN   := 0;                                       -- 一般旧枠税抜売上金額（消費税改修・当面0固定）
     vRecordS07T001T.OLDIPPANSHOHITAXKIN     := 0;                                       -- 一般旧枠消費税金額（消費税改修・当面0固定）
+    -- add 軽減税率変更対応_LI 20261127 End
     vRecordS07T001T.TAXKEISANKBN            := NULL;                                    -- 税計算区分
     vRecordS07T001T.SKYICRNHYPRNTDD         := '00000000';                              -- 請求一覧表印刷日
     vRecordS07T001T.SKYSHOPRNTDD            := '00000000';                              -- 請求書印刷日
@@ -586,6 +588,7 @@ AS
     wN10pertaxnukiurikin     S07T001T.N10PERZEINUKIURIKIN%TYPE;     -- １０％税抜売上金額
     wN10pertaxnukiurikinTax  S07T001T.N10PERZEINUKIURIKIN%TYPE;     -- １０％税抜売上金額(消費税計算用)
     wN10pershohitaxkin       S07T001T.N10PERSHOHITAXKIN%TYPE;       -- １０％消費税金額
+    -- add 軽減税率変更対応_LI 20261127 Start
     wOldkeigenzeinukiurikin    S07T001T.OLDKEIGENZEINUKIURIKIN%TYPE;  -- 軽減旧枠税抜売上金額
     wOldkeigenzeinukiurikinTax S07T001T.OLDKEIGENZEINUKIURIKIN%TYPE;  -- 軽減旧枠税抜売上金額(消費税計算用)
     wOldkeigenshohitaxkin      S07T001T.OLDKEIGENSHOHITAXKIN%TYPE;    -- 軽減旧枠消費税金額
@@ -599,6 +602,7 @@ AS
      WHERE TAXKBN = '4' AND TEKIYOSTRTDD <= vRecordS07T001T.KONKAISHIMEDD
        AND TEKIYOSHRYDD >= vRecordS07T001T.KONKAISHIMEDD AND YUKOKBN = '1';
 
+    -- add 軽減税率変更対応_LI 20261127 End
     -- 売上明細テーブル（数量、金額項目）取得
     SELECT
         -- レギュラー有料
@@ -1242,6 +1246,7 @@ AS
         , NVL(SUM(CASE WHEN UMST.TAXKBN = '2' THEN UMST.KIN ELSE 0 END), 0)                              AS TAXFREEURIKIN
         -- 不課税売上金額
         , NVL(SUM(CASE WHEN UMST.TAXKBN = '3' THEN UMST.KIN ELSE 0 END), 0)                              AS NONTAXABLEURIKIN
+        -- modify 軽減税率変更対応_LI 20261127 Start
         -- 軽減税抜売上金額（新枠：売上日時点の税率が締日時点の税区分4税率と一致する分）
         , NVL(SUM(CASE WHEN UMST.TAXKBN IN ('4', '6', '7') AND TAXM.SHOHITAX = wTaxRate4Shime THEN UMST.KIN ELSE 0 END), 0)                              AS N8PERTAXNUKIURIKIN
         -- 軽減税抜売上金額(消費税計算用)（新枠）
@@ -1258,6 +1263,7 @@ AS
         , NVL(SUM(CASE WHEN UMST.KEIJOKBN IN ('01', '02') AND UMST.TAXKBN IN ('4', '6', '7') AND (TAXM.SHOHITAX IS NULL OR TAXM.SHOHITAX != wTaxRate4Shime) THEN UMST.SHOHITAXKIN ELSE 0 END), 0)  AS OLDKEIGENSHOHITAXKIN
         -- 明細消費税金額
         , NVL(SUM(CASE WHEN UMST.SHNCD NOT IN ('099901', '099902', '099903', '099904') THEN UMST.SHOHITAXKIN ELSE 0 END), 0) AS MEISAITAXKIN
+        -- modify 軽減税率変更対応_LI 20261127 End
     INTO
           wN10pertaxnukiurikin
         , wN10pertaxnukiurikinTax
@@ -1267,9 +1273,11 @@ AS
         , wN8pertaxnukiurikinTax
         , wN10pershohitaxkin
         , wN8pershohitaxkin
+        -- add 軽減税率変更対応_LI 20261127 Start
         , wOldkeigenzeinukiurikin
         , wOldkeigenzeinukiurikinTax
         , wOldkeigenshohitaxkin
+        -- add 軽減税率変更対応_LI 20261127 End
         , wMeisaitaxkin
     FROM
         S06T002T UMST
@@ -1280,6 +1288,7 @@ AS
                 AND HEAD.URIDNPYNO      = UMST.URIDNPYNO
                 AND HEAD.EDANO          = UMST.EDANO
                 AND HEAD.YUKOKBN        = '1'
+            -- add 軽減税率変更対応_LI 20261127 Start
             )
         LEFT JOIN S02M091T TAXM
             ON (
@@ -1287,6 +1296,7 @@ AS
                 AND TAXM.TEKIYOSTRTDD <= HEAD.URIDD
                 AND TAXM.TEKIYOSHRYDD >= HEAD.URIDD
                 AND TAXM.YUKOKBN      = '1'
+            -- add 軽減税率変更対応_LI 20261127 End
             )
     WHERE
             UMST.APKIHONCD              = vRecordS07T001T.APKIHONCD
@@ -1351,6 +1361,7 @@ AS
     vRecordS07T001T.SNTSHNKNPHNKIN          := vRecordS07T001T.SNTSHNKNPHNKIN + wSntshnknphnkin;                   -- その他商品キャンペーン品金額
     vRecordS07T001T.N8PERZEINUKIURIKIN      := vRecordS07T001T.N8PERZEINUKIURIKIN + wN8pertaxnukiurikinTax;        -- ８％税抜売上金額
     vRecordS07T001T.N8PERSHOHITAXKIN        := vRecordS07T001T.N8PERSHOHITAXKIN + wN8pershohitaxkin;               -- ８％税抜売上金額
+    -- modify 軽減税率変更対応_LI 20261127 Start
     vRecordS07T001T.OLDKEIGENZEINUKIURIKIN  := vRecordS07T001T.OLDKEIGENZEINUKIURIKIN + wOldkeigenzeinukiurikinTax;  -- 軽減旧枠税抜売上金額
     vRecordS07T001T.OLDKEIGENSHOHITAXKIN    := vRecordS07T001T.OLDKEIGENSHOHITAXKIN + wOldkeigenshohitaxkin;         -- 軽減旧枠消費税金額
     vRecordS07T001T.N10PERZEINUKIURIKIN     := vRecordS07T001T.N10PERZEINUKIURIKIN + wN10pertaxnukiurikinTax;      -- １０％税抜売上金額
@@ -1358,6 +1369,7 @@ AS
 
     oMeisaitaxkin         := wMeisaitaxkin;                                                                        -- 明細消費税金額
     oKonkaitaxnukiurikin  := wN10pertaxnukiurikin + wN8pertaxnukiurikin + wOldkeigenzeinukiurikin + wTaxfreeurikin + wNontaxableurikin;      -- 今回税抜売上金額
+    -- modify 軽減税率変更対応_LI 20261127 End
 
   EXCEPTION
     -- データが存在しない場合0を返却
@@ -1557,7 +1569,9 @@ AS
         , vRecordS07T001T.KONKAISHIMEDD
         , '00000000'
         , 0
+        -- modify 軽減税率変更対応_LI 20261127 Start
         , vRecordS07T001T.N8PERSHOHITAXKIN + vRecordS07T001T.N10PERSHOHITAXKIN + vRecordS07T001T.OLDKEIGENSHOHITAXKIN + vRecordS07T001T.OLDIPPANSHOHITAXKIN
+        -- modify 軽減税率変更対応_LI 20261127 End
         , 0
         , NULL
         , NULL
@@ -1971,6 +1985,7 @@ AS
           , 0
           , 0
           , vRecordS07T001T.N8PERSHOHITAXKIN
+          -- modify 軽減税率変更対応_LI 20261127 Start
           , 0
           , '4'       -- （軽減税率）
           , '0'       -- （商品）
@@ -2202,6 +2217,7 @@ AS
           , 0
           , 0
           , vRecordS07T001T.OLDKEIGENSHOHITAXKIN
+          -- modify 軽減税率変更対応_LI 20261127 End
           , 0
           , '4'       -- （軽減税率）
           , '0'       -- （商品）
@@ -2926,7 +2942,9 @@ AS
     -- 請求締用対象得意先ワーク更新
     UPDATE S07W006T
     SET
+          -- modify 軽減税率変更対応_LI 20261127 Start
           SHOHITAXKIN   = SHOHITAXKIN + vRecordS07T001T.N8PERSHOHITAXKIN + vRecordS07T001T.N10PERSHOHITAXKIN + vRecordS07T001T.OLDKEIGENSHOHITAXKIN + vRecordS07T001T.OLDIPPANSHOHITAXKIN
+          -- modify 軽減税率変更対応_LI 20261127 End
     WHERE
             APKIHONCD   = vRecordS07T001T.APKIHONCD
         AND SHOPCD      = vRecordS07T001T.SHOPCD
@@ -3063,10 +3081,12 @@ AS
         , N8PERSHOHITAXKIN                        -- ８％消費税金額
         , N10PERZEINUKIURIKIN                     -- １０％税抜売上金額
         , N10PERSHOHITAXKIN                       -- １０％消費税金額
+        -- add 軽減税率変更対応_LI 20261127 Start
         , OLDKEIGENZEINUKIURIKIN                  -- 軽減旧枠税抜売上金額（消費税改修）
         , OLDKEIGENSHOHITAXKIN                    -- 軽減旧枠消費税金額（消費税改修）
         , OLDIPPANZEINUKIURIKIN                   -- 一般旧枠税抜売上金額（消費税改修）
         , OLDIPPANSHOHITAXKIN                     -- 一般旧枠消費税金額（消費税改修）
+        -- add 軽減税率変更対応_LI 20261127 End
         , TAXKEISANKBN                            -- 税計算区分
         , SKYICRNHYPRNTDD                         -- 請求一覧表印刷日
         , SKYSHOPRNTDD                            -- 請求書印刷日
@@ -3159,10 +3179,12 @@ AS
         , vRecordS07T001T.N8PERSHOHITAXKIN        -- ８％消費税金額
         , vRecordS07T001T.N10PERZEINUKIURIKIN     -- １０％税抜売上金額
         , vRecordS07T001T.N10PERSHOHITAXKIN       -- １０％消費税金額
+        -- add 軽減税率変更対応_LI 20261127 Start
         , vRecordS07T001T.OLDKEIGENZEINUKIURIKIN  -- 軽減旧枠税抜売上金額（消費税改修）
         , vRecordS07T001T.OLDKEIGENSHOHITAXKIN    -- 軽減旧枠消費税金額（消費税改修）
         , vRecordS07T001T.OLDIPPANZEINUKIURIKIN   -- 一般旧枠税抜売上金額（消費税改修）
         , vRecordS07T001T.OLDIPPANSHOHITAXKIN     -- 一般旧枠消費税金額（消費税改修）
+        -- add 軽減税率変更対応_LI 20261127 End
         , vRecordS07T001T.TAXKEISANKBN            -- 税計算区分
         , vRecordS07T001T.SKYICRNHYPRNTDD         -- 請求一覧表印刷日
         , vRecordS07T001T.SKYSHOPRNTDD            -- 請求書印刷日
@@ -3434,7 +3456,9 @@ AS
     wNebikikin            S10T001T.NEBIKIKIN%TYPE;            -- 値引金額
     wTesuryo              S10T001T.TESURYO%TYPE;              -- 手数料
     wKonkaitaxnukiurikin  S07T001T.KONKAITAXNUKIURIKIN%TYPE;  -- 今回税抜売上金額
+    -- add 軽減税率変更対応_LI 20261127 Start
     wPrevStrtdd           S02M091T.TEKIYOSTRTDD%TYPE;          -- 税区分4の直前期間の適用開始日（消費税改修）
+    -- add 軽減税率変更対応_LI 20261127 End
   BEGIN
     -- 請求残高テーブル（数量、金額）項目値クリア
     vRecordS07T001T.KONKAITAXNUKIURIKIN     := 0; -- 今回税抜売上金額
@@ -3446,10 +3470,12 @@ AS
     vRecordS07T001T.N8PERSHOHITAXKIN        := 0; -- ８％消費税金額
     vRecordS07T001T.N10PERZEINUKIURIKIN     := 0; -- １０％税抜売上金額
     vRecordS07T001T.N10PERSHOHITAXKIN       := 0; -- １０％消費税金額
+    -- add 軽減税率変更対応_LI 20261127 Start
     vRecordS07T001T.OLDKEIGENZEINUKIURIKIN  := 0; -- 軽減旧枠税抜売上金額（消費税改修）
     vRecordS07T001T.OLDKEIGENSHOHITAXKIN    := 0; -- 軽減旧枠消費税金額（消費税改修）
     vRecordS07T001T.OLDIPPANZEINUKIURIKIN   := 0; -- 一般旧枠税抜売上金額（消費税改修）
     vRecordS07T001T.OLDIPPANSHOHITAXKIN     := 0; -- 一般旧枠消費税金額（消費税改修）
+    -- add 軽減税率変更対応_LI 20261127 End
     vRecordS07T001T.RGRAYURYO               := 0; -- レギュラー有料
     vRecordS07T001T.RGRAMURYO               := 0; -- レギュラー無料
     vRecordS07T001T.SRMYURYO                := 0; -- スリム有料
@@ -3491,10 +3517,12 @@ AS
     wMeisaitaxkin                           := 0; -- 明細消費税金額
     wKonkaitaxnukiurikin                    := 0; -- 今回税抜売上金額
 
+    -- add 軽減税率変更対応_LI 20261127 Start
     -- 消費税改修：軽減旧枠の再計算用に、税区分4の直前期間の適用開始日を取得する
     SELECT MAX(TEKIYOSTRTDD) INTO wPrevStrtdd FROM S02M091T
      WHERE TAXKBN = '4' AND TEKIYOSHRYDD < vRecordS07T001T.KONKAISHIMEDD AND YUKOKBN = '1';
 
+    -- add 軽減税率変更対応_LI 20261127 End
     -- 売上処理ありの場合
     IF iSalesFlg = '1' THEN
       -- 請求明細関連テーブル生成
@@ -3518,6 +3546,7 @@ AS
             -- 10%消費税算出
             vRecordS07T001T.N10PERSHOHITAXKIN := Z1808B01.SyohizeiKeisan('1', '1', '1', NULL, vRecordS07T001T.KONKAISHIMEDD,
               vRecordS07T001T.APKIHONCD, vRecordS07T001T.SHOPCD, NULL, 0, vRecordS07T001T.N10PERZEINUKIURIKIN);
+            -- modify 軽減税率変更対応_LI 20261127 Start
             -- 軽減旧枠消費税算出（税区分4の直前期間の税率で計算する。直前期間が無い場合は旧枠自体が発生しない）
             IF wPrevStrtdd IS NOT NULL THEN
               vRecordS07T001T.OLDKEIGENSHOHITAXKIN := Z1808B01.SyohizeiKeisan( '1', '1', '4', NULL, wPrevStrtdd,
@@ -3526,6 +3555,7 @@ AS
 
             -- 消費税合算が0以外の場合
             IF vRecordS07T001T.N8PERSHOHITAXKIN + vRecordS07T001T.N10PERSHOHITAXKIN + vRecordS07T001T.OLDKEIGENSHOHITAXKIN + vRecordS07T001T.OLDIPPANSHOHITAXKIN != 0 THEN
+            -- modify 軽減税率変更対応_LI 20261127 End
               -- 売上伝票番号採番
               Z1804B01.getSlipNoUriageNa(vRecordS07T001T.APKIHONCD, vRecordS07T001T.SHOPCD, 1, wUridnpynoFrom, wUridnpynoTo);
               -- 売上テーブルデータ生成（消費税・黒）
@@ -3589,7 +3619,9 @@ AS
     vRecordS07T001T.RENBAN              := iRenban;                                 -- 連番
     vRecordS07T001T.KONKAITAXNUKIURIKIN := wKonkaitaxnukiurikin;                    -- 今回税抜売上金額
     vRecordS07T001T.KONKAISHOHITAXKIN
+      -- modify 軽減税率変更対応_LI 20261127 Start
       := vRecordS07T001T.N8PERSHOHITAXKIN + vRecordS07T001T.N10PERSHOHITAXKIN + vRecordS07T001T.OLDKEIGENSHOHITAXKIN + vRecordS07T001T.OLDIPPANSHOHITAXKIN;      -- 今回消費税額
+      -- modify 軽減税率変更対応_LI 20261127 End
     vRecordS07T001T.KURIKOSHIKIN
       := vRecordS07T001T.ZNKKURIKOSHIKIN + vRecordS07T001T.KONKAITAXNUKIURIKIN
         + vRecordS07T001T.KONKAISHOHITAXKIN - vRecordS07T001T.KONKAINYKNKIN;        -- 繰越金額
@@ -3618,8 +3650,10 @@ AS
                             ,iSalesFlg          IN VARCHAR2
                             ,iNyukinFlg         IN VARCHAR2
                             ,iN8pershohitaxkin  IN NUMBER
+                            -- modify 軽減税率変更対応_LI 20261127 Start
                             ,iN10pershohitaxkin IN NUMBER
                             ,iOldkeigenshohitaxkin IN NUMBER) IS
+                            -- modify 軽減税率変更対応_LI 20261127 End
     ---------------------------
     -- 変数定義
     ---------------------------
@@ -3641,10 +3675,12 @@ AS
     vRecordS07T001T.N8PERSHOHITAXKIN        := 0; -- ８％消費税金額
     vRecordS07T001T.N10PERZEINUKIURIKIN     := 0; -- １０％税抜売上金額
     vRecordS07T001T.N10PERSHOHITAXKIN       := 0; -- １０％消費税金額
+    -- add 軽減税率変更対応_LI 20261127 Start
     vRecordS07T001T.OLDKEIGENZEINUKIURIKIN  := 0; -- 軽減旧枠税抜売上金額（消費税改修）
     vRecordS07T001T.OLDKEIGENSHOHITAXKIN    := 0; -- 軽減旧枠消費税金額（消費税改修）
     vRecordS07T001T.OLDIPPANZEINUKIURIKIN   := 0; -- 一般旧枠税抜売上金額（消費税改修）
     vRecordS07T001T.OLDIPPANSHOHITAXKIN     := 0; -- 一般旧枠消費税金額（消費税改修）
+    -- add 軽減税率変更対応_LI 20261127 End
     vRecordS07T001T.RGRAYURYO               := 0; -- レギュラー有料
     vRecordS07T001T.RGRAMURYO               := 0; -- レギュラー無料
     vRecordS07T001T.SRMYURYO                := 0; -- スリム有料
@@ -3709,11 +3745,13 @@ AS
             vRecordS07T001T.N8PERSHOHITAXKIN := iN8pershohitaxkin;
             -- 10%消費税算出
             vRecordS07T001T.N10PERSHOHITAXKIN := iN10pershohitaxkin;
+            -- modify 軽減税率変更対応_LI 20261127 Start
             -- 軽減旧枠消費税算出（呼び出し側で直前税率により算出済みの値を設定）
             vRecordS07T001T.OLDKEIGENSHOHITAXKIN := iOldkeigenshohitaxkin;
 
             -- 消費税合算が0以外の場合
             IF vRecordS07T001T.N8PERSHOHITAXKIN + vRecordS07T001T.N10PERSHOHITAXKIN + vRecordS07T001T.OLDKEIGENSHOHITAXKIN + vRecordS07T001T.OLDIPPANSHOHITAXKIN != 0 THEN
+            -- modify 軽減税率変更対応_LI 20261127 End
               -- 売上伝票番号採番
               Z1804B01.getSlipNoUriageNa(vRecordS07T001T.APKIHONCD, vRecordS07T001T.SHOPCD, 1, wUridnpynoFrom, wUridnpynoTo);
               -- 売上テーブルデータ生成（消費税・黒）
@@ -3777,7 +3815,9 @@ AS
     vRecordS07T001T.RENBAN              := iRenban;                                 -- 連番
     vRecordS07T001T.KONKAITAXNUKIURIKIN := wKonkaitaxnukiurikin;                    -- 今回税抜売上金額
     vRecordS07T001T.KONKAISHOHITAXKIN
+      -- modify 軽減税率変更対応_LI 20261127 Start
       := vRecordS07T001T.N8PERSHOHITAXKIN + vRecordS07T001T.N10PERSHOHITAXKIN + vRecordS07T001T.OLDKEIGENSHOHITAXKIN + vRecordS07T001T.OLDIPPANSHOHITAXKIN;      -- 今回消費税額
+      -- modify 軽減税率変更対応_LI 20261127 End
     vRecordS07T001T.KURIKOSHIKIN
       := vRecordS07T001T.ZNKKURIKOSHIKIN + vRecordS07T001T.KONKAITAXNUKIURIKIN
         + vRecordS07T001T.KONKAISHOHITAXKIN - vRecordS07T001T.KONKAINYKNKIN;        -- 繰越金額
@@ -4813,10 +4853,12 @@ AS
     wRecordCount        NUMBER;                       -- データ件数
     wUriNyukinExists    BOOLEAN := FALSE;             -- 売上・入金伝票存在有無
     wSum8perUriKin      NUMBER := 0;                  -- 売上金額8％（合計）※親子卸の請求先単位の合算用
+    -- add 軽減税率変更対応_LI 20261127 Start
     wSum8perUriKinOld   NUMBER := 0;                  -- 売上金額軽減旧枠（合計）※親子卸の請求先単位の合算用（消費税改修）
     wOldkeigenshohitaxkin NUMBER := 0;                -- 消費税計算軽減旧枠用（消費税改修）
     wTaxRate4Shime      NUMBER;                       -- 税区分4の締日時点税率（新旧判定用）（消費税改修）
     wPrevStrtdd         VARCHAR2(8);                  -- 税区分4の直前期間の適用開始日（消費税改修）
+    -- add 軽減税率変更対応_LI 20261127 End
     wSum10perUriKin     NUMBER := 0;                  -- 売上金額10％（合計）※親子卸の請求先単位の合算用
     wN8pershohitaxkin   NUMBER := 0;                  -- 消費税計算8パーセント用
     wN10pershohitaxkin  NUMBER := 0;                  -- 消費税計算10パーセント用
@@ -5011,6 +5053,7 @@ AS
               -- 支払予定日設定
               SetPaymentPlanDate(recS07W006TS02M017T.SHRSAITO, recS07W006TS02M017T.SHRDD);
 
+              -- modify 軽減税率変更対応_LI 20261127 Start
               -- 消費税改修：新旧判定用に税区分4の締日時点税率と直前期間の適用開始日を取得する
               SELECT SHOHITAX INTO wTaxRate4Shime FROM S02M091T
                WHERE TAXKBN = '4' AND TEKIYOSTRTDD <= vRecordS07T001T.KONKAISHIMEDD
@@ -5030,6 +5073,7 @@ AS
                   wSum10perUriKin,
                   wSum8perUriKin,
                   wSum8perUriKinOld
+              -- modify 軽減税率変更対応_LI 20261127 End
               FROM
                 S06T001T HEAD
                 INNER JOIN S06T002T UMST
@@ -5040,6 +5084,7 @@ AS
                   AND HEAD.EDANO          = UMST.EDANO
                   AND HEAD.YUKOKBN        = '1'
                   AND UMST.NYURYOKUMEISAIFLG = '1'
+                -- add 軽減税率変更対応_LI 20261127 Start
                 )
                 LEFT JOIN S02M091T TAXM
                 ON (
@@ -5047,6 +5092,7 @@ AS
                   AND TAXM.TEKIYOSTRTDD <= HEAD.URIDD
                   AND TAXM.TEKIYOSHRYDD >= HEAD.URIDD
                   AND TAXM.YUKOKBN      = '1'
+                -- add 軽減税率変更対応_LI 20261127 End
                 )
               WHERE
                 HEAD.APKIHONCD           = vRecordS07T001T.APKIHONCD
@@ -5075,6 +5121,7 @@ AS
               -- 10％消費税算出
               wN10pershohitaxkin := Z1808B01.SyohizeiKeisan('1', '1', '1', NULL, vRecordS07T001T.KONKAISHIMEDD,
                 vRecordS07T001T.APKIHONCD, vRecordS07T001T.SHOPCD, NULL, 0, wSum10perUriKin);
+-- add 軽減税率変更対応_LI 20261127 Start
 
               -- 軽減旧枠消費税算出（税区分4の直前期間の税率で計算する。直前期間が無い場合は旧枠自体が発生しない）
               wOldkeigenshohitaxkin := 0;
@@ -5082,6 +5129,7 @@ AS
                 wOldkeigenshohitaxkin := Z1808B01.SyohizeiKeisan( '1', '1', '4', NULL, wPrevStrtdd,
                   vRecordS07T001T.APKIHONCD, vRecordS07T001T.SHOPCD, NULL, 0, wSum8perUriKinOld);
               END IF;
+-- add 軽減税率変更対応_LI 20261127 End
 
             END IF;
 
@@ -5113,11 +5161,13 @@ AS
             IF (recS07W006TS02M017T.TKSM_TOKUISAKICD != wTokuisakicd) THEN
               -- 請求締処理（親子）（消費税金額は0を設定）
               SeikyuFixProcessOyako(wSkyshono, NULL, wSkyshonoedano, wRenban,
+                -- modify 軽減税率変更対応_LI 20261127 Start
                 (CASE WHEN recS07W006TS02M017T.TKSM_TOKUISAKICD IS NULL THEN '0' ELSE '1' END), '1', 0, 0, 0);
             ELSE
               -- 請求締処理（親子）（消費税金額はサマリーした結果を設定）
               SeikyuFixProcessOyako(wSkyshono, NULL, wSkyshonoedano, wRenban,
                 (CASE WHEN recS07W006TS02M017T.TKSM_TOKUISAKICD IS NULL THEN '0' ELSE '1' END), '1', wN8pershohitaxkin, wN10pershohitaxkin, wOldkeigenshohitaxkin);
+                -- modify 軽減税率変更対応_LI 20261127 End
             END IF;
             -- ACCIS2023-6958_end
 

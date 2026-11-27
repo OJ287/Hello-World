@@ -597,8 +597,10 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
   PROCEDURE Setjidonebikikidata2(iShohincd IN VARCHAR2,
                                  iUrikin   IN VARCHAR2,
                                  iTokuisakikbn      IN VARCHAR2,
+                                 -- modify 軽減税率変更対応_LI 20261127 Start
                                  iJutakudlvrycstkbn IN VARCHAR2,
                                  iCalcKirikaebi     IN VARCHAR2 DEFAULT NULL  -- 計算基準日（099904用）
+                                 -- modify 軽減税率変更対応_LI 20261127 End
   ) IS
     iTaxsetteikbn S02V001T.TAXSETTEIKBN%TYPE;   -- 消費税計算用税設定区分
     iTaxkbn       S02V001T.TAXKBN%TYPE;         -- 消費税計算用税区分
@@ -642,7 +644,9 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
             iTaxsetteikbn,                      --税設定区分
             iTaxkbn,                            --消費税計算用税区分
             '2',                                --税計算区分
+            -- modify 軽減税率変更対応_LI 20261127 Start
             NVL(iCalcKirikaebi, vRecordS06T001T.URIDD),  --切り替え日（指定時はその日付の税率で計算）
+            -- modify 軽減税率変更対応_LI 20261127 End
             vRecordS06T001T.APKIHONCD,          --AP基本コード
             vRecordS06T001T.SHOPCD,             --ショップコード
             NULL,                               --仕入先コード
@@ -1380,14 +1384,16 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
     wNebikiunt_TAB2        S02M052T.NEBIKIUNT%TYPE;             -- 値引単価
     wMeisaibiko_TAB2       S02M052T.MEISAIBIKO%TYPE;            -- 明細備考
 
+    -- add 軽減税率変更対応_LI 20261127 Start
     -- 消費税改修：税率ベース振り分け用
     vTaxRate4   S02M091T.SHOHITAX%TYPE;      -- 税区分4の締日時点税率
     vTaxRate6   S02M091T.SHOHITAX%TYPE;      -- 税区分6の締日時点税率
     vTaxRate7   S02M091T.SHOHITAX%TYPE;      -- 税区分7の締日時点税率
     vRowRate    S02M091T.SHOHITAX%TYPE;      -- 振り分け対象行の税率
-    vUriKin8Sub S06T002T.KIN%TYPE;           -- 軽減の別率分売上金額（099904用）
+    vUriKin8Old S06T002T.KIN%TYPE;           -- 軽減の別率分売上金額（099904用）
     vPrevStrtdd S02M091T.TEKIYOSTRTDD%TYPE;  -- 税区分4の直前期間の適用開始日
 
+    -- add 軽減税率変更対応_LI 20261127 End
     -- 自動値引データ作成
     CURSOR SELECT_JNKM IS
     SELECT
@@ -1589,7 +1595,8 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
 
     vUriKin8  := 0;
     vUriKin10 := 0;
-    vUriKin8Sub := 0;
+    -- add 軽減税率変更対応_LI 20261127 Start
+    vUriKin8Old := 0;
 
     -- 消費税改修：振り分け判定用に、締日時点の税率と税区分4の直前期間を取得する
     IF (iSyorimodo = '3') THEN
@@ -1606,6 +1613,7 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
         SELECT MAX(TEKIYOSTRTDD) INTO vPrevStrtdd FROM S02M091T
          WHERE TAXKBN = '4' AND TEKIYOSHRYDD < iSkyshimedd AND YUKOKBN = '1';
     END IF;
+    -- add 軽減税率変更対応_LI 20261127 End
 
     IF wRecordS02M052T.JIDONEBIKICD IS NOT NULL THEN
         --  売上伝票明細番号
@@ -1623,6 +1631,7 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
             IF (vRecordS06T002T.TAXKBN = '1') THEN
                 --売上明細テーブル用変数.税区分＝'1'（課税）の場合
                 vUriKin10 := vUriKin10 + vRecordS06T002T.KIN;
+            -- modify 軽減税率変更対応_LI 20261127 Start
             ELSIF (vRecordS06T002T.TAXKBN IN ('4', '6', '7')) THEN
                 --消費税改修：軽減は税区分ではなく税率で振り分ける（同率→099902、別率→099904）
                 vRowRate := CASE vRecordS06T002T.TAXKBN
@@ -1632,8 +1641,9 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
                 IF (vRowRate = vTaxRate4) THEN
                     vUriKin8 := vUriKin8 + vRecordS06T002T.KIN;
                 ELSE
-                    vUriKin8Sub := vUriKin8Sub + vRecordS06T002T.KIN;
+                    vUriKin8Old := vUriKin8Old + vRecordS06T002T.KIN;
                 END IF;
+            -- modify 軽減税率変更対応_LI 20261127 End
             END IF;
         END IF;
     END IF;
@@ -1654,6 +1664,7 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
             IF (vRecordS06T002T.TAXKBN = '1') THEN
                 --売上明細テーブル用変数.税区分＝'1'（課税）の場合
                 vUriKin10 := vUriKin10 + vRecordS06T002T.KIN;
+            -- modify 軽減税率変更対応_LI 20261127 Start
             ELSIF (vRecordS06T002T.TAXKBN IN ('4', '6', '7')) THEN
                 --消費税改修：軽減は税区分ではなく税率で振り分ける（同率→099902、別率→099904）
                 vRowRate := CASE vRecordS06T002T.TAXKBN
@@ -1663,8 +1674,9 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
                 IF (vRowRate = vTaxRate4) THEN
                     vUriKin8 := vUriKin8 + vRecordS06T002T.KIN;
                 ELSE
-                    vUriKin8Sub := vUriKin8Sub + vRecordS06T002T.KIN;
+                    vUriKin8Old := vUriKin8Old + vRecordS06T002T.KIN;
                 END IF;
+            -- modify 軽減税率変更対応_LI 20261127 End
             END IF;
         END IF;
     END IF;
@@ -1685,6 +1697,7 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
             IF (vRecordS06T002T.TAXKBN = '1') THEN
                 --売上明細テーブル用変数.税区分＝'1'（課税）の場合
                 vUriKin10 := vUriKin10 + vRecordS06T002T.KIN;
+            -- modify 軽減税率変更対応_LI 20261127 Start
             ELSIF (vRecordS06T002T.TAXKBN IN ('4', '6', '7')) THEN
                 --消費税改修：軽減は税区分ではなく税率で振り分ける（同率→099902、別率→099904）
                 vRowRate := CASE vRecordS06T002T.TAXKBN
@@ -1694,8 +1707,9 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
                 IF (vRowRate = vTaxRate4) THEN
                     vUriKin8 := vUriKin8 + vRecordS06T002T.KIN;
                 ELSE
-                    vUriKin8Sub := vUriKin8Sub + vRecordS06T002T.KIN;
+                    vUriKin8Old := vUriKin8Old + vRecordS06T002T.KIN;
                 END IF;
+            -- modify 軽減税率変更対応_LI 20261127 End
             END IF;
         END IF;
     END IF;
@@ -1718,16 +1732,18 @@ CREATE OR REPLACE PACKAGE BODY       D1505B01
             vRecordS06T002T.URIDNPYMEISAINO := NVL(vRecordS06T002T.URIDNPYMEISAINO, 0) + 1;
             --自動値引データ作成の時、売上明細テーブルデータ設定
             Setjidonebikikidata2('099902', vUriKin8, wTokuisakikbn_TAB, wJutakudlvrycstkbn_TAB);
+            -- add 軽減税率変更対応_LI 20261127 Start
             --売上の消費税へ加算
             vRecordS06T001T.SHOHITAXKIN := vRecordS06T001T.SHOHITAXKIN + vRecordS06T002T.SHOHITAXKIN;
         END IF;
 
         --軽減の別率分（税区分4の直前税率分）がある場合、消費税明細レコードを登録する。
-        IF (vUriKin8Sub != 0) THEN
+        IF (vUriKin8Old != 0) THEN
             --売上伝票明細番号
             vRecordS06T002T.URIDNPYMEISAINO := NVL(vRecordS06T002T.URIDNPYMEISAINO, 0) + 1;
             --自動値引データ作成の時、売上明細テーブルデータ設定（基準日＝直前期間の日付）
-            Setjidonebikikidata2('099904', vUriKin8Sub, wTokuisakikbn_TAB, wJutakudlvrycstkbn_TAB, vPrevStrtdd);
+            Setjidonebikikidata2('099904', vUriKin8Old, wTokuisakikbn_TAB, wJutakudlvrycstkbn_TAB, vPrevStrtdd);
+            -- add 軽減税率変更対応_LI 20261127 End
             --売上の消費税へ加算
             vRecordS06T001T.SHOHITAXKIN := vRecordS06T001T.SHOHITAXKIN + vRecordS06T002T.SHOHITAXKIN;
         END IF;

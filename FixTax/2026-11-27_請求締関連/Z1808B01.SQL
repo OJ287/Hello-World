@@ -184,7 +184,9 @@ CREATE OR REPLACE PACKAGE BODY "Z1808B01"
 	IF iSiiresakicd IS NOT NULL AND (vTaxkbn = '2' OR vTaxkbn = '3') THEN
     	RETURN(0);
 	END IF;
+	-- modify 軽減税率変更対応_LI 20261127 Start
 	IF vTaxkbn <> '1' AND vTaxkbn <> '4' AND vTaxkbn <> '6' AND vTaxkbn <> '7' THEN	-- 消費税改修：新固定区分 6/7 を追加
+	-- modify 軽減税率変更対応_LI 20261127 End
 -- ■:2 PKUT)YANG 軽減税率対応 2019-05-20
 -- ■:2 Base)Arai 2014-02-23
     	RETURN(0);

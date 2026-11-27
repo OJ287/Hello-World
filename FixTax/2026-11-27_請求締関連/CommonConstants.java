@@ -996,6 +996,7 @@ package jp.co.aquaclara.accis.common.constants;
      * 意味  : 税区分
      */
     public static final String KBN_TAX_KOMEISAI = "5";
+// add 軽減税率変更対応_LI 20261127 Start
 
     /**
      * 分類  : 税区分
@@ -1010,6 +1011,7 @@ package jp.co.aquaclara.accis.common.constants;
      * 意味  : 税区分（消費税改修で追加）
      */
     public static final String KBN_TAX_KEIGEN_1 = "7";
+// add 軽減税率変更対応_LI 20261127 End
 
     /**
      * 分類  : 計上区分
@@ -2288,12 +2290,14 @@ package jp.co.aquaclara.accis.common.constants;
      * 論理名: 消費税_10%
      */
     public static final String TAX_10 = "10";
+// add 軽減税率変更対応_LI 20261127 Start
 
     /**
      * 分類  : 消費税
      * 論理名: 消費税_1%
      */
     public static final String TAX_1 = "1";
+// add 軽減税率変更対応_LI 20261127 End
 
     /**
      * 分類  : 回収方法区分
