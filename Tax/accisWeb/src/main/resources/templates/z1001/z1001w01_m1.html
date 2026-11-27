@@ -1,0 +1,293 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+</head>
+
+<!--/*
+   システム名:AP総合管理システム
+   機能名:売上照会
+*/-->
+<body>
+    <!--
+    //------------------------------------------------------------------
+    // 明細部("M1")
+    //------------------------------------------------------------------
+    -->
+    <div th:fragment="detail">
+        <div class="aci-sticky-table-wrapper" style="width: 915px;">
+            <div class="aci-sticky-table-dataarea scrollmeisai" style="height: 265px; width: 915px;">
+
+                <template id="z1001w01_meisai_template">
+                    <tr>
+                        <td class="code" rowspan="2">
+                            <!-- // 「商品コード明細」テキストボックスリードオンリー -->
+                            <span class="shncd">{shncd}</span>
+                        </td>
+                        <td class="str" rowspan="2">
+                            <!-- // 「商品名称略称明細」ラベル -->
+                            <span class="shnnmryakusho" style="padding-left:2px;">{shnnmryakusho}</span>
+                        </td>
+                        <td class="str" rowspan="2">
+                            <!-- // 「色明細」ラベル -->
+                            <span class="iro" style="padding-left:2px;">{iro}</span>
+                        </td>
+                        <td class="str" rowspan="2">
+                            <!-- // 「サイズ明細」ラベル -->
+                            <span class="sz" style="padding-left:2px;">{sz}</span>
+                        </td>
+                        <td rowspan="2">
+                            <!-- // 「型式名称」ラベル -->
+                            <span class="katasikinm" style="padding-left:2px;">{katasikinm}</span>
+                        </td>
+                        <td style="padding-left:2px">
+                            <!-- // 「計上区分名称」ラベル -->
+                            <span class="keijokbnnm">{keijokbnnm}</span>
+                        </td>
+                        <td class="num" style="height: 20px;">
+                            <!-- // 「数量明細１」ラベル -->
+                            <span class="suryo1 aci-format-label">{suryo1}</span>
+                            <!-- // 「取扱単位１」ラベル -->
+                            <span class="trtskitani11">{trtskitani11}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「入数明細１」ラベル -->
+                            <span class="irisu1 aci-format-label">{irisu1}</span>
+                            <!-- // 「入数単位明細１」ラベル -->
+                            <span class="irisutani1">{irisutani1}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「総数明細１」ラベル -->
+                            <span class="sokazu1 aci-format-label">{sokazu1}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「単価明細１」ラベル -->
+                            <span class="unt1 aci-format-label">{unt1}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「金額明細１」ラベル -->
+                            <span class="kin1 aci-format-label">{kin1}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「消費税金額明細１」ラベル -->
+                            <span class="shohitaxkinn1 aci-format-label">{shohitaxkinn1}</span>
+                        </td>
+                        <td class="str" style="border-bottom: none"></td>
+                        <td>
+                            <!-- // 「登録者」ラベル -->
+                            <span class="inptsystmymd" style="padding-left:2px; padding-right:0px !important">{inptsystmymd}</span>&nbsp;<span class="inptsystmjikan" style="padding-left:0px !important;padding-right:0px !important">{inptsystmjikan}</span>&nbsp;<span class="toshaapkihoncd" style="padding-left:0px !important;padding-right:0px !important">{toshaapkihoncd}</span><span style="padding-left:0px !important;padding-right:0px !important">-</span><span class="toshashopcd" style="padding-left:0px !important;padding-right:0px !important">{toshashopcd}</span><span style="padding-left:0px !important;padding-right:0px !important">-</span><span class="toshacd" style="padding-left:0px !important;padding-right:0px !important">{toshacd}</span>&nbsp;<span class="toshamei" style="padding-left:0px !important;padding-right:0px !important">{toshamei}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td class="num" style="height: 20px;">
+                            <!-- // 「数量明細２」ラベル -->
+                            <span class="suryo2 aci-format-label">{suryo2}</span>
+                            <!-- // 「取扱単位２」ラベル -->
+                            <span class="trtskitani2">{trtskitani2}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「入数明細２」ラベル -->
+                            <span class="irisu2 aci-format-label">{irisu2}</span>
+                            <!-- // 「入数単位明細２」ラベル -->
+                            <span class="irisutani2">{irisutani2}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「総数明細２」ラベル -->
+                            <span class="sokazu2 aci-format-label">{sokazu2}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「単価明細２」ラベル -->
+                            <span class="unt2 aci-format-label">{unt2}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「金額明細２」ラベル -->
+                            <span class="kin2 aci-format-label">{kin2}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「消費税金額明細２」ラベル -->
+                            <span class="shohitaxkinn2 aci-format-label">{shohitaxkinn2}</span>
+                        </td>
+                        <td class="str" style="border-top: none">
+                            <!-- // 「明細備考明細」ラベル -->
+                            <span class="meisaibiko" style="padding-left:2px;">{meisaibiko}</span>
+                            <!-- // 「更新対象フラグ」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].kshntrgtflg" name="meisaiBeanList[{index}].kshntrgtflg" value="{kshntrgtflg}"/>
+                            <!-- // 「売上伝票明細番号」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].uridnpymeisaino" name="meisaiBeanList[{index}].uridnpymeisaino" value="{uridnpymeisaino}"/>
+                            <!-- // 「売上伝票明細枝番号」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].uridnpymeisaiedano" name="meisaiBeanList[{index}].uridnpymeisaiedano" value="{uridnpymeisaiedano}"/>
+                            <!-- // 「データ作成元区分」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].datsksmotokbn" name="meisaiBeanList[{index}].datsksmotokbn" value="{datsksmotokbn}"/>
+                            <!-- // 「大分類コード」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].lctgrycd" name="meisaiBeanList[{index}].lctgrycd" value="{lctgrycd}"/>
+                            <!-- // 「中分類コード」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].mctgrycd" name="meisaiBeanList[{index}].mctgrycd" value="{mctgrycd}"/>
+                            <!-- // 「小分類コード」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].sctgrycd" name="meisaiBeanList[{index}].sctgrycd" value="{sctgrycd}"/>
+                            <!-- // 「価格区分」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].pricekbn" name="meisaiBeanList[{index}].pricekbn" value="{pricekbn}"/>
+                            <!-- // 「標準価格切替日」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].hyojunpricekirikaedd" name="meisaiBeanList[{index}].hyojunpricekirikaedd" value="{hyojunpricekirikaedd}"/>
+                            <!-- // 「現標準価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].genzhyojunprice" name="meisaiBeanList[{index}].genzhyojunprice" value="{genzhyojunprice}"/>
+                            <!-- // 「現標準持ち帰り価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].genzhyojunmochikaeriprice" name="meisaiBeanList[{index}].genzhyojunmochikaeriprice" value="{genzhyojunmochikaeriprice}"/>
+                            <!-- // 「新標準価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].shinhyojunprice" name="meisaiBeanList[{index}].shinhyojunprice" value="{shinhyojunprice}"/>
+                            <!-- // 「新標準持ち帰り価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].shinhyojunmochikaeriprice" name="meisaiBeanList[{index}].shinhyojunmochikaeriprice" value="{shinhyojunmochikaeriprice}"/>
+                            <!-- // 「ショップ価格切替日」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].shoppricekirikaedd" name="meisaiBeanList[{index}].shoppricekirikaedd" value="{shoppricekirikaedd}"/>
+                            <!-- // 「現ショップ価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].genzshopprice" name="meisaiBeanList[{index}].genzshopprice" value="{genzshopprice}"/>
+                            <!-- // 「現ショップ持ち帰り価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].genzshopmochikaeriprice" name="meisaiBeanList[{index}].genzshopmochikaeriprice" value="{genzshopmochikaeriprice}"/>
+                            <!-- // 「新ショップ価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].shinshopprice" name="meisaiBeanList[{index}].shinshopprice" value="{shinshopprice}"/>
+                            <!-- // 「新ショップ持ち帰り価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].shinshopmochikaeriprice" name="meisaiBeanList[{index}].shinshopmochikaeriprice" value="{shinshopmochikaeriprice}"/>
+                            <!-- // 「販促開始日」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].hansokustrtdd" name="meisaiBeanList[{index}].hansokustrtdd" value="{hansokustrtdd}"/>
+                            <!-- // 「販促終了日」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].hansokushrydd" name="meisaiBeanList[{index}].hansokushrydd" value="{hansokushrydd}"/>
+                            <!-- // 「販促価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].hansokuprice" name="meisaiBeanList[{index}].hansokuprice" value="{hansokuprice}"/>
+                            <!-- // 「販促持ち帰り価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].hansokumochikaeriprice" name="meisaiBeanList[{index}].hansokumochikaeriprice" value="{hansokumochikaeriprice}"/>
+                            <!-- // 「得意先価格開始日」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].ttpricestrtdd" name="meisaiBeanList[{index}].ttpricestrtdd" value="{ttpricestrtdd}"/>
+                            <!-- // 「得意先価格終了日」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].ttpriceshrydd" name="meisaiBeanList[{index}].ttpriceshrydd" value="{ttpriceshrydd}"/>
+                            <!-- // 「得意先価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].ttprice" name="meisaiBeanList[{index}].ttprice" value="{ttprice}"/>
+                            <!-- // 「得意先持ち帰り価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].ttmochikaeriprice" name="meisaiBeanList[{index}].ttmochikaeriprice" value="{ttmochikaeriprice}"/>
+                            <!-- // 「単価消費税金額」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].untshohitaxkin" name="meisaiBeanList[{index}].untshohitaxkin" value="{untshohitaxkin}"/>
+                            <!-- // 「消費税金額」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].shohitaxkin" name="meisaiBeanList[{index}].shohitaxkin" value="{shohitaxkin}"/>
+                            <!-- // 「初期表示価格」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].shokidsplyprice" name="meisaiBeanList[{index}].shokidsplyprice" value="{shokidsplyprice}"/>
+                            <!-- // 「在庫単価」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].zaikount" name="meisaiBeanList[{index}].zaikount" value="{zaikount}"/>
+                            <!-- // 「商品税区分」隠しフィールド -->
+                            <input type="hidden" id="meisaiBeanList[{index}].shntaxkbn" name="meisaiBeanList[{index}].shntaxkbn" value="{shntaxkbn}"/>
+                        </td>
+                        <td>
+                            <!-- // 「更新者」ラベル -->
+                            <span class="kshnsystmymd" style="padding-left:2px; padding-right:0px !important">{kshnsystmymd}</span>&nbsp;<span class="kshnsystmjikan" style="padding-left:0px !important;padding-right:0px !important">{kshnsystmjikan}</span>&nbsp;<span class="koshaapkihoncd" style="padding-left:0px !important;padding-right:0px !important">{koshaapkihoncd}</span><span style="padding-left:0px !important;padding-right:0px !important">-</span><span class="koshashopcd" style="padding-left:0px !important;padding-right:0px !important">{koshashopcd}</span><span style="padding-left:0px !important;padding-right:0px !important">-</span><span class="koshacd" style="padding-left:0px !important;padding-right:0px !important">{koshacd}</span>&nbsp;<span class="koshamei" style="padding-left:0px !important;padding-right:0px !important">{koshamei}</span>
+                        </td>
+                    </tr>
+                </template>
+
+                <table id="orderdetailhead" class="grid border uriage aci-sticky-table aci-table-data" style="border:0; cellspacing:0; cellpadding:2; position: relative;width: 1540px;">
+                    <col width="40">
+                    <col width="180">
+                    <col width="60">
+                    <col width="60">
+                    <col width="95">
+                    <col width="80">
+                    <col width="75">
+                    <col width="70">
+                    <col width="70">
+                    <col width="100">
+                    <col width="90">
+                    <col width="90">
+                    <col width="215">
+                    <col width="310">
+                    <thead>
+                        <tr>
+                            <th>商品CD</th>
+                            <th>商品略称名</th>
+                            <th>色</th>
+                            <th>サイズ</th>
+                            <th>型式</th>
+                            <th>売上計上区分</th>
+                            <th>数量</th>
+                            <th>入数</th>
+                            <th>総数</th>
+                            <th>単価</th>
+                            <th>金額</th>
+                            <th>消費税額</th>
+                            <th>備考&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                            <th>登録者／更新者</th>
+                        </tr>
+                    </thead>
+                    <tbody id="z1001w01_meisai_body" data-template="z1001w01_meisai_template" data-data_property="content" class="multiple-row row-2">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="aci-sticky-table-dataarea scrollsummary" style="margin-top: 1px; height: 43px; width: 915px;">
+                <template id="z1001w01_summary_template">
+                    <tr>
+                        <td style="background-color: #cccccc" rowspan="2"></td>
+                        <td style="background-color: #cccccc; height: 17px;padding-left:2px;width:36px">売上計</td>
+                        <th rowspan="2" style="background-color: #ffcc66;padding-right:3px">税込み合計</th>
+                        <td class="num">
+                            <b>
+                                <!-- // 「売上金額１」ラベル -->
+                                <span class="aci-format-label" style="font-weight:bold;color:black">{urikin1}</span>
+                            </b>
+                        </td>
+                        <td style="background-color: #cccccc;width:6px" rowspan="2"></td>
+                        <th rowspan="2">合計</th>
+                        <td class="num">
+                            <b>
+                                <!-- // 「売上金額２」ラベル -->
+                                <span class="aci-format-label" style="font-weight:bold;color:black">{urikin2}</span>
+                            </b>
+                        </td>
+                        <td class="num">
+                            <!-- // 「消費税金額１」ラベル -->
+                            <span class="aci-format-label" >{shohitaxkin1}</span>
+                        </td>
+                        <td style="background-color: #cccccc" rowspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #cccccc;height: 17px;padding-left:2px">仕入計</td>
+                        <td class="num">
+                            <b>
+                                <!-- // 「仕入金額１」ラベル -->
+                                <span class="aci-format-label" style="font-weight:bold;color:black">{siirekin1}</span>
+                            </b>
+                        </td>
+                        <td class="num">
+                            <b>
+                                <!-- // 「仕入金額２」ラベル -->
+                                <span class="aci-format-label" style="font-weight:bold;color:black">{siirekin2}</span>
+                            </b>
+                        </td>
+                        <td class="num">
+                            <!-- // 「消費税金額２」ラベル -->
+                            <span class="aci-format-label" >{shohitaxkin2}</span>
+                        </td>
+                    </tr>
+                </template>
+                <table class="grid border" style="height: 40px; width:1540px;">
+                    <col width="555">
+                    <col width="40">
+                    <col width="90">
+                    <col width="90">
+                    <col width="5">
+                    <col width="50">
+                    <col width="90">
+                    <col width="90">
+                    <col width="*">
+                    <tbody id="z1001w01_summary_body"
+                        class="aci-load"
+                        th:data-api="@{|/api/z1001w01/summary/*{baseBean.apkihoncd}/*{baseBean.shopcd}|}"
+                        data-template="z1001w01_summary_template"
+                        data-with-formdata="true"
+                        data-query-filters='[
+                            "baseBean.*"
+                        ]'
+                        >
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

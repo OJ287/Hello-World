@@ -1,0 +1,1221 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<!--/*
+    C0801W02_受注登録（受注登録）
+*/-->
+<head>
+    <title>[(${headerTitle})]</title>
+    <th:block th:replace="commons/layout.html :: configFragment"></th:block>
+    <link th:href="@{/css/commons/aci/common.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/commons/ifm.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/c0801/c0801w00.css}" rel="stylesheet" type="text/css">
+
+    <script type="module" class="aci-module aci-module-page" th:src="@{/js/c0801/c0801w02.js}"></script>
+    
+    <!--/* ページ独自のスタイル定義 */-->
+    <style>
+    .ifm-multicontrol tr td label {
+        top: 2px !important;
+    }
+    #display table tr th {
+        padding: 2px;
+    }
+    
+    #display button:disabled {
+        color: #A0A0A0;
+    }
+    /* set CSS for Chrome 29+ only */
+    @media screen and (-webkit-min-device-pixel-ratio:0) and (min-resolution:.001dpcm) {
+        select:disabled{
+            color: gray;
+            }
+    }
+    span.message {
+        position: absolute;
+        top: 3px;
+        color: #f33;
+        font-weight: bold;
+    }
+    .vertical-writing {
+        padding: 1px;
+        display: table-cell;
+        writing-mode: vertical-rl;
+        vertical-align: middle;
+        text-align: center;
+    }
+    #orderdetailbodytable td.nowrap {
+        white-space: nowrap;
+    }
+    #c0801w02_base_previous td:empty {
+        height: 10px;
+    }
+    .order-list-area {
+        width : 1280px;
+    }
+    #juchuhaifu input:read-only:not([type="button"]), #c0801w02_meisai_list input:read-only:not([type="button"]) {
+        background-color: inherit;
+        border: 0px;
+    }
+    </style>
+</head>
+
+<body>
+    <!--/* プルダウン用テンプレート定義 */-->
+    <template id="template_select">
+        <option value="{value}">{label}</option>
+    </template>
+    <!--/* 処理区分ラジオボタンテンプレート */-->
+    <template id="template_radio_prcskbn">
+        <label class="form-check-label">
+            <input type="radio"
+                value="{value}"
+                id="baseBean.prcskbn{index}"
+                name="baseBean.prcskbn"
+                class="form-check-input"
+            >
+            {label}
+        </label>
+    </template>
+    <!--/* 受注区分ラジオボタンテンプレート */-->
+    <template id="template_radio_acptkbn">
+        <label class="form-check-label">
+            <input type="radio"
+                value="{value}"
+                id="meisaiBean.acptkbn{index}"
+                name="meisaiBean.acptkbn"
+                class="form-check-input"
+                th:disabled="${c0801W02Form.baseBean.authflag != 'f'}"
+            >
+            {label}
+        </label>
+    </template>
+
+    
+    <!--/* フォーム定義 th:objectはc0801W02Form */-->
+    <form th:method="post" th:action="@{/c0801w02}" th:object="${c0801W02Form}">
+        <!--* 共通ヘッダー部 */-->
+        <div th:replace="commons/header.html :: header"></div>
+        <!--* AP/ショップ選択部 */-->
+        <th:block th:replace="z0101/z0101w01 :: basic_fix" />
+        <!--* ローディングアイコン */-->
+        <div id="aci-ajaxloader"></div>
+        <!--* メッセージエリア */-->
+        <div id="message_area" class="ifm-message-area"></div>
+        <!--* メッセージ取り込み */-->
+        <div th:replace="commons/messages.html :: basic"></div>
+        <th:block>
+            <!--/* 初期表示エラー情報 */-->
+            <input th:field="*{dialogmessage}" type="hidden">
+        </th:block>
+        <!--/* 業務エリア */-->
+        <div id="display">
+            <!--* 得意先共通ヘッダー部 */-->
+            <th:block th:replace="z0501/z0501w01.html :: syorimode1" />
+        <div id="c0801w02_main" style="display: none;">
+            <!--/* 隠しフィールド定義 */-->
+            <div>
+                <!--/* 消費税率情報 */-->
+                <th:block th:each="taxInfo : *{taxInfoList}">
+                    <input
+                        type="hidden"
+                        th:data-index="${taxInfoStat.index}"
+                        th:id="|taxInfoList[__${taxInfoStat.index}__].taxkbn|"
+                        th:name="|taxInfoList[__${taxInfoStat.index}__].taxkbn|"
+                        th:value="${taxInfo.taxkbn}">
+                    <input
+                        type="hidden"
+                        th:data-index="${taxInfoStat.index}"
+                        th:id="|taxInfoList[__${taxInfoStat.index}__].tekiyostrtdd|"
+                        th:name="|taxInfoList[__${taxInfoStat.index}__].tekiyostrtdd|"
+                        th:value="${taxInfo.tekiyostrtdd}">
+                    <input
+                        type="hidden"
+                        th:data-index="${taxInfoStat.index}"
+                        th:id="|taxInfoList[__${taxInfoStat.index}__].tekiyoshrydd|"
+                        th:name="|taxInfoList[__${taxInfoStat.index}__].tekiyoshrydd|"
+                        th:value="${taxInfo.tekiyoshrydd}">
+                    <input
+                        type="hidden"
+                        th:data-index="${taxInfoStat.index}"
+                        th:id="|taxInfoList[__${taxInfoStat.index}__].shohitax|"
+                        th:name="|taxInfoList[__${taxInfoStat.index}__].shohitax|"
+                        th:value="${taxInfo.shohitax}">
+                </th:block>
+                <!--/* 権限フラグ */-->
+                <input th:field="*{baseBean.authflag}" type="hidden">
+                <!--/* AP基本コード */-->
+                <input th:field="*{baseBean.apkihoncd}" type="hidden">
+                <!--/* ショップコード */-->
+                <input th:field="*{baseBean.shopcd}" type="hidden">
+                <!--/* 得意先コード */-->
+                <input th:field="*{baseBean.tokuisakicd}" type="hidden">
+                <!--/* 受注伝票番号 */-->
+                <input th:field="*{baseBean.acptdnpyno}" type="hidden">
+                <!--/* 枝番号 */-->
+                <input th:field="*{baseBean.edano}" type="hidden">
+                <!--/* 遷移元機能ID */-->
+                <input th:field="*{baseBean.beforekinoid}" type="hidden">
+                <!--/* 伝票ステータス */-->
+                <input th:field="*{baseBean.dnpysts}" type="hidden">
+                <!--/* データ作成元区分 */-->
+                <input th:field="*{baseBean.datsksmotokbn}" type="hidden">
+                <!--/* データ作成元区分名 */-->
+                <input th:field="*{baseBean.datsksmotokbnnm}" type="hidden">
+                <!--/* 配達管轄AP基本コード */-->
+                <input th:field="*{baseBean.dlvrykankatsuapkihoncd}" type="hidden">
+                <!--/* 配達管轄ショップコード */-->
+                <input th:field="*{baseBean.dlvrykankatsushopcd}" type="hidden">
+                <!--/* 検索用AP基本コード */-->
+                <input th:field="*{baseBean.apkihoncdForSearchDlvry}" type="hidden">
+                <!--/* 検索用ショップコード */-->
+                <input th:field="*{baseBean.shopcdForSearchDlvry}" type="hidden">
+                <!--/* 拠点ステータス */-->
+                <input th:field="*{baseBean.kyotensts}" type="hidden">
+                <!--/* 配達拠点コード */-->
+                <input th:field="*{baseBean.dlvrykyotencd}" type="hidden">
+                <!--/* 配達エリアコード */-->
+                <input th:field="*{baseBean.dlvryareacd}" type="hidden">
+                <!--/* 配達拠点コード（初期値） */-->
+                <input id="initDlvrykyotencd" name="initDlvrykyotencd" th:value="*{baseBean.dlvrykyotencd}" type="hidden">
+                <!--/* 配達エリアコード（初期値） */-->
+                <input id="initDlvryareacd" name="initDlvryareacd" th:value="*{baseBean.dlvryareacd}" type="hidden">
+                <!--/* 配達パターン */-->
+                <input th:field="*{baseBean.dlvrypattern}" type="hidden">                
+                <!--/* 配達会社コード */-->
+                <input th:field="*{baseBean.dlvrycmpnycd}" class="binding-calculator-property" type="hidden">
+                <!--/* 配達担当者コード */-->
+                <input th:field="*{baseBean.dlvrytnshacd}" maxlength="6" class="code" type="hidden">
+                <!--/* 配達区分 */-->
+                <input th:field="*{baseBean.dlvrykbn}" type="hidden">
+                <!--/* 得意先区分 */-->
+                <input th:field="*{baseBean.tokuisakikbn}" type="hidden">
+                <!--/* 受託配達顧客区分 */-->
+                <input th:field="*{baseBean.jutakudlvrycstkbn}" type="hidden">
+                <!--/* 委託相手AP基本コード */-->
+                <input th:field="*{baseBean.itakuaiteapkihoncd}" type="hidden">
+                <!--/* 委託相手ショップコード */-->
+                <input th:field="*{baseBean.itakuaiteshopcd}" type="hidden">
+                <!--/* 委託相手得意先コード */-->
+                <input th:field="*{baseBean.itakuaitetokuisakicd}" type="hidden">
+                <!--/* 委託相手受注伝票番号 */-->
+                <input th:field="*{baseBean.itakuaiteacptdnpyno}" type="hidden">
+                <!--/* 状態ステータス */-->
+                <input th:field="*{baseBean.jotaists}" type="hidden">
+                <!--/* 得意先状態 */-->
+                <input th:field="*{baseBean.tokuisakijotai}" type="hidden">
+                <!--/* インボイス施行日 */-->
+                <input th:field="*{baseBean.invoicshikoymd}" type="hidden">
+                <!--/* 受注担当者AP基本コード */-->
+                <input th:field="*{baseBean.acpttnshaapkihoncd}" type="hidden">
+                <!--/* 受注担当者ショップコード */-->
+                <input th:field="*{baseBean.acpttnshashopcd}" type="hidden">
+                <!--/* 受注担当者コード */-->
+                <input th:field="*{baseBean.acpttnshacd}" type="hidden">
+                <!--/* 有効区分 */-->
+                <input th:field="*{baseBean.yukokbn}" type="hidden">
+                <!--/* 請求区分 */-->
+                <input th:field="*{baseBean.skykbn}" type="hidden">
+                <!--/* 回収方法区分 */-->
+                <input th:field="*{baseBean.kaishuhohokbn}" type="hidden">
+                <!--/* 受注時代引フラグ */-->
+                <input th:field="*{baseBean.acptthdaibikiflg}" type="hidden">
+                <!--/* 初期表示の際に明細を検索させるための隠しボタン */-->
+                <button
+                    id="btnmeisaikensaku"
+                    type="button"
+                    th:name="btnmeisaikensaku"
+                    class="button aci-search"
+                    style="display: none;"
+                    th:data-api="@{/api/c0801w02/meisailist}"
+                    data-bind_target="c0801w02_meisai_list">検索</button>  
+            </div>
+            <!--/* 受注基本情報エリア */-->
+            <!--/* 受注伝票 */-->
+            <div id="c0801w02_base" class="block" style="position: relative; width: 1052px; margin-left: 5px;" th:object="${c0801W02Form.baseBean}">
+                <h4>受注基本情報</h4>
+                <!--* (メッセージ1) */-->
+                <span id="baseBean.msg1" style="left: 100px;" class="message" th:text="*{msg1}"></span>
+                <!--* (メッセージ2) */-->
+                <span id="baseBean.msg2" style="left: 400px;" class="message" th:text="*{msg2}"></span>
+                <!--* 受注基本情報テーブルレイアウト部分 */-->
+                <table  style="border-spacing:0;border-collapse:collapse;" class="border blocksmall">
+                    <!--* 列幅指定 */-->
+                    <colgroup>
+                        <col width="68">
+                        <col width="89">
+                        <col width="96"> 
+                        <col width="50">
+                        <col width="346">
+                        <col width="70">
+                        <col width="120">
+                        <col width="60">
+                        <col width="154">
+                    </colgroup>
+                    <tr>
+                        <!--* 処理区分 */-->
+                        <td align="center" valign="top" colspan="3">
+                            <div
+                                id="rdoPrcskbn"
+                                class="aci-ajax-parts"
+                                data-template="template_radio_prcskbn"
+                                data-api="/api/c0801w02/prcskbnlist"
+                                th:data-default="*{prcskbn}"
+                                data-cache="true"
+                                >
+                            </div>
+                        </td>
+                        <!--* 配達拠点・エリア */-->
+                        <th rowspan="2" class="hissu">配達拠点<br>・エリア</th>
+                        <td rowspan="2">
+                            <table style="border-spacing:0; border-collapse:collapse; border:none; width:100%;">
+                                <tr style="border: none;">
+                                    <td style="border: none;">
+                                        <!--/* 「配達拠点コード」プルダウン */-->
+                                        <!--/* 処理区分に関係なく、委託元かつ他拠点の場合は非活性 */-->
+                                        <select style="width: 85%;"
+                                            th:disabled="*{authflag != 'f' || (itakumoto && kyotensts == '1')}"
+                                            id="plddlvrykyoten"
+                                            name="plddlvrykyoten"
+                                            data-hidden-element="baseBean.dlvrykyotencd"
+                                            class="aci-ajax-parts coodinate-hidden-element"
+                                            data-template="template_select"
+                                            th:data-default="*{dlvrykyotencd}"
+                                            th:data-api="|/api/c0801w02/kyotenlist/*{apkihoncdForSearchDlvry}/*{shopcdForSearchDlvry}|"
+                                            >
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr style="border: none;">
+                                    <td style="border: none;">
+                                        <!--/* 「配達エリアコード」プルダウン */-->
+                                        <!--/* 処理区分に関係なく、委託元かつ他拠点の場合は非活性 */-->
+                                        <select style="width: 70%;"
+                                            th:disabled="*{authflag != 'f' || (itakumoto && kyotensts == '1')}"
+                                            id="plddlvryarea"
+                                            name="plddlvryarea"
+                                            data-hidden-element="baseBean.dlvryareacd"
+                                            class="aci-ajax-parts coodinate-hidden-element"
+                                            data-template="template_select"
+                                            th:data-default="*{dlvryareacd}"
+                                            th:data-api="|/api/c0801w02/arealist/*{apkihoncdForSearchDlvry}/*{shopcdForSearchDlvry}/*{dlvrykyotencd}|"
+                                            >
+                                        </select>
+                                        <!--/* 「他拠点／自拠点」ボタン */-->
+                                        <!--/* 処理区分が更新の場合は非活性、新規の場合は委託元かつ拠点ステータスが「他拠点」の場合のみ活性 */-->
+                                        <button id="btnkyoten"
+                                            name="btnkyoten"
+                                            type="button"
+                                            class="button"
+                                            th:disabled="*{authflag != 'f' || prcskbn != '1' || !itakumoto || (itakumoto && kyotensts == '0')}">
+                                            他拠点／自拠点
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <th class="hissu">配達会社</th>
+                        <td colspan="3">
+                            <!--/* 「配達会社」プルダウン */-->
+                            <select style="width: 34%;"
+                                th:disabled="*{authflag != 'f'}"
+                                id="plddlvrycmpny"
+                                name="plddlvrycmpny"
+                                class="aci-ajax-parts coodinate-hidden-element"
+                                data-hidden-element="baseBean.dlvrycmpnycd"
+                                data-template="template_select"
+                                th:data-default="*{dlvrycmpnycd}"
+                                th:data-api="|/api/c0801w02/companylist/*{apkihoncd}/*{shopcd}|"
+                                >
+                            </select>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>伝票番号</th>
+                        <td>
+                            <!--/* 「伝票番号」 */-->
+                            <div th:switch="*{syorimode}">
+                                <span th:case="1">（新規登録）</span>
+                                <span th:case="*">
+                                    <span th:text="*{dnpyno}"></span>
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <!--/* 「データ作成元区分名称」 */-->
+                            <span th:text="*{datsksmotokbnnm}"></span>
+                        </td>
+                        <th>配達パターン</th>
+                        <td>
+                            <!--/* 「配達パターン」 */-->
+                            <span id="lbldlvrypattern" th:text="*{dlvrypattern}"></span>
+                        </td>
+                        <th id="reftnshacd_label">
+                            <!--/* 「配達担当者」 */-->
+                            <th:block th:if="*{authflag eq 'f'}">
+                                <a id="reftnshacd" href="javascript:void(0);" tabindex="-1">配達担当者</a>
+                            </th:block>
+                            <th:block th:unless="*{authflag eq 'f'}">
+                                配達担当者
+                            </th:block>
+                        </th>
+                        <td>
+                            <!--/* 「配達担当者コード」 */-->
+                            <input
+                                th:value="*{dlvrytnshacd}"
+                                id="txtdlvrytnshacd"
+                                name="txtdlvrytnshacd"
+                                data-hidden-element="baseBean.dlvrytnshacd"
+                                type="text"
+                                size="6"
+                                maxLength="6"
+                                class="aci-zero-padding-format ifm-mode-enable code coodinate-hidden-element"
+                                style="width:40px"
+                                th:readonly="*{authflag != 'f'}"
+                                th:tabindex="*{authflag != 'f' ? '-1' : ''}">
+                            <!--/* 「配達担当者名」 */-->
+                            <span id="baseBean.dlvrytnshamei" th:text="*{dlvrytnshamei}"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!--/* 受注日・配達日関連 */-->
+            <div id="c0801w02_base_date" class="blocksmall" style="width: 1052px; margin-left: 5px;" th:object="${c0801W02Form.baseBean}">
+                <table style="border:0; padding:2px; width:100% " class="border">
+                    <!--* 列幅指定 */-->
+                    <colgroup>
+                        <col width="68">
+                        <col width="65">
+                        <col width="85">
+                        <col width="90">
+                        <col width="300">
+                        <col width="70">
+                        <col width="54">
+                        <col width="60">
+                        <col width="214">
+                    </colgroup>
+                    <tr>
+                        <th class="hissu">受注日</th>
+                        <td>
+                            <!--/* 「受注日」 */-->
+                            <input 
+                                type="text"
+                                th:field="*{acptdd}"
+                                size="10"
+                                maxLength="8"
+                                class="ifm-mode-enable hasDatepicker ifm-mode-enable"
+                                th:readonly="*{authflag != 'f'}"
+                                th:tabindex="*{authflag != 'f' ? '-1' : ''}"
+                                style="width:62px">
+                        </td>
+                        <td>
+                            <!--/* 「受注経路区分」プルダウン */-->
+                            <select
+                                th:disabled="*{authflag != 'f'}"
+                                th:field="*{acptrcptkeirokbn}"
+                                class="aci-ajax-parts"
+                                data-template="template_select"
+                                th:data-default="*{acptrcptkeirokbn}"
+                                data-api="/api/parts/s02m006t/000/000/147"
+                                >
+                            </select>
+                        </td>
+                        <th class="hissu">配達予定日・時刻</th>
+                        <td>
+                            <!--/* 「配達予定日」 */-->
+                            <input th:field="*{dlvryytidd}"
+                                type="text"
+                                size="10"
+                                maxLength="8"
+                                th:readonly="*{authflag != 'f'}"
+                                th:tabindex="*{authflag != 'f' ? '-1' : ''}"
+                                class="ifm-mode-enable hasDatepicker binding-calculator-property">
+                            <!--/* 「配達希望時間区分」プルダウン */-->
+                            <select
+                                th:disabled="*{authflag != 'f'}"
+                                th:field="*{dlvrykibojikankbn}"
+                                class="aci-ajax-parts"
+                                data-template="template_select"
+                                th:data-default="*{dlvrykibojikankbn}"
+                                data-api="/api/parts/s02m006t/000/000/012"
+                                >
+                            </select>
+                            <!--/* 「配達希望時間」 */-->
+                            <input th:field="*{dlvrykibojikan}"
+                                type="text"
+                                size="5"
+                                maxLength="4"
+                                th:readonly="*{authflag != 'f'}"
+                                th:tabindex="*{authflag != 'f' ? '-1' : ''}"
+                                class="ifm-mode-enable aci-time-format"
+                                style="margin-right: -2px; width:35px">
+                            <!--/* 「配達希望時間（終了）」 */-->
+                            <input th:field="*{dlvrykibojikanshry}"
+                                type="text"
+                                size="5"
+                                maxLength="4"
+                                th:readonly="*{authflag != 'f'}"
+                                th:tabindex="*{authflag != 'f' ? '-1' : ''}"
+                                class="ifm-mode-enable aci-time-format"
+                                style="margin-right: -2px; width:35px">
+                        </td>
+                        <th>留守置き</th>
+                        <td>
+                            <!--/* 「留守置き」チェックボックス */-->
+                            <input th:field="*{fzaiokikanoflg}"
+                                type="checkbox"
+                                th:value="1"
+                                th:disabled="*{authflag != 'f'}">
+                            <label th:for="${#ids.prev('baseBean.fzaiokikanoflg')}">可能</label>
+                        </td>
+                        <th>納品先情報</th>
+                        <td>
+                            <!--/* 「納品先情報１」*/-->
+                            <span th:text="*{nohinsakijohon1}"></span>
+                            <!--/* 「納品先情報１」*/-->
+                            <span th:text="*{nohinsakijohon2}"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
+            <!--/* 前回受注 */-->
+            <div id="c0801w02_base_previous" class="blocksmall" style="width: 1052px; margin-left: 5px;" th:object="${c0801W02Form.baseBean}">
+                <div class="listbodyheader">
+                    <table style="border:0; padding:2px; width: 100%" class="border">
+                        <colgroup>
+                            <col width="60">
+                            <col width="60">
+                            <col width="60">
+                            <col width="30">
+                            <col width="30">
+                            <col width="30">
+                            <col width="30">
+                            <col width="30">
+                            <col width="30">
+                            <col width="60">
+                            <col width="60">
+                            <col width="110">
+                            <col width="110">
+                            <col width="100">
+                            <col width="176">
+                        </colgroup>
+                        <tr>
+                            <th rowspan="2">受注区分</th>
+                            <th rowspan="2">受注日</th>
+                            <th rowspan="2">配達日</th>
+                            <th colspan="2">レギュラー</th>
+                            <th colspan="2">スリム</th>
+                            <th colspan="2">その他</th>
+                            <th rowspan="2">製品水売上</th>
+                            <th rowspan="2">その他売上</th>
+                            <th rowspan="2">受注担当者</th>
+                            <th rowspan="2">配達担当者</th>
+                            <th rowspan="2">ステータス</th>
+                            <td rowspan="3" style="padding-left: 1px;padding-right: 2px;">
+                                <!--/* 「前回配達実績から複写」ボタン*/-->
+                                <!--/* 前回受注日が設定されている場合のみ活性*/-->
+                                <button id="btnfukusha"
+                                    name="btnfukusha"
+                                    type="button"
+                                    style="width:100%"
+                                    class="button aci-search"
+                                    th:data-api="@{/api/c0801w02/meisailistwzpre}"
+                                    data-bind_target="c0801w02_meisai_list"
+                                    data-query-filters='[
+                                        "(?!detailBeanList).*"
+                                    ]'
+                                    th:disabled="*{authflag != 'f' || previousAcptdd == null}">
+                                    前回配達実績から複写
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>有料</th>
+                            <th>無料</th>
+                            <th>有料</th>
+                            <th>無料</th>
+                            <th>有料</th>
+                            <th>無料</th>
+                        </tr>
+                        <tr>
+                            <!--/* 「前回受注区分」*/-->
+                            <td th:text="*{acptkbn}" style="text-align:center; padding: 2px;" />
+                            <!--/* 「前回受注日」*/-->
+                            <td th:text="*{previousAcptdd}"
+                                class="hasDatepicker"
+                                style="text-align:center; padding: 2px;" />
+                            <!--/* 「前回配達日」*/-->
+                            <td th:text="*{dlvrydd}"
+                                class="hasDatepicker"
+                                style="text-align:center; padding: 2px;" />
+                            <!--/* 「配達実績：レギュラー有料」*/-->
+                            <td th:text="*{dlvryjissekirgrayusyohns}" class="num" style="padding:2px;" />
+                            <!--/* 「配達実績：レギュラー無料」*/-->
+                            <td th:text="*{dlvryjissekirgramushohns}" class="num" style="padding:2px;" />
+                            <!--/* 「配達実績：スリム有料」*/-->
+                            <td th:text="*{dlvryjissekisrmyusyohns}" class="num" style="padding:2px;" />
+                            <!--/* 「配達実績：スリム無料」*/-->
+                            <td th:text="*{dlvryjissekisrmmushohns}" class="num" style="padding:2px;" />
+                            <!--/* 「配達実績：その他有料」*/-->
+                            <td th:text="*{dlvryjissekistyshns}" class="num" style="padding:2px;" />
+                            <!--/* 「配達実績：その他無料」*/-->
+                            <td th:text="*{dlvryjissekistmshns}" class="num" style="padding:2px;" />
+                            <!--/* 「配達実績：製品水売上」*/-->
+                            <td th:text="*{dlvryjissekishsuakin}" class="aci-format-label num" style="padding:2px;" />
+                            <!--/* 「配達実績：その他売上金額」*/-->
+                            <td th:text="*{dlvryjissekisonotaurikin}" class="aci-format-label num" style="padding:2px;" />
+                            <!--/* 「前回受注担当者名」*/-->
+                            <td th:text="*{acpttnshamei}" style="padding:2px;" />
+                            <!--/* 「前回配達担当者名」*/-->
+                            <td th:text="*{previousDlvrytnshamei}" style="padding:2px;" />
+                            <!--/* 「伝票ステータス名称」*/-->
+                            <td th:text="*{dnpystsnm}" style="padding:2px;" />
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <!--/* 受注基本情報（ここまで） */-->
+            <!--/* 受注明細情報エリア */-->
+            <div id="c0801w02_meisai" style="margin-left: 5px;">
+                <th:block th:replace="c0801/c0801w02_m1 :: detail" />
+            </div>
+            <!--/* 受注明細情報エリア（ここまで） */-->
+            <!--/* フッターエリア */-->
+            <div id="c0801w02_footer" class="order-list-area" style="margin-left: 3px;">
+                <input type="hidden" th:field="*{footerBean.azukaribtln1n2rittoruhns}">
+                <input type="hidden" th:field="*{footerBean.azukaribtln8rittoruhns}">
+                <table style="border:0;padding:0px;" class="block">
+                    <tr>
+                        <td valign="top" align="right" style="width:450px; vertical-align: top;">
+                            <div id="sonota" style="text-align: left">
+                                <table style="border:0; padding:2px" class="border">
+                                    <colgroup>
+                                        <col width="20">
+                                    </colgroup>
+                                    <tr>
+                                        <th class="vertical-writing">印刷メモ</th>
+                                        <td>
+                                            <!--/* 「印刷メモ１」*/-->
+                                            <input th:field="*{footerBean.prntmemon1}" 
+                                                type="text"
+                                                size="80"
+                                                maxLength="80"
+                                                th:readonly="*{baseBean.authflag != 'f'}"
+                                                th:tabindex="*{baseBean.authflag != 'f' ? '-1' : ''}"
+                                                class="str"><br>
+                                            <!--/* 「印刷メモ２」*/-->
+                                            <input th:field="*{footerBean.prntmemon2}" 
+                                                type="text"
+                                                size="80"
+                                                maxLength="80"
+                                                th:readonly="*{baseBean.authflag != 'f'}"
+                                                th:tabindex="*{baseBean.authflag != 'f' ? '-1' : ''}"
+                                                class="str"><br>
+                                            <!--/* 「印刷メモ３」*/-->
+                                            <input th:field="*{footerBean.prntmemon3}" 
+                                                type="text"
+                                                size="80"
+                                                maxLength="80"
+                                                th:readonly="*{baseBean.authflag != 'f'}"
+                                                th:tabindex="*{baseBean.authflag != 'f' ? '-1' : ''}"
+                                                class="str">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                        <td valign="top" style="width:133px; vertical-align: top;">
+                            <div id="kaishu">
+                                <table style="border:0; padding:2px; width: 100%" class="border">
+                                    <colgroup>
+                                        <col width="12px">
+                                        <col width="40px">
+                                        <col width="27px">
+                                        <col width="54px">
+                                    </colgroup>
+                                    <tr>
+                                        <th rowspan="3" class="vertical-writing">回収予定</th>
+                                        <th colspan="2">お預けボトル</th>
+                                        <th>予定本数</th>
+                                    </tr>
+                                    <tr>
+                                        <td>ﾚｷﾞｭﾗｰ</td>
+                                        <!--/* 「預かりボトル１２ｌ本数」*/-->
+                                        <td th:text="|*{footerBean.azukaribtln1n2rittoruhns}本|" class="num" />
+                                        <!--/* 「回収予定ボトル１２ｌ本数」*/-->
+                                        <td style="text-align:center;">
+                                            <input
+                                                type="text"
+                                                th:field="*{footerBean.kybtln1n2rittoruhns}"
+                                                size="1"
+                                                maxLength="6"
+                                                th:readonly="*{baseBean.authflag != 'f'}"
+                                                th:tabindex="*{baseBean.authflag != 'f' ? '-1' : ''}"
+                                                th:class="*{baseBean.authflag != 'f' ? 'num_label aci-amount-format' : 'num aci-amount-format'}"
+                                                data-allow-number-of-decimals="0"
+                                                >
+                                            <span>本</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>ｽﾘﾑ</td>
+                                        <!--/* 「預かりボトル８ｌ本数」*/-->
+                                        <td th:text="|*{footerBean.azukaribtln8rittoruhns}本|" class="num" />
+                                        <!--/* 「回収予定ボトル８ｌ本数」*/-->
+                                        <td style="text-align:center;">
+                                            <input
+                                                type="text"
+                                                th:field="*{footerBean.kybtln8rittoruhns}"
+                                                size="1"
+                                                maxLength="6"
+                                                th:readonly="*{baseBean.authflag != 'f'}"
+                                                th:tabindex="*{baseBean.authflag != 'f' ? '-1' : ''}"
+                                                th:class="*{baseBean.authflag != 'f' ? 'num_label aci-amount-format' : 'num aci-amount-format'}"
+                                                data-allow-number-of-decimals="0"
+                                                >
+                                            <span>本</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                        <td style="vertical-align: top; width:680px">
+                            <div id="juchuhaifu">
+                                <!--/* クリックされた配布物を識別するためのhidden項目 */-->
+                                <input type="hidden" id="clickedhaifuidx" name="clickedhaifuidx" value="0">
+                                <div style="width: 100%;">
+                                    <table style="border:0;" id="serverinfotitle" class="border">
+                                        <colgroup>
+                                            <col width="20">
+                                            <col width="20">
+                                            <col width="25">
+                                            <col width="240">
+                                            <col width="45">
+                                            <col width="20">
+                                            <col width="25">
+                                            <col width="240">
+                                            <col width="45">
+                                        </colgroup>
+                                        <!--/* 「配布物１～４」 新規の場合または新規以外で委託先でない場合に活性 */-->
+                                        <tr>
+                                            <th class="vertical-writing" rowspan="2">配布物</th>
+                                            <!--/* 「配布物１」*/-->
+                                            <th>
+                                                <th:block th:if="*{baseBean.authflag eq 'f' and !baseBean.haifuDisabled}">
+                                                    <a id="linkrenkeihmk0" class="linkrenkeihmk" data-index="0" href="javascript:void(0)" tabindex=-1>(1)</a>
+                                                </th:block>
+                                                <th:block th:unless="*{baseBean.authflag eq 'f' and !baseBean.haifuDisabled}">
+                                                    (1)
+                                                </th:block>
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].apkihoncd"
+                                                    name="haifubutsuBeanList[0].apkihoncd"
+                                                    th:value="*{haifubutsuBeanList[0].apkihoncd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].shopcd"
+                                                    name="haifubutsuBeanList[0].shopcd"
+                                                    th:value="*{haifubutsuBeanList[0].shopcd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].acptdnpyno"
+                                                    name="haifubutsuBeanList[0].acptdnpyno"
+                                                    th:value="*{haifubutsuBeanList[0].acptdnpyno}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].edano"
+                                                    name="haifubutsuBeanList[0].edano"
+                                                    th:value="*{haifubutsuBeanList[0].edano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].acptdnpymeisaino"
+                                                    name="haifubutsuBeanList[0].acptdnpymeisaino"
+                                                    th:value="*{haifubutsuBeanList[0].acptdnpymeisaino}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].acptdnpymeisaiedano"
+                                                    name="haifubutsuBeanList[0].acptdnpymeisaiedano"
+                                                    th:value="*{haifubutsuBeanList[0].acptdnpymeisaiedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].itakuaiteapkihoncd"
+                                                    name="haifubutsuBeanList[0].itakuaiteapkihoncd"
+                                                    th:value="*{haifubutsuBeanList[0].itakuaiteapkihoncd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].itakuaiteshopcd"
+                                                    name="haifubutsuBeanList[0].itakuaiteshopcd"
+                                                    th:value="*{haifubutsuBeanList[0].itakuaiteshopcd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].itakuaiteacptdnpyno"
+                                                    name="haifubutsuBeanList[0].itakuaiteacptdnpyno"
+                                                    th:value="*{haifubutsuBeanList[0].itakuaiteacptdnpyno}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].itakuaiteedano"
+                                                    name="haifubutsuBeanList[0].itakuaiteedano"
+                                                    th:value="*{haifubutsuBeanList[0].itakuaiteedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].itakuaiteacptdnpymeisaino"
+                                                    name="haifubutsuBeanList[0].itakuaiteacptdnpymeisaino"
+                                                    th:value="*{haifubutsuBeanList[0].itakuaiteacptdnpymeisaino}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].itakuaiteacptdnpymeisaiedano"
+                                                    name="haifubutsuBeanList[0].itakuaiteacptdnpymeisaiedano"
+                                                    th:value="*{haifubutsuBeanList[0].itakuaiteacptdnpymeisaiedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].haifudkikanstrtdd"
+                                                    name="haifubutsuBeanList[0].haifudkikanstrtdd"
+                                                    th:value="*{haifubutsuBeanList[0].haifudkikanstrtdd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[0].haifudkikanshrydd"
+                                                    name="haifubutsuBeanList[0].haifudkikanshrydd"
+                                                    th:value="*{haifubutsuBeanList[0].haifudkikanshrydd}">
+                                            </th>
+                                            <td class="code">
+                                                <input type="text"
+                                                    id="haifubutsuBeanList[0].haifubutsucd"
+                                                    name="haifubutsuBeanList[0].haifubutsucd"
+                                                    th:value="*{haifubutsuBeanList[0].haifubutsucd}"
+                                                    size="3"
+                                                    maxlength="5"
+                                                    readonly="readonly"
+                                                    tabindex="-1"
+                                                    >
+                                            </td>
+                                            <td>
+                                                <input type="text"
+                                                    id="haifubutsuBeanList[0].haifubutsunm"
+                                                    name="haifubutsuBeanList[0].haifubutsunm"
+                                                    th:value="*{haifubutsuBeanList[0].haifubutsunm}"
+                                                    size="30"
+                                                    maxlength="40"
+                                                    readonly="readonly"
+                                                    tabindex="-1"
+                                                    >
+                                            </td>
+                                            <td>
+                                                <button id="btnClearHaifu1"
+                                                    name="btnClearHaifu"
+                                                    type="button"
+                                                    class="button"
+                                                    data-index="0"
+                                                    th:disabled="*{baseBean.authflag != 'f' || baseBean.haifuDisabled}"
+                                                    style="margin-left: -1px;">
+                                                    ｸﾘｱ
+                                                </button>
+                                            </td>
+                                            <!--/* 「配布物１」 ここまで*/-->
+                                            <!--/* 「配布物３」*/-->
+                                            <th>
+                                                <th:block th:if="*{baseBean.authflag eq 'f' and !baseBean.haifuDisabled}">
+                                                    <a id="linkrenkeihmk2" class="linkrenkeihmk" data-index="2" href="javascript:void(0)" tabindex=-1>(3)</a>
+                                                </th:block>
+                                                <th:block th:unless="*{baseBean.authflag eq 'f' and !baseBean.haifuDisabled}">
+                                                    (3)
+                                                </th:block>
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].apkihoncd"
+                                                    name="haifubutsuBeanList[2].apkihoncd"
+                                                    th:value="*{haifubutsuBeanList[2].apkihoncd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].shopcd"
+                                                    name="haifubutsuBeanList[2].shopcd"
+                                                    th:value="*{haifubutsuBeanList[2].shopcd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].acptdnpyno"
+                                                    name="haifubutsuBeanList[2].acptdnpyno"
+                                                    th:value="*{haifubutsuBeanList[2].acptdnpyno}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].edano"
+                                                    name="haifubutsuBeanList[2].edano"
+                                                    th:value="*{haifubutsuBeanList[2].edano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].acptdnpymeisaino"
+                                                    name="haifubutsuBeanList[2].acptdnpymeisaino"
+                                                    th:value="*{haifubutsuBeanList[2].acptdnpymeisaino}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].acptdnpymeisaiedano"
+                                                    name="haifubutsuBeanList[2].acptdnpymeisaiedano"
+                                                    th:value="*{haifubutsuBeanList[2].acptdnpymeisaiedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].itakuaiteapkihoncd"
+                                                    name="haifubutsuBeanList[2].itakuaiteapkihoncd"
+                                                    th:value="*{haifubutsuBeanList[2].itakuaiteapkihoncd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].itakuaiteshopcd"
+                                                    name="haifubutsuBeanList[2].itakuaiteshopcd"
+                                                    th:value="*{haifubutsuBeanList[2].itakuaiteshopcd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].itakuaiteacptdnpyno"
+                                                    name="haifubutsuBeanList[2].itakuaiteacptdnpyno"
+                                                    th:value="*{haifubutsuBeanList[2].itakuaiteacptdnpyno}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].itakuaiteedano"
+                                                    name="haifubutsuBeanList[2].itakuaiteedano"
+                                                    th:value="*{haifubutsuBeanList[2].itakuaiteedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].itakuaiteacptdnpymeisaino"
+                                                    name="haifubutsuBeanList[2].itakuaiteacptdnpymeisaino"
+                                                    th:value="*{haifubutsuBeanList[2].itakuaiteacptdnpymeisaino}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].itakuaiteacptdnpymeisaiedano"
+                                                    name="haifubutsuBeanList[2].itakuaiteacptdnpymeisaiedano"
+                                                    th:value="*{haifubutsuBeanList[2].itakuaiteacptdnpymeisaiedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].haifudkikanstrtdd"
+                                                    name="haifubutsuBeanList[2].haifudkikanstrtdd"
+                                                    th:value="*{haifubutsuBeanList[2].haifudkikanstrtdd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[2].haifudkikanshrydd"
+                                                    name="haifubutsuBeanList[2].haifudkikanshrydd"
+                                                    th:value="*{haifubutsuBeanList[2].haifudkikanshrydd}">
+                                            </th>
+                                            <td class="code">
+                                                <input type="text"
+                                                    id="haifubutsuBeanList[2].haifubutsucd"
+                                                    name="haifubutsuBeanList[2].haifubutsucd"
+                                                    th:value="*{haifubutsuBeanList[2].haifubutsucd}"
+                                                    size="3"
+                                                    maxlength="5"
+                                                    readonly="readonly"
+                                                    tabindex="-1"
+                                                    >
+                                            </td>
+                                            <td>
+                                                <input type="text"
+                                                    id="haifubutsuBeanList[2].haifubutsunm"
+                                                    name="haifubutsuBeanList[2].haifubutsunm"
+                                                    th:value="*{haifubutsuBeanList[2].haifubutsunm}"
+                                                    size="30"
+                                                    maxlength="40"
+                                                    readonly="readonly"
+                                                    tabindex="-1"
+                                                    >
+                                            </td>
+                                            <td>
+                                                <button id="btnClearHaifu2"
+                                                    name="btnClearHaifu"
+                                                    type="button"
+                                                    class="button"
+                                                    data-index="2"
+                                                    th:disabled="*{baseBean.authflag != 'f' || baseBean.haifuDisabled}"
+                                                    style="margin-left: -1px;">
+                                                    ｸﾘｱ
+                                                </button>
+                                            </td>
+                                            <!--/* 「配布物３」 ここまで*/-->
+                                        </tr>
+                                        <tr>
+                                            <!--/* 「配布物２」*/-->
+                                            <th>
+                                                <th:block th:if="*{baseBean.authflag eq 'f' and !baseBean.haifuDisabled}">
+                                                    <a id="linkrenkeihmk1" class="linkrenkeihmk" data-index="1" href="javascript:void(0)" tabindex=-1>(2)</a>
+                                                </th:block>
+                                                <th:block th:unless="*{baseBean.authflag eq 'f' and !baseBean.haifuDisabled}">
+                                                    (2)
+                                                </th:block>
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].apkihoncd"
+                                                    name="haifubutsuBeanList[1].apkihoncd"
+                                                    th:value="*{haifubutsuBeanList[1].apkihoncd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].shopcd"
+                                                    name="haifubutsuBeanList[1].shopcd"
+                                                    th:value="*{haifubutsuBeanList[1].shopcd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].acptdnpyno"
+                                                    name="haifubutsuBeanList[1].acptdnpyno"
+                                                    th:value="*{haifubutsuBeanList[1].acptdnpyno}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].edano"
+                                                    name="haifubutsuBeanList[1].edano"
+                                                    th:value="*{haifubutsuBeanList[1].edano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].acptdnpymeisaino"
+                                                    name="haifubutsuBeanList[1].acptdnpymeisaino"
+                                                    th:value="*{haifubutsuBeanList[1].acptdnpymeisaino}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].acptdnpymeisaiedano"
+                                                    name="haifubutsuBeanList[1].acptdnpymeisaiedano"
+                                                    th:value="*{haifubutsuBeanList[1].acptdnpymeisaiedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].itakuaiteapkihoncd"
+                                                    name="haifubutsuBeanList[1].itakuaiteapkihoncd"
+                                                    th:value="*{haifubutsuBeanList[1].itakuaiteapkihoncd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].itakuaiteshopcd"
+                                                    name="haifubutsuBeanList[1].itakuaiteshopcd"
+                                                    th:value="*{haifubutsuBeanList[1].itakuaiteshopcd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].itakuaiteacptdnpyno"
+                                                    name="haifubutsuBeanList[1].itakuaiteacptdnpyno"
+                                                    th:value="*{haifubutsuBeanList[1].itakuaiteacptdnpyno}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].itakuaiteedano"
+                                                    name="haifubutsuBeanList[1].itakuaiteedano"
+                                                    th:value="*{haifubutsuBeanList[1].itakuaiteedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].itakuaiteacptdnpymeisaino"
+                                                    name="haifubutsuBeanList[1].itakuaiteacptdnpymeisaino"
+                                                    th:value="*{haifubutsuBeanList[1].itakuaiteacptdnpymeisaino}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].itakuaiteacptdnpymeisaiedano"
+                                                    name="haifubutsuBeanList[1].itakuaiteacptdnpymeisaiedano"
+                                                    th:value="*{haifubutsuBeanList[1].itakuaiteacptdnpymeisaiedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].haifudkikanstrtdd"
+                                                    name="haifubutsuBeanList[1].haifudkikanstrtdd"
+                                                    th:value="*{haifubutsuBeanList[1].haifudkikanstrtdd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[1].haifudkikanshrydd"
+                                                    name="haifubutsuBeanList[1].haifudkikanshrydd"
+                                                    th:value="*{haifubutsuBeanList[1].haifudkikanshrydd}">
+                                            </th>
+                                            <td class="code">
+                                                <input type="text"
+                                                    id="haifubutsuBeanList[1].haifubutsucd"
+                                                    name="haifubutsuBeanList[1].haifubutsucd"
+                                                    th:value="*{haifubutsuBeanList[1].haifubutsucd}"
+                                                    size="3"
+                                                    maxlength="5"
+                                                    readonly="readonly"
+                                                    tabindex="-1"
+                                                    >
+                                            </td>
+                                            <td>
+                                                <input type="text"
+                                                    id="haifubutsuBeanList[1].haifubutsunm"
+                                                    name="haifubutsuBeanList[1].haifubutsunm"
+                                                    th:value="*{haifubutsuBeanList[1].haifubutsunm}"
+                                                    size="30"
+                                                    maxlength="40"
+                                                    readonly="readonly"
+                                                    tabindex="-1"
+                                                    >
+                                            </td>
+                                            <td>
+                                                <button id="btnClearHaifu1"
+                                                    name="btnClearHaifu"
+                                                    type="button"
+                                                    class="button"
+                                                    data-index="1"
+                                                    th:disabled="*{baseBean.authflag != 'f' || baseBean.haifuDisabled}"
+                                                    style="margin-left: -1px;">
+                                                    ｸﾘｱ
+                                                </button>
+                                            </td>
+                                            <!--/* 「配布物２」 ここまで*/-->
+                                            <!--/* 「配布物４」*/-->
+                                            <th>
+                                                <th:block th:if="*{baseBean.authflag eq 'f' and !baseBean.haifuDisabled}">
+                                                    <a id="linkrenkeihmk3" class="linkrenkeihmk" data-index="3" href="javascript:void(0)" tabindex=-1>(4)</a>
+                                                </th:block>
+                                                <th:block th:unless="*{baseBean.authflag eq 'f' and !baseBean.haifuDisabled}">
+                                                    (4)
+                                                </th:block>
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].apkihoncd"
+                                                    name="haifubutsuBeanList[3].apkihoncd"
+                                                    th:value="*{haifubutsuBeanList[3].apkihoncd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].shopcd"
+                                                    name="haifubutsuBeanList[3].shopcd"
+                                                    th:value="*{haifubutsuBeanList[3].shopcd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].acptdnpyno"
+                                                    name="haifubutsuBeanList[3].acptdnpyno"
+                                                    th:value="*{haifubutsuBeanList[3].acptdnpyno}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].edano"
+                                                    name="haifubutsuBeanList[3].edano"
+                                                    th:value="*{haifubutsuBeanList[3].edano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].acptdnpymeisaino"
+                                                    name="haifubutsuBeanList[3].acptdnpymeisaino"
+                                                    th:value="*{haifubutsuBeanList[3].acptdnpymeisaino}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].acptdnpymeisaiedano"
+                                                    name="haifubutsuBeanList[3].acptdnpymeisaiedano"
+                                                    th:value="*{haifubutsuBeanList[3].acptdnpymeisaiedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].itakuaiteapkihoncd"
+                                                    name="haifubutsuBeanList[3].itakuaiteapkihoncd"
+                                                    th:value="*{haifubutsuBeanList[3].itakuaiteapkihoncd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].itakuaiteshopcd"
+                                                    name="haifubutsuBeanList[3].itakuaiteshopcd"
+                                                    th:value="*{haifubutsuBeanList[3].itakuaiteshopcd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].itakuaiteacptdnpyno"
+                                                    name="haifubutsuBeanList[3].itakuaiteacptdnpyno"
+                                                    th:value="*{haifubutsuBeanList[3].itakuaiteacptdnpyno}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].itakuaiteedano"
+                                                    name="haifubutsuBeanList[3].itakuaiteedano"
+                                                    th:value="*{haifubutsuBeanList[3].itakuaiteedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].itakuaiteacptdnpymeisaino"
+                                                    name="haifubutsuBeanList[3].itakuaiteacptdnpymeisaino"
+                                                    th:value="*{haifubutsuBeanList[3].itakuaiteacptdnpymeisaino}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].itakuaiteacptdnpymeisaiedano"
+                                                    name="haifubutsuBeanList[3].itakuaiteacptdnpymeisaiedano"
+                                                    th:value="*{haifubutsuBeanList[3].itakuaiteacptdnpymeisaiedano}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].haifudkikanstrtdd"
+                                                    name="haifubutsuBeanList[3].haifudkikanstrtdd"
+                                                    th:value="*{haifubutsuBeanList[3].haifudkikanstrtdd}">
+                                                <input type="hidden"
+                                                    id="haifubutsuBeanList[3].haifudkikanshrydd"
+                                                    name="haifubutsuBeanList[3].haifudkikanshrydd"
+                                                    th:value="*{haifubutsuBeanList[3].haifudkikanshrydd}">
+                                            </th>
+                                            <td class="code">
+                                                <input type="text"
+                                                    id="haifubutsuBeanList[3].haifubutsucd"
+                                                    name="haifubutsuBeanList[3].haifubutsucd"
+                                                    th:value="*{haifubutsuBeanList[3].haifubutsucd}"
+                                                    size="3"
+                                                    maxlength="5"
+                                                    readonly="readonly"
+                                                    tabindex="-1"
+                                                    >
+                                            </td>
+                                            <td>
+                                                <input type="text"
+                                                    id="haifubutsuBeanList[3].haifubutsunm"
+                                                    name="haifubutsuBeanList[3].haifubutsunm"
+                                                    th:value="*{haifubutsuBeanList[3].haifubutsunm}"
+                                                    size="30"
+                                                    maxlength="40"
+                                                    readonly="readonly"
+                                                    tabindex="-1"
+                                                    >
+                                            </td>
+                                            <td>
+                                                <button id="btnClearHaifu3"
+                                                    name="btnClearHaifu"
+                                                    type="button"
+                                                    class="button"
+                                                    data-index="3"
+                                                    th:disabled="*{baseBean.authflag != 'f' || baseBean.haifuDisabled}"
+                                                    style="margin-left: -1px;">
+                                                    ｸﾘｱ
+                                                </button>
+                                            </td>
+                                            <!--/* 「配布物４」 ここまで*/-->
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="buttonpanel" style="width:454px" th:object="${c0801W02Form.baseBean}">
+                                <table style="border:0; padding:0px; width:454px;">
+                                    <tr>
+                                        <td width="30%">
+                                            <input type="checkbox" th:field="*{singldnpyflg}" th:value="1" th:disabled="*{disabledSingldnpy}" />
+                                            <label th:for="${#ids.prev('baseBean.singldnpyflg')}">単体伝票締め</label>
+                                        </td>
+                                        <td width="20%" align="left" style="padding:0px">
+                                            <!--/* 「更新」ボタン（処理前明細オミット用） */-->
+                                            <button
+                                                id="btnprekshn"
+                                                name="btnprekshn"
+                                                type="button"
+                                                class="button detail-list-omit"
+                                                data-bind_target="c0801w02_meisai_list"
+                                                th:disabled="*{authflag != 'f'}"
+                                                th:data-api="|@{/api/c0801w02/omitlist}|"
+                                                data-query-filters='[
+                                                    "(?!detailBeanList).*"
+                                                ]'
+                                                data-button-id="btnkshn"
+                                                >更新</button>
+                                            <!--/* 「更新」ボタン（実体） */-->
+                                            <button
+                                                id="btnkshn"
+                                                name="btnkshn"
+                                                type="button"
+                                                style="width: 80px; display: none;"
+                                                th:disabled="*{authflag != 'f'}"
+                                                class="button aci-put"
+                                                data-message="I002"
+                                                data-messageparam='[""]'
+                                                th:data-check-api="|@{/api/c0801w02/check}|"
+                                                th:data-api="|@{/api/c0801w02/update}|"
+                                                data-button-id="btnprekshn"
+                                                data-query-filters='[
+                                                    "(?!detailBeanList).*"
+                                                ]'
+                                                >
+                                                更新
+                                            </button>
+                                        </td>
+                                        <td width="30%" align="left" style="padding:0px">
+                                            <!--/* 「更新後に印刷」ボタン（処理前明細オミット用） */-->
+                                            <button
+                                                id="btnpreprnt"
+                                                name="btnpreprnt"
+                                                type="button"
+                                                class="button detail-list-omit"
+                                                th:disabled="*{authflag != 'f' || (itakumoto && kyotensts == '1')}"
+                                                data-bind_target="c0801w02_meisai_list"
+                                                th:data-api="|@{/api/c0801w02/omitlist}|"
+                                                data-button-id="btnprnt"
+                                                data-query-filters='[
+                                                    "(?!detailBeanList).*"
+                                                ]'
+                                                >更新後に印刷</button>
+                                            <!--/* 「更新後に印刷」ボタン（実体） */-->
+                                            <button
+                                                id="btnprnt"
+                                                name="btnprnt"
+                                                type="button"
+                                                style="width: 80px; display: none;"
+                                                th:disabled="*{authflag != 'f' || (itakumoto && kyotensts == '1')}"
+                                                class="button aci-put"
+                                                data-message="I002"
+                                                data-messageparam='[""]'
+                                                th:data-check-api="|@{/api/c0801w02/printcheck}|"
+                                                th:data-api="|@{/api/c0801w02/print}|"
+                                                data-button-id="btnpreprnt"
+                                                data-query-filters='[
+                                                    "(?!detailBeanList).*"
+                                                ]'
+                                                data-download="true"
+                                                >
+                                                更新後に印刷
+                                            </button>
+                                        </td>
+                                        <td width="20%" align="right" style="padding:0px">
+                                            <!--/* 「戻る」ボタン */-->
+                                            <th:block th:if="*{closebtn eq true}">
+                                                <!--/* 別ウィンドウで戻る場合 */-->
+                                                <th:block th:if="*{#strings.contains(backpath, 'c0501w02')}">
+                                                    <!--/* 得意先情報確認（得意先情報確認）に戻る場合は画面状態復元不要 */-->
+                                                    <th:block th:replace="commons/parts/button-back :: no_restore_open(@{|*{backpath}|}, ${backquery}, false)"/>
+                                                </th:block>
+                                                <th:block th:unless="*{#strings.contains(backpath, 'c0501w02')}">
+                                                    <!--/* 未配達受注データ確認・修正に戻る場合は画面状態復元 */-->
+                                                    <th:block th:replace="commons/parts/button-back :: open(@{|*{backpath}|}, ${backquery}, false, false)"/>
+                                                </th:block>
+                                            </th:block>
+                                            <th:block th:unless="*{closebtn eq true}">
+                                                <!--/* 同ウィンドウで戻る場合 */-->
+                                                <th:block th:if="*{#strings.endsWith(backpath, 'c0801w01')}">
+                                                    <!--/* 登録済受注選択が得意先指定で表示されていない場合、画面状態を復元 */-->
+                                                    <th:block th:replace="commons/parts/button-back :: basic(@{|*{backpath}|}, false)" />
+                                                </th:block>
+                                                <th:block th:unless="*{#strings.endsWith(backpath, 'c0801w01')}">
+                                                    <!--/* 登録済受注選択が得意先指定で表示されているまたは得意先情報確認に戻る（CTI連携時は同ウィンドウ遷移）場合、画面状態復元不要 */-->
+                                                    <th:block th:replace="commons/parts/button-back :: no_restore_basic(@{|*{backpath}|})" />
+                                                </th:block>
+                                            </th:block>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!--/* フッターエリア（ここまで） */-->
+        </div>
+        </div>
+        <!--/* 業務エリア（ここまで） */-->
+    </form><!--/* フォーム定義（ここまで） th:objectはc0801W02Form */-->
+</body>
+</html>

@@ -1,0 +1,1627 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>[(${headerTitle})]</title>
+    <th:block th:replace="commons/layout.html :: configFragment"></th:block>
+    <link th:href="@{/css/a0301/a0301w00.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/commons/aci/common.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/commons/ifm.css}" rel="stylesheet" type="text/css">
+
+    <script type="module" class="aci-module aci-module-page" th:src="@{/js/a0301/a0301w02.js}"></script>
+
+    <style>
+    input.no-border {
+        border: 0px;
+    }
+    input.read-only {
+        background-color: inherit;
+    }
+    .aci-sticky-table-dataarea > table.border {
+      background-color: #fff;
+      border-collapse: separate;
+      border-spacing: 0px;
+      border-top: 0px;
+      border-right: solid 1px #0c449b;
+      border-bottom: solid 1px #0c449b;
+    }
+    .aci-sticky-table-dataarea > table.border th {
+      background-color: #ccf;
+      border: solid 1px #0c449b;
+      border-right: 0px;
+      border-bottom: 0px;
+    }
+    .aci-sticky-table-dataarea > table.border td {
+      border: 1px solid #0c449b;
+      border-right: 0px;
+      border-bottom: 0px;
+    }
+    </style>
+    
+</head>
+<body>
+
+<div id="contentsarea">
+
+    <script>
+        //タブ切り替え用JS
+        $(function(){
+            $("#contentsarea").aciTabs(); //idは任意
+        });
+    </script>
+
+    <form th:method="post" th:action="@{/a0301w02}" th:object="${a0301W02Form}">
+        <!-- // 画面共通ヘッダーのインクルード -->
+        <div th:replace="commons/header.html :: header"></div>
+        <th:block th:replace="z0101/z0101w01 :: basic_fix" />
+        <div id="aci-ajaxloader"></div>
+
+        <!-- // メッセージエリア -->
+        <div id="message_area" class="ifm-message-area">\
+            <span th:text="*{errMsg}"></span>
+        </div>
+        <div th:replace="commons/messages.html :: basic"></div>
+
+        <div id="display" style="width:1050px;">
+            <!--
+            //------------------------------------------------------------------
+            //    カード部
+            //------------------------------------------------------------------
+            -->
+            <!-- // 「AP基本コード」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.apkihoncd}" />
+            <!-- // 「ショップコード」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.shopcd}" />
+            <!-- // 「AP名称」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.apnm}" />
+            <!-- // 「ショップ名称」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.shopnm}" />
+            <!-- // 「アクセス範囲区分」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.akshanikbn}" />
+            <!-- // 「価格区分」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.pricekbn}" />
+            <!-- // 「行追加判定区分」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.gyokbn}" />
+            <!-- // 「修正区分」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.syuseikbn}" />
+            <!-- // 「AP区分」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.apkbn}" />
+            <!-- // 「ショップ区分」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.shopkbn}" />
+            <!-- // 「商品属性」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.shnzokusei}" />
+            <!-- // 「処理ステータス」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.syoristatus}" />
+            <!-- // 「運用日付」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.opedate}" />
+            <!-- // 「エラーフラグ」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.errorflg}" />
+            <!-- // 「ボタン利用可能フラグ」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.btnusableflg}" />
+            <!-- // 「ショップ押下判定フラグ」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.shopinflg}" />
+            <!-- // 「基本区分」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.kihonkbn}" />
+
+            <input type="hidden" th:field="*{baseBean.hanbaidkikanflg}" />
+
+            <!-- // 売上金額端数計算区分隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.urikinhasukeisankbn}" />
+            <!-- // 「商品コード」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.shncd}" />
+ 
+            <!-- // 「基本情報タブ-更新システム日付」隠しフィールド -->
+            <input type="hidden" th:field="*{baseTabBean.kihonshnkshnsystmymd}" />
+            <!-- // 「基本情報タブ-更新システム時間」隠しフィールド -->
+            <input type="hidden" th:field="*{baseTabBean.kihonshnkshnsystmjikan}" />
+            
+            <!-- // 「ショップ情報タブ-更新システム日付」隠しフィールド -->
+            <input type="hidden" th:field="*{shopTabBean.shopkshnsystmymd}" />
+            <!-- // 「ショップ情報タブ-更新システム時間」隠しフィールド -->
+            <input type="hidden" th:field="*{shopTabBean.shopkshnsystmjikan}" />
+
+            <!-- // 「コード検索フラグ」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.cdkensakuflg}" />
+            
+            <!-- // 「セット区分」隠しフィールド -->
+            <input type="hidden" th:field="*{baseBean.stkbnhidden}" />
+
+            <!-- // 「有効区分（変更前）」隠しフィールド -->
+            <input type="hidden" th:field="*{baseTabBean.kihonshnyukokbn0}" />
+            <input type="hidden" th:field="*{shopTabBean.yukokbn0}" />
+            
+            <input type="hidden" th:field="*{baseBean.authflag}" />
+            <input type="hidden" th:field="*{baseBean.pagerflag}" />
+            <input type="hidden" th:field="*{baseBean.pagenum}" />
+            <input type="hidden" th:field="*{baseBean.addrowflag}" />
+            <input type="hidden" th:field="*{baseBean.updatedflag}" />
+            <input type="hidden" th:field="*{baseBean.copyindex}" />
+            <input type="hidden" th:field="*{baseBean.deleteindex}" />
+
+            <input type="hidden" th:field="*{baseBean.disabledTabItem}" />
+            
+            <input type="hidden" th:field="*{shopTabBean.siiretanihenkankbn}" />
+
+            <!--
+            //------------------------------------------------------------------
+            //    カード部
+            //------------------------------------------------------------------
+            -->
+            <div id="masterentry" class="cm-width">
+
+                <!-- セレクトボックステンプレート -->
+                <template id="template_select">
+                    <option value="{value}">{label}</option>
+                </template>
+
+                <div id="entryheader">
+                    <table class="border" style="margin-top: 10px; margin-left: 80px;width:87%">
+                        <colgroup>
+	                        <col width="100px">
+	                        <col width="190px">
+	                        <col width="100px">
+	                        <col width="340px">
+	                        <col width="100px">
+                        </colgroup>
+
+                        <th:block th:if="*{baseBean.syoristatus == '1'}">
+                            <tr>
+                                <th class="hissu" style="line-height:23px">セット区分</th>
+                                <td style="padding-left: 4px;">
+                                    <input type="radio" th:field="*{baseBean.stkbn}" value="0" 
+                                        th:disabled="*{(baseBean.authflag != 'f') || (baseBean.authflag == 'f' && baseBean.syoristatus != '1')}"
+                                    ><label for="baseBean.stkbn1">単独商品</label>
+                                    <input type="radio" th:field="*{baseBean.stkbn}" value="1" 
+                                        th:disabled="*{(baseBean.authflag != 'f') || (baseBean.authflag == 'f' && baseBean.syoristatus != '1')}"
+                                    ><label for="baseBean.stkbn2">セット商品</label>
+                                </td>
+                                <th>商品コード</th>
+                                <td style="border-right: none;">&nbsp;
+                                    <span id="shncdstr">新規登録</span>
+                                </td>
+                                <td style="border-left: none;"></td>
+                            </tr>
+                            <tr style="height: 24px">
+                                <th>商品属性</th>
+                                <td>
+                                    &nbsp;
+                                    <th:block th:if="*{baseBean.shnzokuseinm != null && baseBean.shnzokuseinm != ''}">
+                                        <span th:text="*{baseBean.shnzokuseinm}"></span>
+                                    </th:block>
+                                </td>
+                                <th>価格区分</th>
+                                <td colspan="2">
+                                    &nbsp;<span id="baseBean.pricekbnnm" th:text="*{baseBean.pricekbnnm}"></span>
+                                </td>
+                            </tr>
+                        </th:block>
+
+                        <th:block th:if="*{baseBean.syoristatus != '1'}">
+                            <tr>
+                                <th class="hissu" style="line-height:23px">セット区分</th>
+                                <td style="padding-left: 4px;">
+                                    <input type="radio" th:field="*{baseBean.stkbn}" value="0" 
+                                        th:disabled="*{(baseBean.authflag != 'f') || (baseBean.authflag == 'f' && baseBean.syoristatus != '1')}"
+                                    ><label for="baseBean.stkbn1">単独商品</label>
+                                    <input type="radio" th:field="*{baseBean.stkbn}" value="1" 
+                                        th:disabled="*{(baseBean.authflag != 'f') || (baseBean.authflag == 'f' && baseBean.syoristatus != '1')}"
+                                    ><label for="baseBean.stkbn2">セット商品</label>
+                                </td>
+                                <th>商品コード</th>
+                                <td th:class="*{shopTabBean.yukokbn == '0' ? 'str_invalid' : 'str'}">
+                                    &nbsp;<span th:text="*{baseBean.shncd}"></span>&nbsp;<span th:text="*{baseBean.shnnm}"></span>
+                                </td>
+                                <td align="center">
+                                    <th:block th:if="*{baseBean.trtskikbnnm != null && baseBean.trtskikbnnm != ''}">
+                                        <span th:text="*{baseBean.trtskikbnnm}"></span>
+                                    </th:block>
+                                </td>
+                            </tr>
+                            <tr style="height: 24px">
+                                <th>商品属性</th>
+                                <td>
+                                    &nbsp;
+                                    <th:block th:if="*{baseBean.shnzokuseinm != null && baseBean.shnzokuseinm != ''}">
+                                        <span th:text="*{baseBean.shnzokuseinm}"></span>
+                                    </th:block>
+                                </td>
+                                <th>価格区分</th>
+                                <td style="border-right: none;">
+                                    &nbsp;
+                                    <th:block th:if="*{baseBean.pricekbnnm != null && baseBean.pricekbnnm != ''}">
+                                        <span th:text="*{baseBean.pricekbnnm}"></span>
+                                    </th:block>
+                                </td>
+                                <td style="border-left: none;"></td>
+                            </tr>
+                        </th:block>
+                    </table>
+                </div>
+
+                <div id="tabcontainer" style="position: relative; margin-top:10px;">
+                    <table style="border-collapse: collapse; position: relative; margin-top: 5px; width:100%">
+                        <tr>
+                            <td width="80" style="border: solid 1px #0c449b; border-bottom: none;">
+                                <a href="#tabcontents1" class="activetab tab aci-tabs-anchor" style="border-top: solid 0px #fc6;" tabindex="-1">基本情報</a>
+                            </td>
+                            <td width="80" style="border: solid 1px #0c449b; border-bottom: none;">
+                                <a href="#tabcontents2" class="tab aci-tabs-anchor" style="border-top: solid 0px #9c3;" tabindex="-1">セット商品情報</a>
+                            </td>
+                            <td width="80" style="border: solid 1px #0c449b; border-bottom: none;">
+                                <th:block th:if="*{(baseBean.apkbn == '2' && baseBean.syoristatus == '1')
+                                                   || (baseBean.kihonkbn == '2' && baseBean.syoristatus == '3' && baseBean.shopinflg != '1')}">
+                                    <a id="tabcontents3" class="tab" style="border-top: solid 0px #9c3;" tabindex="-1">ショップ情報</a>
+                                </th:block>
+                                <th:block th:if="*{!((baseBean.apkbn == '2' && baseBean.syoristatus == '1')
+                                                   || (baseBean.kihonkbn == '2' && baseBean.syoristatus == '3' && baseBean.shopinflg != '1'))}">
+                                    <a href="#tabcontents3" class="tab aci-tabs-anchor" style="border-top: solid 0px #9c3;" tabindex="-1">ショップ情報</a>
+                                </th:block>
+                            </td>
+                            <td align="right" style="border-bottom: solid 1px #0c449b;">&nbsp;</td>
+                        </tr>
+                    </table>
+                </div>
+    
+                <!-- 基本情報タブ(baseTabBean) -------------------------------------------------------------------------------->
+                <div id="tabcontents" style="height: 528px;">
+                    <div id="tabcontents1" class="aci-tabs aci-tabs-default" style="position: relative; top: 0; left: 0; display: block; overflow: auto;">
+                        <table class="border" style="margin-top: 5px;">
+                            <colgroup>
+	                            <col width="110px">
+	                            <col width="310px">
+                            </colgroup>
+                            <tr>
+                                <th class="hissu" style="line-height:49px;">
+                                    <th:block th:if="*{baseBean.catkbn == '1' || baseBean.shopkbn == '1' || baseBean.syoristatus == '99'}">
+                                        <span id="refctgrycd" tabindex="-1">分類コード</span>
+                                    </th:block>
+                                    <th:block th:if="*{baseBean.catkbn != '1' && baseBean.shopkbn != '1' && baseBean.syoristatus != '99'}">
+                                        <th:block th:if="*{baseBean.authflag != 'f'}">
+                                            分類コード
+                                        </th:block>
+                                        <th:block th:if="*{baseBean.authflag == 'f'}">
+                                            <a href="javascript:void(0)" id="refctgrycd" tabindex="-1" data-code-type="cod" style="text-decoration: underline !important;">分類コード</a>
+                                        </th:block>
+                                    </th:block>
+                                </th>
+                                <td>
+                                    <input type="text" th:field="*{baseTabBean.lctgrycd}" class="str_label" size="5" readonly/><input type="text" th:field="*{baseTabBean.lctgrynm}" class="str_label" size="42" readonly/><br>
+                                    <input type="text" th:field="*{baseTabBean.mctgrycd}" class="str_label" size="5" readonly/><input type="text" th:field="*{baseTabBean.mctgrynm}" class="str_label" size="42" readonly/><br>
+                                    <input type="text" th:field="*{baseTabBean.sctgrycd}" class="str_label" size="5" readonly/><input type="text" th:field="*{baseTabBean.sctgrynm}" class="str_label" size="42" readonly/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top: 5px;">
+                            <colgroup>
+	                            <col width="55px">
+	                            <col width="55px">
+	                            <col width="105px">
+	                            <col width="50px">
+	                            <col width="160px">
+	                            <col width="105px">
+	                            <col width="105px">
+	                            <col width="105px">
+	                            <col width="50px">
+	                            <col width="160px">
+                            </colgroup>
+                            <tr style="line-height:15px;">
+                                <th colspan=2 style="border-top: medium none; border-right: medium none; border-bottom: medium none; border-left: medium none; background-color: #ffffff"><br></th>
+                                <th colspan=3>（新）</th>
+                                <th colspan=2>切替日</th>
+                                <th colspan=3 class="hissu">（現）</th>
+                            </tr>
+                            <tr>
+                                <th rowspan=3>商品名称</th>
+                                <th style="line-height:2.3">漢字 </th>
+                                <td colspan=3>
+                                    <input type="text" th:field="*{baseTabBean.shinshnnm}"
+                                        size="50" maxLength="50"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '102'}" />
+                                </td>
+                                <td rowspan=3 style="border-right: none;padding-left:2px;" >
+                                    <input type="hidden" th:field="*{baseTabBean.initshnnmkirikaedd}">
+                                    <input type="text" th:field="*{baseTabBean.shnnmkirikaedd}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '105'}" />
+                                    <span>より</span><br> 新名称に切替え
+                                </td>
+                                <td rowspan=3 align="center" style="border-left: none">
+                                    <button type="button" id="btnkirikaenyuryokun1" name="btnkirikaenyuryokun1"
+                                        style="width: 80px; height: 30px" th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}" >切替入力 →</button>
+                                </td>
+                                <td colspan=3>
+                                    <input type="text" th:field="*{baseTabBean.genzshnnm}"
+                                        size="50" maxLength="50"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '107'}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="line-height:2.3;">カナ(半角)</th>
+                                <td colspan=3>
+                                    <input type="text" th:field="*{baseTabBean.shinshnnmkana}"
+                                        size="40" maxLength="35"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '103'}" />
+                                </td>
+                                <td colspan=3>
+                                    <input type="text" th:field="*{baseTabBean.genzshnnmkana}"
+                                        size="40" maxLength="35"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '108'}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th  style="line-height:2.3;">略称</th>
+                                <td colspan=3>
+                                    <input type="text" th:field="*{baseTabBean.shinshnnmryakusho}"
+                                        size="30" maxLength="30"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '104'}" />
+                                </td>
+                                <td colspan=3>
+                                    <input type="text" th:field="*{baseTabBean.genzshnnmryakusho}"
+                                        size="30" maxLength="30"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '109'}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th rowspan=2 style="line-height:46px">標準価格</th>
+                                <th  style="line-height:2.3;">配達</th>
+                                <td class="num">
+                                    <input type="text" th:field="*{baseTabBean.shinhyojundlvryprice}"
+                                        size="13" maxLength="11" style="width:92%;"
+                                        th:readonly="*{baseBean.authflag == 't'|| baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '110'}" />
+                                </td>
+                                <th rowspan=2 style="line-height:11px;">価格<br>区分</th>
+                                <td rowspan=2 style="padding-left: 2px;">
+                                    <input type="radio" th:field="*{baseTabBean.shinpricekbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '112'}"
+                                    ><label for="baseTabBean.shinpricekbn1">標準価格</label>
+                                    <input type="radio" th:field="*{baseTabBean.shinpricekbn}" value="2" 
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '112'}"
+                                    ><label for="baseTabBean.shinpricekbn2">オープン価格</label>
+                                </td>
+                                <td rowspan=2 style="border-right: none;padding-left:2px;" >
+                                    <input type="hidden" th:field="*{baseTabBean.inithyojunpricekirikaedd}">
+                                    <input type="text" th:field="*{baseTabBean.hyojunpricekirikaedd}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't' || baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '113'}" />
+                                    <span>より</span> <br>新価格に切替え
+                                </td>
+                                <td rowspan=2 align="center" style="border-left: none">
+                                    <button type="button" id="btnkirikaenyuryokun2" name="btnkirikaenyuryokun2"
+                                        style="width: 80px; height: 30px"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1'}" >切替入力 →</button>
+                                </td>
+                                <td class="num">
+                                    <input type="text" th:field="*{baseTabBean.genzhyojundlvryprice}"
+                                        size="13" maxLength="11" style="width:92%;"
+                                        th:readonly="*{baseBean.authflag == 't' || baseBean.stkbnhidden == '1'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '115'}" />
+                                </td>
+                                <th rowspan=2 style="line-height:11px;">
+                                    価格<br>区分
+                                </th>
+                                <td rowspan=2 style="padding-left: 2px;">
+                                    <th:block th:if="*{baseBean.disabledTabItem} == true">
+                                        <input type="hidden" th:field="*{baseTabBean.genzpricekbn}">
+                                    </th:block>
+                                    <input type="radio" th:field="*{baseTabBean.genzpricekbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.stkbnhidden == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '117'}"
+                                    ><label for="baseTabBean.genzpricekbn1">標準価格</label>
+                                    <input type="radio" th:field="*{baseTabBean.genzpricekbn}" value="2" 
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.stkbnhidden == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '117'}"
+                                    ><label for="baseTabBean.genzpricekbn2">オープン価格</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th  style="line-height:2.3;">持ち帰り</th>
+                                <td class="num">
+                                    <input type="text" th:field="*{baseTabBean.shinhyojunmochikaeriprice}"
+                                        size="13" maxLength="11" style="width:92%;"
+                                        th:readonly="*{baseBean.authflag == 't' || baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '111'}" />
+                                </td>
+                                <td class="num">
+                                    <input type="text" th:field="*{baseTabBean.genzhyojunmochikaeriprice}"
+                                        size="13" maxLength="11" style="width:92%;"
+                                        th:readonly="*{baseBean.authflag == 't' || baseBean.stkbnhidden == '1'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '116'}" />
+                                </td>
+                            </tr>
+                            <tr style="margin-top:5px;line-height:17px;">
+                                <td style="border-top: medium none; border-right: medium none; border-bottom: medium none; border-left: medium none; background-color: #ffffff" colspan=10>&nbsp;&nbsp;※「切替入力→」ボタンを押下すると切替日がクリアされ、新項目が現項目に移動します。</td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top: 10px;">
+                            <colgroup>
+	                            <col width="110px">
+	                            <col width="365px">
+	                            <col width="110px">
+	                            <col width="365px">
+                            </colgroup>
+                            <tr>
+                                <th  style="line-height:2.3;">サイズ</th>
+                                <td>
+                                    <select
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '118'}"
+                                        name="baseTabBean.sz"
+                                        id="baseTabBean.sz"
+                                        class="aci-ajax-parts"
+                                        data-template="template_select"
+                                        th:data-default="*{baseTabBean.sz}"
+                                        data-api="/api/parts/s02m006t/000/000/037"
+                                        data-params='{
+                                            "blank":"t"
+                                        }'
+                                    >
+                                    </select>
+                                </td>
+                                <th>色</th>
+                                <td>
+                                    <input type="text" th:field="*{baseTabBean.iro}"
+                                        size="13" maxLength="10"
+                                        th:disabled="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '119'}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="hissu"  style="line-height:2.4;">取扱区分</th>
+                                <td style="padding-left: 2px;">
+                                    <th:block th:if="*{baseBean.disabledTabItem} == true">
+                                        <input type="hidden" th:field="*{baseTabBean.trtskikbn}">
+                                    </th:block>
+                                    <input type="radio" th:field="*{baseTabBean.trtskikbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '120'}"
+                                    ><label for="baseTabBean.trtskikbn1">売上仕入両方</label>
+                                    <input type="radio" th:field="*{baseTabBean.trtskikbn}" value="2" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '120'}"
+                                    ><label for="baseTabBean.trtskikbn2">仕入のみ</label>
+                                    <input type="radio" th:field="*{baseTabBean.trtskikbn}" value="3" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '120'}"
+                                    ><label for="baseTabBean.trtskikbn3">売上のみ</label>
+                                </td>
+                                <th>数量端数管理区分</th>
+                                <td style="padding-left: 2px;">
+                                    <!-- // 「数量端数管理区分」ラジオボタン -->
+                                    <th:block th:if="*{baseBean.disabledTabItem} == true">
+                                        <input type="hidden" th:field="*{baseTabBean.suryohasukanrikbn}">
+                                    </th:block>
+                                    <input type="radio" th:field="*{baseTabBean.suryohasukanrikbn}" value="0" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '121'}"
+                                    ><label for="baseTabBean.suryohasukanrikbn1">なし</label>
+                                    <input type="radio" th:field="*{baseTabBean.suryohasukanrikbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '121'}"
+                                    ><label for="baseTabBean.suryohasukanrikbn2">あり</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="line-height:2.4;">商品区分</th>
+                                <td colspan="3" style="padding-left: 2px;">
+                                    <!-- // 「商品区分２」ラジオボタン -->
+                                    <input type="radio" th:field="*{baseTabBean.shnkbn2}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '122'}"
+                                    ><label for="baseTabBean.shnkbn21">有形</label>
+                                    <input type="radio" th:field="*{baseTabBean.shnkbn2}" value="2" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '122'}"
+                                    ><label for="baseTabBean.shnkbn22">無形</label>
+                                </td>
+                            </tr>
+                            <tr style="line-height:2.3;">
+                                <th>備考</th>
+                                <td colspan=3>
+                                    <textarea th:field="*{baseTabBean.biko1}"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        tabindex="123" cols="50" rows="3" maxLength="200"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top: 5px;">
+                            <colgroup>
+	                            <col width="80px">
+	                            <col width="90px">
+	                            <col width="80px">
+	                            <col width="310px">
+	                            <col width="80px">
+	                            <col width="310px">
+                            </colgroup>
+                            <tr style="height: 25px">
+                                <th class="hissu">有効区分</th>
+                                <td style="padding-left: 2px;">
+                                    <input type="radio" th:field="*{baseTabBean.kihonshnyukokbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '124'}"
+                                    ><label for="baseTabBean.kihonshnyukokbn1">有効</label>
+                                    <input type="radio" th:field="*{baseTabBean.kihonshnyukokbn}" value="0" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '124'}"
+                                    ><label for="baseTabBean.kihonshnyukokbn2">無効</label>
+                                </td>
+                                <th class="masterFooter">登録者</th>
+                                <td style="padding-left: 3px;">
+                                 <th:block th:if="*{baseTabBean.kihonshninptsystmymd != null && baseTabBean.kihonshninptsystmymd != ''}">
+                                    <span id="baseTabBean.kihonshninptsystmymd" th:text="*{baseTabBean.kihonshninptsystmymd}" style="margin-left: 2px;"></span
+                                    ><span id="baseTabBean.kihonshninptsystmjikan" th:text="*{baseTabBean.kihonshninptsystmjikan}" style="margin-left: 5px;"></span
+                                    ><span id="baseTabBean.kihonshntoshaapkihoncd" th:text="*{baseTabBean.kihonshntoshaapkihoncd}" style="margin-left: 5px;"></span
+                                    ><span id="hyphen1">-</span><span id="baseTabBean.kihonshntoshashopcd" th:text="*{baseTabBean.kihonshntoshashopcd}"></span
+                                    ><span id="hyphen1">-</span><span id="baseTabBean.kihonshntoshacd" th:text="*{baseTabBean.kihonshntoshacd}"></span
+                                    >&nbsp;<span id="baseTabBean.kihonshntoshamei" th:text="*{baseTabBean.kihonshntoshamei}"></span>
+                                </th:block>
+                                <th:block th:if="*{baseTabBean.kihonshninptsystmymd == null || baseTabBean.kihonshninptsystmymd == ''}">
+                                    <span id="baseTabBean.kihonshninptsystmymd" th:text="*{baseTabBean.kihonshninptsystmymd}" style="margin-left: 2px;"></span
+                                    ><span id="baseTabBean.kihonshninptsystmjikan" th:text="*{baseTabBean.kihonshninptsystmjikan}" style="margin-left: 5px;"></span
+                                    ><span id="baseTabBean.kihonshntoshaapkihoncd" th:text="*{baseTabBean.kihonshntoshaapkihoncd}" style="margin-left: 5px;"></span
+                                    ><span id="hyphen1"></span><span id="baseTabBean.kihonshntoshashopcd" th:text="*{baseTabBean.kihonshntoshashopcd}"></span
+                                    ><span id="hyphen1"></span><span id="baseTabBean.kihonshntoshacd" th:text="*{baseTabBean.kihonshntoshacd}"></span
+                                    >&nbsp;<span id="baseTabBean.kihonshntoshamei" th:text="*{baseTabBean.kihonshntoshamei}"></span>
+                                </th:block>
+                                </td>
+                                <th class="masterFooter">更新者</th>
+                                <td style="padding-left: 3px;">
+                                <th:block th:if="*{baseTabBean.kihonshnkshnsystmymd != null && baseTabBean.kihonshnkshnsystmymd != ''}">
+                                    <span id="baseTabBean.kihonshnkshnsystmymd" th:text="*{baseTabBean.kihonshnkshnsystmymd}" style="margin-left: 2px;"></span
+                                    ><span id="baseTabBean.kihonshnkshnsystmjikan" th:text="*{baseTabBean.kihonshnkshnsystmjikan}" style="margin-left: 5px;"></span
+                                    ><span id="baseTabBean.kihonshnkoshaapkihoncd" th:text="*{baseTabBean.kihonshnkoshaapkihoncd}" style="margin-left: 5px;"></span
+                                    ><span id="hyphen1">-</span><span id="baseTabBean.kihonshnkoshashopcd" th:text="*{baseTabBean.kihonshnkoshashopcd}"></span
+                                    ><span id="hyphen1">-</span><span id="baseTabBean.kihonshnkoshacd" th:text="*{baseTabBean.kihonshnkoshacd}" ></span
+                                    >&nbsp;<span id="baseTabBean.kihonshnkoshamei" th:text="*{baseTabBean.kihonshnkoshamei}"></span>
+                                </th:block>
+                                <th:block th:if="*{baseTabBean.kihonshnkshnsystmymd == null || baseTabBean.kihonshnkshnsystmymd == ''}">
+                                    <span id="baseTabBean.kihonshnkshnsystmymd" th:text="*{baseTabBean.kihonshnkshnsystmymd}" style="margin-left: 2px;"></span>
+                                    <span id="baseTabBean.kihonshnkshnsystmjikan" th:text="*{baseTabBean.kihonshnkshnsystmjikan}" style="margin-left: 5px;"></span>
+                                    <span id="baseTabBean.kihonshnkoshaapkihoncd" th:text="*{baseTabBean.kihonshnkoshaapkihoncd}" style="margin-left: 5px;"></span
+                                    ><span id="hyphen1"></span><span id="baseTabBean.kihonshnkoshashopcd" th:text="*{baseTabBean.kihonshnkoshashopcd}"></span
+                                    ><span id="hyphen1"></span><span id="baseTabBean.kihonshnkoshacd" th:text="*{baseTabBean.kihonshnkoshacd}"></span>&nbsp;
+                                    <span id="baseTabBean.kihonshnkoshamei" th:text="*{baseTabBean.kihonshnkoshamei}"></span>
+                                </th:block>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- セット商品情報タブ(setTabBean) -------------------------------------------------------------------------------->
+                    <!-- // 明細M1のインクルード -->
+                    <div id="tabcontents2" class="aci-tabs" style="position: relative; top: 0; left: 0; display: none;">
+                        <!-- // 検索ボタンを追加。APIコントローラー経由で検索処理を行う必要があるためdisplay-noneで定義し、初期表示時に疑似押下。 -->
+                        <button
+                            id="btnkensaku"
+                            th:name="btnkensaku"
+                            class="button aci-search"
+                            type="button"
+                            style="display:none"
+                            th:data-api="@{/api/a0301w02/search/{apkihoncd}/{shopcd}}"
+                            data-bind_target="a0301w02_meisai_body"
+                            data-query-filters='[
+                                "(?!meisaiBeanList).*"
+                            ]'
+                            >検索</button>
+                        <div id="a0301w02----m1">
+                            <th:block th:replace="a0301/a0301w02_m1 :: detail" />
+                        </div>
+                    </div>
+
+                    <!-- ショップ情報タブ(shopTabBean) -------------------------------------------------------------------------------->
+                    <!-- //  カード部 -->
+                    <div id="tabcontents3" class="aci-tabs" style="position: relative; top: 0; left: 0; display: none; overflow: auto;height:520px;">
+                        <!--/* hidden項目 */-->
+	                    <input type="hidden" th:field="*{shopTabBean.shnapkihoncd}" />
+	                    <input type="hidden" th:field="*{shopTabBean.kakunojikan}" />
+	                    <input type="hidden" th:field="*{shopTabBean.kakunotnsha}" />
+	                    <input type="hidden" th:field="*{shopTabBean.kakunoymd}" />
+	                    <input type="hidden" th:field="*{shopTabBean.kakninflg}" />
+	                    <input type="hidden" th:field="*{shopTabBean.errids}" />
+                        <table class="border" style="margin-top: 5px;">
+                        	<colgroup>
+	                            <col width="110px">
+	                            <col width="200px">
+	                            <col width="125px">
+	                            <col width="190px">
+	                            <col width="125px">
+	                            <col width="200px">
+                            </colgroup>
+                            <tr>
+                                <th class="hissu" style="line-height:2.3;">販売期間</th>
+                                <td>
+                                    <input type="text" th:field="*{shopTabBean.hanbaidkikanstr}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '201'}"
+                                    />&nbsp;～&nbsp;<input type="text" th:field="*{shopTabBean.hanbaidkikanend}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '202'}" />
+                                </td>
+                                <th>外部連携商品コード</th>
+                                <td>
+                                    <input type="text" th:field="*{shopTabBean.gaiburenkeishncd}"
+                                        size="15" maxLength="15"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '203'}" />
+                                </td>
+                                <th>本部販売管理商品コード</th>
+                                <td>
+                                    <input type="text" th:field="*{shopTabBean.honbuhanbaikanrishncd}"
+                                        size="15" maxLength="15"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.shopcd != '000'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '204'}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="hissu"  style="line-height:2.4;">マージン対象区分</th>
+                                <td style="padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.mgntrgtkbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '205'}"
+                                    ><label for="shopTabBean.mgntrgtkbn1">対象</label>
+                                    <input type="radio" th:field="*{shopTabBean.mgntrgtkbn}" value="2" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '205'}"
+                                    ><label for="shopTabBean.mgntrgtkbn2">対象外</label>
+                                </td>
+                                <th class="hissu">商品区分</th>
+                                <td style="padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.shnkbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '206'}"
+                                    ><label for="shopTabBean.shnkbn1">有形</label>
+                                    <input type="radio" th:field="*{shopTabBean.shnkbn}" value="2" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '206'}"
+                                    ><label for="shopTabBean.shnkbn2">無形</label>
+                                </td>
+                                <th class="hissu"  style="line-height:20px">モバイル利用</th>
+                                <td style="padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.mobileriyoumu}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '207'}"
+                                    ><label for="shopTabBean.mobileriyoumu1">あり</label>
+                                    <input type="radio" th:field="*{shopTabBean.mobileriyoumu}" value="0" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '207'}"
+                                    ><label for="shopTabBean.mobileriyoumu2">なし</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="hissu"  style="line-height:2.4;">税設定</th>
+                                <td style="padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.taxsetteikbn}" value="0" 
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '208'}"
+                                    ><label for="shopTabBean.taxsetteikbn1">しない</label>
+                                    <input type="radio" th:field="*{shopTabBean.taxsetteikbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '208'}"
+                                    ><label for="shopTabBean.taxsetteikbn2">する</label>
+                                </td>
+                                <th class="hissu">税区分</th>
+                                <td colspan="4">
+                                    <select
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '209'}"
+                                        name="shopTabBean.taxkbn"
+                                        id="shopTabBean.taxkbn"
+                                        class="aci-ajax-parts"
+                                        data-template="template_select"
+                                        th:data-default="*{shopTabBean.taxkbn}"
+                                        data-api="/api/parts/s01m004t/CN030"
+                                        data-params='{
+                                            "blank":"t"
+                                        }'
+                                    >
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top:2px;">
+                            <colgroup>
+	                            <col width="110px">
+	                            <col width="110px">
+	                            <col width="90px">
+	                            <col width="90px">
+                            </colgroup>
+                            <tr>
+                                <td style="border: none;border-top: medium none; height: 20px; border-right: medium none; border-bottom: medium none; border-left: medium none" colspan=4>
+                                    <h4>入庫情報</h4>
+                                </td>
+                            </tr>
+                            <tr >
+                                <th style="line-height:15px">取扱単位</th>
+                                <th>入数</th>
+                                <th>入庫単価</th>
+                                <th>発注ロット数</th>
+                            </tr>
+                            <tr>
+                                <td style="line-height:2.3;">
+                                    <select
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '210'}"
+                                        name="shopTabBean.siiretrtskitani"
+                                        id="shopTabBean.siiretrtskitani"
+                                        class="aci-ajax-parts"
+                                        data-template="template_select"
+                                        th:data-default="*{shopTabBean.siiretrtskitani}"
+                                        data-api="/api/parts/s02m006t/000/000/013"
+                                        data-params='{
+                                            "blank":"t"
+                                        }'
+                                    >
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" th:field="*{shopTabBean.siireirisu}"
+                                        size="5" maxLength="7"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '211'}" />
+                                    <select
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '212'}"
+                                        name="shopTabBean.irisutani1"
+                                        id="shopTabBean.irisutani1"
+                                        class="aci-ajax-parts"
+                                        data-template="template_select"
+                                        th:data-default="*{shopTabBean.irisutani1}"
+                                        data-api="/api/parts/s02m006t/000/000/013"
+                                        data-params='{
+                                            "blank":"t"
+                                        }'
+                                    >
+                                    </select>
+                                </td>
+                                <td class="num">
+                                    <input type="text" th:field="*{shopTabBean.siireunt}"
+                                        size="13" maxLength="11"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '213'}" />
+                                </td>
+                                <td class="num">
+                                    <input type="text" th:field="*{shopTabBean.hacchurottokazu}"
+                                        size="5" maxLength="6"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '214'}" />
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="border"
+                            style="margin-top: 5px; float: left;">
+                            <colgroup>
+	                            <col width="110px">
+	                            <col width="110px">
+	                            <col width="10px">
+                            </colgroup>
+                            <tr>
+                                <td style="border-top: medium none; height: 20px; border-right: medium none; border-bottom: medium none; border-left: medium none; border: none; height: 20px;" colspan=3>
+                                    <h4>売上・取扱情報 <br>（入庫情報と合わせてください）</h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="line-height:15px">取扱単位</th>
+                                <th>入数</th>
+                            </tr>
+                            <tr>
+                                <td class="td-style" style="line-height:2.3;">
+                                    <select
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '215'}"
+                                        name="shopTabBean.uritrtskitani"
+                                        id="shopTabBean.uritrtskitani"
+                                        class="aci-ajax-parts"
+                                        data-template="template_select"
+                                        th:data-default="*{shopTabBean.uritrtskitani}"
+                                        data-api="/api/parts/s02m006t/000/000/013"
+                                        data-params='{
+                                            "blank":"t"
+                                        }'
+                                    >
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" th:field="*{shopTabBean.uriirisu}"
+                                        size="5" maxLength="7"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '216'}" />
+                                    <select
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '217'}"
+                                        name="shopTabBean.irisutani2"
+                                        id="shopTabBean.irisutani2"
+                                        class="aci-ajax-parts"
+                                        data-template="template_select"
+                                        th:data-default="*{shopTabBean.irisutani2}"
+                                        data-api="/api/parts/s02m006t/000/000/013"
+                                        data-params='{
+                                            "blank":"t"
+                                        }'
+                                    >
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top: 1px; margin-left: 40px;">
+                            <colgroup>
+	                            <col width="45px">
+                                <col width="40px">
+                                <col width="120px">
+                                <col width="95px">
+                                <col width="110px">
+                                <col width="85px">
+                                <col width="120px">
+                                <col width="95px">
+                                <col width="70px">
+                            </colgroup>
+                            <tr>
+                                <td style="border: none;" colspan="4"></td>
+                                <td style="border: none;" colspan="5">
+                                    ※「切替入力 →」ボタンを押下すると切替日がクリアされ、新項目が現項目に移動します
+                                </td>
+                            </tr>
+                            <tr>
+                                <th rowspan=3>オープン<br>価格</th>
+                                <th></th>
+                                <th colspan=2 style="line-height:15px">（新）</th>
+                                <th colspan=2>切替日</th>
+                                <th colspan=2>（現）</th>
+                                <th>標準価格</th>
+                            </tr>
+                            <tr>
+                                <th style="line-height:2.3;">配達</th>
+                                <td colspan=2 class="num">
+                                    <input type="text" th:field="*{shopTabBean.shindlvryprice1}"
+                                        size="13" maxLength="11"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1' || (baseTabBean.shinpricekbn == '1' && baseTabBean.genzpricekbn == '1')}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '218'}" />
+                                </td>
+                                <td rowspan=2 style="border-right: none;padding-left:2px;">
+                                    <input type="hidden" th:field="*{shopTabBean.initopnpricekirikaedd}">
+                                    <input type="text" th:field="*{shopTabBean.opnpricekirikaedd}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1' || (baseTabBean.shinpricekbn == '1' && baseTabBean.genzpricekbn == '1')}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '219'}" />
+                                    <span>より</span><br>新価格に切替え
+                                </td>
+                                <td rowspan=2 align="center" style="border-left: none">
+                                    <button type="button" id="btnkirikaenyuryokun3" name="btnkirikaenyuryokun3"
+                                         tabindex="220" style="width: 80px; height: 30px" th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1' || (baseTabBean.shinpricekbn == '1' && baseTabBean.genzpricekbn == '1')}" >切替入力 →</button>
+                                </td>
+                                <td colspan=2 class="num">
+                                    <input type="text" th:field="*{shopTabBean.gendlvryprice2}"
+                                        size="13" maxLength="11"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1' || (baseTabBean.shinpricekbn == '1' && baseTabBean.genzpricekbn == '1')}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '221'}" />
+                                </td>
+                                <td class="num">
+                                    <span id="shopTabBean.hyojundlvryprice" th:text="*{shopTabBean.hyojundlvryprice}"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th span=2　style="line-height:2.3;">持ち帰り</th>
+                                <td colspan=2 class="num">
+                                    <input type="text" th:field="*{shopTabBean.shinmochikaeriprice2}"
+                                        size="13" maxLength="11"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1' || (baseTabBean.shinpricekbn == '1' && baseTabBean.genzpricekbn == '1')}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '218'}" />
+                                </td>
+                                <td colspan=2 class="num">
+                                    <input type="text" th:field="*{shopTabBean.genzmochikaeriprice}"
+                                        size="13" maxLength="11"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.syoristatus == '1' || baseBean.stkbnhidden == '1' || (baseTabBean.shinpricekbn == '1' && baseTabBean.genzpricekbn == '1')}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                       th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '222'}" />
+                                </td>
+                                <td class="num">
+                                    <span id="shopTabBean.hyojunmochikaeriprice" th:text="*{shopTabBean.hyojunmochikaeriprice}" ></span>
+                                </td>
+                            </tr>
+                            <!--　ポイント -->
+                            <tr>
+                                <th colspan=2 style="line-height:69px">ポイント設定</th>
+                                <td style="border-right: none;padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.shinshnpointhasseikbn}" value="0"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '223'}"
+                                    ><label for="shopTabBean.shinshnpointhasseikbn1">設定しない</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.shinshnpointhasseikbn}" value="1"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '223'}"
+                                    ><label for="shopTabBean.shinshnpointhasseikbn2">ステージ設定</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.shinshnpointhasseikbn}" value="2"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '223'}"
+                                    ><label for="shopTabBean.shinshnpointhasseikbn3">ステージ設定×倍率</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.shinshnpointhasseikbn}" value="3"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '223'}"
+                                    ><label for="shopTabBean.shinshnpointhasseikbn4">固定</label>
+									<!--
+									  ACCIS2023-7394
+									  ポイント設定固定時、radio を disabled にするため
+									  Request に値を含める目的で同一 name の hidden 項目を追加
+									-->
+                                    <input type="hidden" th:field="*{shopTabBean.shinshnpointhasseikbn}" disabled />
+                                </td>
+                                <td style="border-left: none;padding-left: 2px;">
+                                    <br>
+                                    <br>
+                                    <input type="text" th:field="*{shopTabBean.shinshnpointsu1}"
+                                        size="8" maxLength="8" style="width:50px;"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="2"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '224'}" /><span style="padding-left: 3px;">倍</span><br>
+                                    <input type="text" th:field="*{shopTabBean.shinshnpointsu2}"
+                                        size="7" maxLength="7" style="width:50px;"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '225'}" /><span style="padding-left: 5px;">P</span>
+                                </td>
+                                <td style="border-right: none;padding-left:2px;" >
+                                    <input type="hidden" th:field="*{shopTabBean.initshnpointkirikaedd}">
+                                    <input type="text" th:field="*{shopTabBean.shnpointkirikaedd}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '226'}" />
+                                    <span>より</span> <br>新ポイントに切替え
+                                </td>
+                                <td align="center" style="border-left: none">
+                                    <button type="button" id="btnkirikaenyuryokun4" name="btnkirikaenyuryokun4"
+                                        style="width: 80px; height: 30px"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'
+                                        }" >切替入力 →</button>
+                                </td>
+                                <td style="border-right: none;padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.genshnpointhasseikbn}" value="0"
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '227'}"
+                                    ><label for="shopTabBean.genshnpointhasseikbn1">設定しない</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.genshnpointhasseikbn}" value="1"
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '227'}"
+                                    ><label for="shopTabBean.genshnpointhasseikbn2">ステージ設定</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.genshnpointhasseikbn}" value="2"
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '227'}"
+                                    ><label for="shopTabBean.genshnpointhasseikbn3">ステージ設定×倍率</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.genshnpointhasseikbn}" value="3"
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '227'}"
+                                    ><label for="shopTabBean.genshnpointhasseikbn4">固定</label>
+                                    <!--
+                                      ACCIS2023-7394
+                                      ポイント設定固定時、radio を disabled にするため
+                                      Request に値を含める目的で同一 name の hidden 項目を追加
+                                    -->
+                                    <input type="hidden" th:field="*{shopTabBean.genshnpointhasseikbn}" disabled />
+                                </td>
+                                <td style="border-left: none;padding-left: 2px;">
+                                    <br>
+                                    <br>
+                                    <input type="text" th:field="*{shopTabBean.genshnpointsu1}"
+                                        size="8" maxLength="8" style="width:50px;"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.stkbnhidden == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="2"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '228'}" /><span style="padding-left: 3px;">倍</span><br>
+                                    <input type="text" th:field="*{shopTabBean.genshnpointsu2}"
+                                        size="7" maxLength="7" style="width:50px;"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.stkbnhidden == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '229'}" /><span style="padding-left: 5px;">P</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">まとめ買い<br>ポイント設定</th>
+                                <td style="border-right: none;padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.shinmtmkipointkbn}" value="0"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '230'}"
+                                    ><label for="shopTabBean.shinmtmkipointkbn1">発生しない</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.shinmtmkipointkbn}" value="1"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '230'}"
+                                    ><label for="shopTabBean.shinmtmkipointkbn2">数量以上で発生</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.shinmtmkipointkbn}" value="2"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '230'}"
+                                    ><label for="shopTabBean.shinmtmkipointkbn3">数量毎に発生</label><br>
+                                    <span style="padding-left: 27px;">数量</span>
+                                    <input type="text" th:field="*{shopTabBean.shinmtmkisuryo}"
+                                        size="7" maxLength="7" style="width:40px;"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '231'}" /><br>
+                                    <span style="padding-left: 27px;">発生</span>
+                                    <input type="text" th:field="*{shopTabBean.shinmtmkipointsu}"
+                                        size="8" maxLength="8" style="width:40px;"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '232'}" /><br>
+                                    <input type="radio" th:field="*{shopTabBean.shinmtmkipointkbn}" value="3"
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '230'}"
+                                    ><label for="shopTabBean.shinmtmkipointkbn4">段階的に発生</label><br>
+                                    <span style="padding-left: 5px;">※閾値以上で発生<br>（閾値降順で発生）</span>
+                                    <td style="border-left: none;padding-left: 2px;height: 118px;">
+                                        <table style="border: 1px solid; line-height:1.4;">
+                                            <tr>
+                                                <th style="background-color: #EEEEEE;">数量閾値</th>
+                                                <th style="background-color: #EEEEEE;">発生</th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaisuryo1}"
+                                                        size="5" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '233'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaipointsu1}"
+                                                        size="6" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1'}"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '234'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaisuryo2}"
+                                                        size="5" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '235'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaipointsu2}"
+                                                        size="6" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '236'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaisuryo3}"
+                                                        size="5" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '237'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaipointsu3}"
+                                                        size="8" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '238'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaisuryo4}"
+                                                        size="7" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '239'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaipointsu4}"
+                                                        size="8" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '240'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaisuryo5}"
+                                                        size="7" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '241'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.shinmtmkidankaipointsu5}"
+                                                        size="8" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '242'}" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </td>
+                                <td style="border-right: none;padding-left:2px;">
+                                    <input type="hidden" th:field="*{shopTabBean.initmtmkipointkirikaedd}">
+                                    <input type="text" th:field="*{shopTabBean.mtmkipointkirikaedd}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.syoristatus == '1' }"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '243'}" />
+                                    <span>より</span><br>新ポイントに切替え
+                                </td>
+                                <td align="center" style="border-left: none">
+                                    <button type="button" id="btnkirikaenyuryokun5" name="btnkirikaenyuryokun5"
+                                         tabindex="220" style="width: 80px; height: 30px" 
+                                         th:disabled="*{baseBean.authflag == 't' || baseBean.syoristatus == '1' 
+                                         }" >切替入力 →</button>
+                                </td>
+                                <td style="border-right: none;padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.genmtmkipointkbn}" value="0"
+                                        th:disabled="*{baseBean.authflag == 't' }"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '244'}"
+                                    ><label for="shopTabBean.genmtmkipointkbn1">発生しない</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.genmtmkipointkbn}" value="1"
+                                        th:disabled="*{baseBean.authflag == 't' }"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '244'}"
+                                    ><label for="shopTabBean.genmtmkipointkbn2">数量以上で発生</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.genmtmkipointkbn}" value="2"
+                                        th:disabled="*{baseBean.authflag == 't' }"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '244'}"
+                                    ><label for="shopTabBean.genmtmkipointkbn3">数量毎に発生</label><br>
+                                    <span style="padding-left: 27px;">数量</span>
+                                    <input type="text" th:field="*{shopTabBean.genmtmkisuryo}"
+                                        size="7" maxLength="7" style="width:40px;"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '245'}" /><br>
+                                    <span style="padding-left: 27px;">発生</span>
+                                    <input type="text" th:field="*{shopTabBean.genmtmkipointsu}"
+                                        size="8" maxLength="8" style="width:40px;"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '246'}" /><br>
+                                    <input type="radio" th:field="*{shopTabBean.genmtmkipointkbn}" value="3"
+                                        th:disabled="*{baseBean.authflag == 't' }"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '244'}"
+                                    ><label for="shopTabBean.genmtmkipointkbn4">段階的に発生</label><br>
+                                    <span style="padding-left: 5px;">※閾値以上で発生<br>（閾値降順で発生）</span>
+                                    <td style="border-left: none;padding-left: 2px;">
+                                        <table style="border: 1px solid;line-height:1.4;">
+                                            <tr>
+                                                <th style="background-color: #EEEEEE;">数量閾値</th>
+                                                <th style="background-color: #EEEEEE;">発生</th>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaisuryo1}"
+                                                        size="5" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '247'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaipointsu1}"
+                                                        size="6" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '248'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaisuryo2}"
+                                                        size="5" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '249'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaipointsu2}"
+                                                        size="6" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '250'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaisuryo3}"
+                                                        size="5" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '251'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaipointsu3}"
+                                                        size="8" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '252'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaisuryo4}"
+                                                        size="7" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '253'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaipointsu4}"
+                                                        size="8" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '254'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaisuryo5}"
+                                                        size="7" maxLength="7" style="width:35px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '255'}" />
+                                                </td>
+                                                <td>
+                                                    <input type="text" th:field="*{shopTabBean.genmtmkidankaipointsu5}"
+                                                        size="8" maxLength="8" style="width:40px;"
+                                                        th:readonly="*{baseBean.authflag == 't'}"
+                                                        th:disabled="*{baseBean.stkbnhidden == '1' }"
+                                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                                        data-allow-number-of-decimals="0"
+                                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '256'}" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top: 5px;">
+                            <colgroup>
+	                            <col width="110px">
+	                            <col width="110px">
+	                            <col width="190px">
+	                            <col width="235px">
+	                            <col width="100px">
+	                            <col width="100px">
+	                            <col width="105px">
+                            </colgroup>
+                            <tr>
+                                <th class="hissu" rowspan=2>販促設定</th>
+                                <td style="padding-left: 2px;" rowspan=2>
+                                    <input type="radio" th:field="*{shopTabBean.hansokusettei}" value="0" 
+                                        th:disabled="*{baseBean.authflag == 't'|| baseBean.stkbnhidden == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '223'}"
+                                    ><label for="shopTabBean.hansokusettei1">対象外</label>
+                                    <input type="radio" th:field="*{shopTabBean.hansokusettei}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'|| baseBean.stkbnhidden == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '223'}"
+                                    ><label for="shopTabBean.hansokusettei2">対象</label>
+                                </td>
+                                <th  style="line-height:15px">適用期間</th>
+                                <th>名称</th>
+                                <th>配達価格</th>
+                                <th>持ち帰り価格</th>
+                                <th class="hissu">優先表示</th>
+                            </tr>
+                            <tr style="line-height:2.3;">
+                                <td class="code">
+                                    <input type="text" th:field="*{shopTabBean.tekiyodkikanstr}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.stkbnhidden == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '224'}"
+                                    />&nbsp;～&nbsp;<input type="text" th:field="*{shopTabBean.tekiyodkikanend}"
+                                        size="10" maxLength="8"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.stkbnhidden == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'BusinessCommonDatepicker52 hasDatepicker'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '225'}" />
+                                </td>
+                                <td style="padding-left:1.5px;">
+                                    <input type="text" th:field="*{shopTabBean.hansokunm}"
+                                        size="40" maxLength="40" style="width:98%"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.stkbnhidden == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'str_label' : 'str'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '226'}" />
+                                </td>
+                                <td class="num">
+                                    <input type="text" th:field="*{shopTabBean.dlvryprice}"
+                                        size="13" maxLength="11"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.stkbnhidden == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '227'}" />
+                                </td>
+                                <td class="num">
+                                    <input type="text" th:field="*{shopTabBean.omchkrprice}"
+                                        size="13" maxLength="11"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:disabled="*{baseBean.stkbnhidden == '1'}"
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '228'}" />
+                                </td>
+                                <td style="padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.hansokuyusenkbn}" value="0" 
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.stkbnhidden == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '229'}"
+                                    ><label for="shopTabBean.hansokuyusenkbn1">しない</label>
+                                    <input type="radio" th:field="*{shopTabBean.hansokuyusenkbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't' || baseBean.stkbnhidden == '1'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '229'}"
+                                    ><label for="shopTabBean.hansokuyusenkbn2">する</label>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top: 2px;">
+                            <colgroup>
+	                            <col width="110px">
+	                            <col width="110px">
+	                            <col width="90px">
+	                            <col width="90px">
+                            </colgroup>
+                            <tr>
+                                <td style="border-top: medium none; height: 20px; border-right: medium none; border-bottom: medium none; border-left: medium none; border: none; height: 20px;" colspan=5>
+                                    <h4>在庫情報</h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="hissu"  style="line-height:15px">在庫管理区分</th>
+                                <th class="hissu">原価計算区分</th>
+                                <th>在庫単価</th>
+                                <th>在庫アラーム数量</th>
+                            </tr>
+                            <tr style="line-height:1.9;">
+                                <td  style="border-right: none;padding-left: 2px;" rowspan=2>
+                                    <input type="radio" th:field="*{shopTabBean.zaikokanrikbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '229'}"
+                                    ><label for="shopTabBean.zaikokanrikbn1">する</label>
+                                    <input type="radio" th:field="*{shopTabBean.zaikokanrikbn}" value="0" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '229'}"
+                                    ><label for="shopTabBean.zaikokanrikbn2">しない</label>
+                                </td>
+                                <td style="border-right: none;padding-left: 2px;" rowspan=2>
+                                    <input type="radio" th:field="*{shopTabBean.genkakeisankbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '230'}"
+                                    ><label for="shopTabBean.genkakeisankbn1">標準原価</label><br>
+                                    <input type="radio" th:field="*{shopTabBean.genkakeisankbn}" value="2" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '230'}"
+                                    ><label for="shopTabBean.genkakeisankbn2">移動平均単価</label>
+                                </td>
+                                <td class="num" style="border-bottom: none; border-left: none;">
+                                    <input type="text" th:field="*{shopTabBean.zaikount1}"
+                                        size="13" maxLength="11"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '231'}" />
+                                </td>
+                                <td class="num" style="border-bottom: none;">
+                                    <input type="text" th:field="*{shopTabBean.zaikoaramusuryo}"
+                                        size="6" maxLength="7"
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:class="*{(baseBean.authflag == 't') ? 'num_label' : 'num aci-amount-format'}"
+                                        data-allow-number-of-decimals="0"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '233'}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="num" style="border-top: none; border-left: none;padding-bottom:3px;padding-right: 2px;">
+                                    <span class="ifm-mode-enable kit-numeric-align-right"></span>
+                                </td>
+                                <td style="border-top: none; border-left: none;"><br></td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top: 3px;">
+                            <colgroup>
+	                            <col width="110px">
+	                            <col width="720px">
+                            </colgroup>
+                            <tr>
+                                <th>備考</th>
+                                <td>
+                                    <textarea th:field="*{shopTabBean.biko2}" cols="50" rows="3" maxLength="200" 
+                                        th:readonly="*{baseBean.authflag == 't'}" 
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '-1' : '234'}"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="border" style="margin-top: 3px;">
+                            <colgroup>
+                                <col width="80px">
+                                <col width="90px">
+                                <col width="80px">
+                                <col width="310px">
+                                <col width="80px">
+                                <col width="310px">
+                            </colgroup>
+                            <tr style="height: 25px">
+                                <th class="hissu">有効区分</th>
+                                <td class="masterFooter" style="padding-left: 2px;">
+                                    <input type="radio" th:field="*{shopTabBean.yukokbn}" value="1" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '235'}"
+                                    ><label for="shopTabBean.yukokbn1">有効</label>
+                                    <input type="radio" th:field="*{shopTabBean.yukokbn}" value="0" 
+                                        th:disabled="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{(baseBean.authflag == 't') ? '' : '235'}"
+                                    ><label for="shopTabBean.yukokbn2">無効</label>
+                                </td>
+                                <th class="masterFooter">登録者</th>
+                                <td class="masterFooter" style="padding-left: 3px;">
+                                <th:block th:if="*{shopTabBean.shopinptsystmymd != null && shopTabBean.shopinptsystmymd != ''}">
+                                    <span id="shopTabBean.shopinptsystmymd" th:text="*{shopTabBean.shopinptsystmymd}" style="margin-left: 2px;"></span
+                                    ><span id="shopTabBean.shopinptsystmjikan" th:text="*{shopTabBean.shopinptsystmjikan}" style="margin-left: 5px;"></span
+                                    ><span id="shopTabBean.shoptoshaapkihoncd" th:text="*{shopTabBean.shoptoshaapkihoncd}" style="margin-left: 5px;"></span
+                                    ><span id="hyphen2">-</span><span id="shopTabBean.shoptoshashopcd" th:text="*{shopTabBean.shoptoshashopcd}"></span
+                                    ><span id="hyphen2">-</span><span id="shopTabBean.shoptoshacd" th:text="*{shopTabBean.shoptoshacd}"></span
+                                    >&nbsp;<span id="shopTabBean.shoptoshamei" th:text="*{shopTabBean.shoptoshamei}"></span>
+                                </th:block>
+                                <th:block th:if="*{shopTabBean.shopinptsystmymd == null || shopTabBean.shopinptsystmymd == ''}">
+                                    <span id="shopTabBean.shopinptsystmymd" th:text="*{shopTabBean.shopinptsystmymd}" style="margin-left: 2px;"></span
+                                    ><span id="shopTabBean.shopinptsystmjikan" th:text="*{shopTabBean.shopinptsystmjikan}" style="margin-left: 5px;"></span
+                                    ><span id="shopTabBean.shoptoshaapkihoncd" th:text="*{shopTabBean.shoptoshaapkihoncd}" style="margin-left: 5px;"></span
+                                    ><span id="hyphen2"></span><span id="shopTabBean.shoptoshashopcd" th:text="*{shopTabBean.shoptoshashopcd}"></span
+                                    ><span id="hyphen2"></span><span id="shopTabBean.shoptoshacd" th:text="*{shopTabBean.shoptoshacd}"></span
+                                    >&nbsp;<span id="shopTabBean.shoptoshamei" th:text="*{shopTabBean.shoptoshamei}"></span>
+                                </th:block>
+                                </td>
+                                <th class="masterFooter">更新者</th>
+                                <td class="masterFooter" style="padding-left: 3px;">
+                                  <th:block th:if="*{shopTabBean.shopkshnsystmymd != null && shopTabBean.shopkshnsystmymd != ''}">
+                                    <span id="shopTabBean.shopkshnsystmymd" th:text="*{shopTabBean.shopkshnsystmymd}" style="margin-left: 2px;"></span
+                                    ><span id="shopTabBean.shopkshnsystmjikan" th:text="*{shopTabBean.shopkshnsystmjikan}" style="margin-left: 5px;"></span
+                                    ><span id="shopTabBean.shopkoshaapkihoncd" th:text="*{shopTabBean.shopkoshaapkihoncd}" style="margin-left: 5px;"
+                                    ></span><span id="hyphen2">-</span><span id="shopTabBean.shopkoshashopcd" th:text="*{shopTabBean.shopkoshashopcd}"></span
+                                    ><span id="hyphen2">-</span><span id="shopTabBean.shopkoshacd" th:text="*{shopTabBean.shopkoshacd}"></span
+                                    >&nbsp;<span id="shopTabBean.shopkoshamei" th:text="*{shopTabBean.shopkoshamei}"></span>
+                                </th:block>
+                                <th:block th:if="*{shopTabBean.shopkshnsystmymd == null || shopTabBean.shopkshnsystmymd == ''}">
+                                    <span id="shopTabBean.shopkshnsystmymd" th:text="*{shopTabBean.shopkshnsystmymd}" style="margin-left: 2px;"></span
+                                    ><span id="shopTabBean.shopkshnsystmjikan" th:text="*{shopTabBean.shopkshnsystmjikan}" style="margin-left: 5px;"></span
+                                    ><span id="shopTabBean.shopkoshaapkihoncd" th:text="*{shopTabBean.shopkoshaapkihoncd}" style="margin-left: 5px;"></span
+                                    ><span id="hyphen2"></span><span id="shopTabBean.shopkoshashopcd" th:text="*{shopTabBean.shopkoshashopcd}"></span
+                                    ><span id="hyphen2"></span><span id="shopTabBean.shopkoshacd" th:text="*{shopTabBean.shopkoshacd}"></span
+                                    >&nbsp;<span id="shopTabBean.shopkoshamei" th:text="*{shopTabBean.shopkoshamei}"></span>
+                                </th:block>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttonpanel cm-buttonpanel" style="width:1050px !important;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td width="30%" align="left"></td>
+                        <td width="40%" align="center">
+                            <th:block th:if="*{baseBean.authflag == 'f'}">
+                                <button
+                                    id="btnkshn"
+                                    th:name="btnkshn"
+                                    class="button aci-put"
+                                    type="button"
+                                    tabindex="400"
+                                    th:data-api="@{/api/a0301w02/update}"
+                                    th:data-check-api="@{/api/a0301w02/check}"
+                                >更新
+                                </button>
+                            </th:block>
+                            <input type="hidden" th:field="*{shopTabBean.confirmmess}" />
+                        </td>
+                        <td width="30%" align="right">
+                            <th:block th:replace="commons/parts/button-back :: basic(@{/a0301w01}, false)" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+</head>
+
+<!--/*
+   システム名:AP総合管理システム
+   機能名:請求入金照会
+*/-->
+
+<body>
+    <!--
+    //------------------------------------------------------------------
+    // 明細部("M1")
+    //------------------------------------------------------------------
+    -->
+    <!-- //----- 明細セクションヘッダ ----- -->
+    <div th:fragment="detail" style="display: none;" id="b1501w11_m1">
+        <div class="aci-sticky-table-wrapper" id="listbodyheader">
+            <div class="aci-sticky-table-dataarea" style="width: 1300px; height: 480px;">
+                <template id="b1501w11_meisai_template">
+                    <tr>
+                        <td class="date">
+                            <!-- // 「年月明細」ラベル -->
+                            <div class="dydmmeioff display-none">
+                                <span>
+                                    {dydmmei}
+                                </span>
+                            </div>
+                            <div class="dydmmeion">
+                                <a class="dydmmei" id="meisaiBeanList[{index}]" href="javascript:void(0)" 
+                                    data-dydmmei="{dydmmei}" 
+                                    data-kaishuhohokbn="{kaishuhohokbn}" 
+                                    data-renban="{renban}">
+                                    {dydmmei}
+                                </a>
+                            </div>
+                        </td>
+                        <td class="num">
+                            <!-- // 「レギュラー有料」ラベル -->
+                            <span class="aci-format-label">{rgrayuryomei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「レギュラー無料明細」ラベル -->
+                            <span class="aci-format-label">{rgramuryomei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「スリム有料明細」ラベル -->
+                            <span class="aci-format-label">{srmyuryomei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「スリム無料明細」ラベル -->
+                            <span class="aci-format-label">{srmmuryomei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「その他有料明細」ラベル -->
+                            <span class="aci-format-label">{sonotayuryomei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「その他無料明細」ラベル -->
+                            <span class="aci-format-label">{sonotamuryomei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「製品水売上明細」ラベル -->
+                            <span class="aci-format-label">{seihinmizuurimei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「レンタル料金明細」ラベル -->
+                            <span class="aci-format-label">{rtlrknmei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「その他売上明細」ラベル -->
+                            <span class="aci-format-label">{sonotaurimei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「当月売上計明細」ラベル -->
+                            <span class="aci-format-label">{totsukiurikeimei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「内消費税金額明細」ラベル -->
+                            <span class="aci-format-label">{uchishohitaxkinmei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「当月税込売上計」ラベル -->
+                            <span class="aci-format-label taxkomiurikeikinmei">{taxkomiurikeikinmei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「前月残高明細」ラベル -->
+                            <span class="aci-format-label">{maedmzdmei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「当月入金明細」ラベル -->
+                            <span class="aci-format-label">{totsukinyknmei}</span>
+                        </td>
+                        <td class="num">
+                            <!-- // 「当月残高明細」ラベル -->
+                            <span class="aci-format-label">{totsukizdmei}</span>
+                        </td>
+                        <td class="str">
+                            <!-- // 「回収方法」ラベル -->
+                            <span>{kaishuhoho}</span>
+                        </td>
+                        <!-- 次期での追加項目 -->
+                        <input type="hidden" id="meisaiBeanList[{index}].shohitaxkbnmei" name="meisaiBeanList[{index}].shohitaxkbnmei" value="{shohitaxkbnmei}" />
+                    </tr>
+                </template>
+                <table border="0" cellspacing="0" cellpadding="2"
+                    class="grid border aci-sticky-table aci-table-data b1501_table_m1_header">
+                    <col width="57">
+                    <col width="35">
+                    <col width="35">
+                    <col width="35">
+                    <col width="35">
+                    <col width="35">
+                    <col width="35">
+                    <col width="60">
+                    <col width="60">
+                    <col width="60">
+                    <col width="60">
+                    <col width="65">
+                    <col width="70">
+                    <col width="65">
+                    <col width="65">
+                    <col width="65">
+                    <col width="75">
+                    <thead>
+                        <tr>
+                            <th rowspan="3">年月日</th>
+                            <th colspan="6">製品水売上数量</th>
+                            <th colspan="3">売上内訳</th>
+                            <th rowspan="3">当月売上計</th>
+                            <th rowspan="3" id="shohitax-th">消費税額</th>
+                            <th rowspan="3">当月税込売上計</th>
+                            <th rowspan="3">前月残高</th>
+                            <th rowspan="3">当月入金</th>
+                            <th rowspan="3">当月残高</th>
+                            <th rowspan="3">回収方法</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">レギュラー</th>
+                            <th colspan="2">スリム</th>
+                            <th colspan="2">その他</th>
+                            <th rowspan="2">製品水売上</th>
+                            <th rowspan="2">レンタル料</th>
+                            <th rowspan="2">その他売上</th>
+                        </tr>
+                        <tr>
+                            <th>有料</th>
+                            <th>無料</th>
+                            <th>有料</th>
+                            <th>無料</th>
+                            <th>有料</th>
+                            <th>無料</th>
+                        </tr>
+                    </thead>
+                    <tbody id="b1501w11_meisai_body"
+                        data-template="b1501w11_meisai_template"
+                        >
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,389 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>[(${headerTitle})]</title>
+    <th:block th:replace="commons/layout.html :: configFragment"></th:block>
+    <link th:href="@{/css/b0505/b0505w00.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/commons/aci/common.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{/css/commons/ifm.css}" rel="stylesheet" type="text/css">
+    <script type="module" class="aci-module aci-module-page" th:src="@{/js/b0505/b0505w02.js}"></script>
+</head>
+<body>
+<div id ="contentsarea">
+    <form th:method="post" th:action="@{/b0505w02}" th:object="${b0505W02Form}">
+        <div th:replace="commons/header.html :: header" />
+        <th:block th:replace="z0101/z0101w01 :: basic_fix" />
+        <div id="aci-ajaxloader"></div>
+        
+        <div id="message_area" class="ifm-message-area">
+            <span th:text="*{errMsg}" />
+        </div>
+        <div th:replace="commons/messages.html :: basic" />
+        
+        <div id="display">
+            <input type="hidden" th:field="*{baseBean.apkihoncd}" />
+            <input type="hidden" th:field="*{baseBean.shopcd}" />
+            <input type="hidden" th:field="*{baseBean.apnm}" />
+            <input type="hidden" th:field="*{baseBean.shopnm}" />
+            <input type="hidden" th:field="*{baseBean.ymd}" />
+            <input type="hidden" th:field="*{baseBean.jikaikeijodd}" />
+            <input type="hidden" th:field="*{baseBean.shokaikeijodd}" />
+            <input type="hidden" th:field="*{baseBean.shntaxkbn}" />
+            <input type="hidden" th:field="*{baseBean.jigyoshocd}" />
+            <input type="hidden" th:field="*{baseBean.urisiirekbn}" />
+            <input type="hidden" th:field="*{baseBean.apshopfixedflag}" />
+            <input type="hidden" th:field="*{kihonBean.znkhasseikeijodd}" />
+            <input type="hidden" th:field="*{baseBean.teireihasseino}" />
+            
+            <div id="masterentry">
+                <!-- セレクトボックステンプレート -->
+                <template id="template_select">
+                    <option value="{value}">{label}</option>
+                </template>
+
+                <table class="border table-fixed" style="width: 1000px; margin-bottom: 12px">
+                    <tr style="height: 24px;">
+                        <th style="width: 106px;">定例発生番号</th>
+                        <td style="text-align: left; width: 390px;" th:class="*{footerBean.yukokbn == '0' ? 'code_invalid' : 'code'}">
+                            <!-- // 「定例発生番号」ラベル -->
+                            <th:block th:if="*{baseBean.teireihasseino == null}">
+                                <span class="ifm-mode-enable" id="teireihasseinoreg" style="margin-left: 2px;">（新規登録）</span>
+                            </th:block>
+                            <input type="text" th:field="*{baseBean.teireihasseino}" size="15" readonly="readonly" tabindex="-1"
+                                th:class="*{footerBean.yukokbn == '0' ? 'str_label_invalid' : 'str_label'}"/>
+                        </td>
+                        <th class="hissu" style="width: 106px;">伝票区分</th>
+                        <td style="width: 390px;">
+                            <!-- // 「伝票区分」プルダウン -->
+                            <select style="margin-left: 2px; height: 19px; width: 68px;"
+                                name="baseBean.dnpykbn"
+                                id="baseBean.dnpykbn"
+                                class="aci-ajax-parts b0505w02-option"
+                                data-template="template_select"
+                                th:data-default="*{baseBean.dnpykbn}"
+                                data-api="/api/parts/s02m006t/000/000/092"
+                                th:disabled="*{baseBean.teireihasseino != null && baseBean.teireihasseino != ''}"
+                                >
+                            </select>
+                            <th:block th:if="*{baseBean.teireihasseino != null && baseBean.teireihasseino != ''}">
+                                <input type="hidden" th:field="*{baseBean.dnpykbn}" />
+                            </th:block>
+                        </td>
+                    </tr>
+                </table>
+                <h4>計上先</h4>
+                <table class="border table-fixed" style="width: 1000px; margin-bottom: 5px; margin-top: 0px">
+                    <colgroup>
+                            <col width="106px">
+                            <col width="390px">
+                            <col width="106px">
+                            <col width="390px">
+                    </colgroup>
+                    <tr height="24">
+                        <th>取引区分</th>
+                        <td colspan="3">
+                            <!-- 「取引区分」ラベル -->
+                            <span id="torihikikbn" style="margin-left: 2px;">
+                                <th:block th:if="*{baseBean.teireihasseino == null}">
+                                    <span id="torihikikbnText" />
+                                </th:block>
+                                <th:block th:unless="*{baseBean.teireihasseino == null}">
+                                    <th:block th:if="*{baseBean.dnpykbn == '11'}">
+                                        <span>売上</span>
+                                    </th:block>
+                                    <th:block th:if="*{baseBean.dnpykbn == '12'}">
+                                        <span>経費</span>
+                                    </th:block>
+                                    <th:block th:if="*{baseBean.dnpykbn != '11' && baseBean.dnpykbn != '12'}">
+                                        <span>&nbsp;</span>
+                                    </th:block>
+                                </th:block>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr style="height: 24px;">
+                        <th>
+                            <span id="reftokuisakicd1flag1">
+                                <!--  「得意先コード」リンク -->
+                                <th:block th:if="*{baseBean.authflag == 'f'}">
+                                    <a class="ifm-mode-enable" id="reftokuisakicd1" href="" >得意先コード</a>
+                                </th:block>
+                                <th:block th:if="*{baseBean.authflag != 'f'}">
+                                    得意先コード
+                                </th:block>
+                            </span>
+                            <span id="reftokuisakicd1flag2" style="display:none">得意先コード</span>
+                        </th>
+                        <td>
+                            <!--  「得意先コード」テキストボックス -->
+                            <input type="text" th:field="*{keijosakiBean.tokuisakicd1}" size="6" maxlength="6" style="margin-left: 2px; width: 38px;"
+                                th:class="*{baseBean.authflag == 't' ? 'code_label aci-zero-padding-format' : 'code aci-zero-padding-format'}"
+                                th:readonly="*{baseBean.authflag == 't'}"
+                                th:tabindex="*{baseBean.authflag == 't' ? '-1' : ''}" />
+                            <!--  「得意先名称」ラベル -->
+                            <span th:text="*{keijosakiBean.tokuisakinm1}" id="tokuisakinmLabel" class="str_label" readonly="readonly" tabindex="-1" style="margin-left: -1px; margin-top: 5px;"/>
+                        </td>
+                        <th>
+                            <!--  「実績担当者コード」リンク -->
+                            <th:block th:if="*{baseBean.authflag == 'f'}">
+                                <a class="ifm-mode-enable" id="reftnshacd1" href="" >実績担当者コード</a>
+                            </th:block>
+                            <th:block th:if="*{baseBean.authflag != 'f'}">
+                                実績担当者コード
+                            </th:block>
+                        </th>
+                        <td>
+                            <!--  「実績担当者コード」テキストボックス -->
+                            <input type="text" th:field="*{keijosakiBean.jissekitnshacd1}" size="6" maxlength="6" style="margin-left: 2px; width: 38px;"
+                                th:class="*{baseBean.authflag == 't' ? 'code_label aci-zero-padding-format' : 'code aci-zero-padding-format'}"
+                                th:readonly="*{baseBean.authflag == 't'}"
+                                th:tabindex="*{baseBean.authflag == 't' ? '-1' : ''}" />
+                             <!--  「実績担当者名称」ラベル -->
+                             <span th:text="*{keijosakiBean.tnshamei1}" size="20" id="jissekitnshanmLabel" class="str_label" readonly="readonly" tabindex="-1" style="margin-left: -1px; margin-top: 5px;" />
+                        </td>
+                    </tr>
+                </table>
+                </br>
+<!-- kihonBean -->
+                <h4>基本情報</h4>
+                <table class="border table-fixed" style="width: 1000px; margin-bottom: 5px">
+                    <tr style="height: 24px;">
+                        <th class="hissu" style="width: 106px;">計上日</th>
+                        <td>
+                            <!--  「計上日」テキストボックス -->
+                            <input type="text" th:field="*{kihonBean.keijodd}" size="2" maxlength="2" style="margin-left: 2px; width: 18px;"
+                                th:class="*{baseBean.authflag == 't' ? 'code_label aci-zero-padding-format' : 'code aci-zero-padding-format'}"
+                                th:readonly="*{baseBean.authflag == 't'}"
+                                th:tabindex="*{baseBean.authflag == 't' ? '-1' : ''}" />
+                            <span>&nbsp;&nbsp;※末日は31を指定</span>
+                        </td>
+                        <th class="hissu" style="width: 106px;">開始年月</th>
+                        <td style="width: 140px;">
+                            <!--  「開始年月」テキストボックス -->
+                            <input type="text" th:field="*{kihonBean.shokaikeijodydm}" size="7" maxlength="6" style="margin-left: 2px; width: 43px;"
+                                th:class="*{baseBean.authflag == 't' ? 'str_label BusinessCommonDatepicker52 hasMonthpicker' : 'str BusinessCommonDatepicker52 hasMonthpicker'}"
+                                th:readonly="*{baseBean.authflag == 't'}"
+                                th:tabindex="*{baseBean.authflag == 't' ? '-1' : ''}" />
+                            <input type="hidden" id="kihonBean.preshokaikeijodydm" />
+                        </td>
+                        <th class="hissu" style="width: 106px;">終了年月</th>
+                        <td style="width: 140px;">
+                            <!--  「終了年月」テキストボックス -->
+                            <input type="text" th:field="*{kihonBean.shrydydm}" size="7" maxlength="6" style="margin-left: 2px; width: 43px;"
+                                th:class="*{baseBean.authflag == 't' ? 'str_label BusinessCommonDatepicker52 hasMonthpicker' : 'str BusinessCommonDatepicker52 hasMonthpicker'}"
+                                th:readonly="*{baseBean.authflag == 't'}"
+                                th:tabindex="*{baseBean.authflag == 't' ? '-1' : ''}" />
+                        </td>
+                    </tr>
+                    <tr style="height: 24px;">
+                        <th>前回発生計上日</th>
+                        <td>
+                            <!--  「前回発生計上日」ラベル -->
+                            <span th:text="*{kihonBean.znkhasseikeijodd}" size="10" maxlength="8" class="ifm-mode-enable BusinessCommonDatepicker52 hasDatepicker" style="margin-left: 2px;" />
+                        </td>
+                        <th class="hissu">次回計上年月</th>
+                        <td colspan=3>
+                            <!--  「次回計上年月」テキストボックス -->
+                            <input type="text" th:field="*{kihonBean.jikaikeijodydm}" size="7" maxlength="6" style="margin-left: 2px; width: 44px;"
+                                th:class="*{baseBean.authflag == 't' ? 'str_label BusinessCommonDatepicker52 hasMonthpicker' : 'str BusinessCommonDatepicker52 hasMonthpicker'}"
+                                th:readonly="*{baseBean.authflag == 't'}"
+                                th:tabindex="*{baseBean.authflag == 't' ? '-1' : ''}" 
+                                th:text="*{baseBean.teireihasseino == null ? '&nbsp;開始年月と同じ年月を入力してください' : ''}" />
+                            <input type="hidden" id="kihonBean.prejikaikeijodydm" />
+                        </td>
+                    </tr>
+                    <tr style="height: 24px;">
+                        <th class="hissu">発生間隔計上パターン</th>
+                        <td style="border-right: none;" class="b0505w02-radio">
+                            <!--  「次回計上年月」ラジオボタン -->
+                            <input type="radio" th:field="*{kihonBean.hasseikankakukeijoptn}" value="1" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.hasseikankakukeijoptn1">毎月</label>
+                            <input type="radio" th:field="*{kihonBean.hasseikankakukeijoptn}" value="2" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.hasseikankakukeijoptn2">３ヶ月</label>
+                            <input type="radio" th:field="*{kihonBean.hasseikankakukeijoptn}" value="3" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.hasseikankakukeijoptn3">６ヶ月</label>
+                            <input type="radio" th:field="*{kihonBean.hasseikankakukeijoptn}" value="4" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.hasseikankakukeijoptn4">１年</label>
+                        </td>
+                        <th class="hissu">定例区分</th>
+                        <td colspan=3 class="b0505w02-radio teireikbn-seigyo">
+                            <!--  「定例区分」ラジオボタン -->
+                            <input type="radio" th:field="*{kihonBean.teireikbn}" value="1" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.teireikbn1">サーバーレンタル</label>
+                            <input type="radio" th:field="*{kihonBean.teireikbn}" value="2" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.teireikbn2">商品レンタル</label>
+                            <input type="radio" th:field="*{kihonBean.teireikbn}" value="3" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.teireikbn3">通常取引</label>
+                            <input type="radio" th:field="*{kihonBean.teireikbn}" value="4" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.teireikbn4">アクアクララ光</label>
+                        </td>
+                    </tr>
+                    <tr style="height: 24px;">
+                        <th class="hissu">売上発生</th>
+                        <td class="b0505w02-radio">
+                            <!-- 「売上発生」ラジオボタン -->
+                            <input type="radio" th:field="*{kihonBean.dnpyhasseiarinashiflg}" value="0" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.dnpyhasseiarinashiflg1">停止</label>
+                            <input type="radio" th:field="*{kihonBean.dnpyhasseiarinashiflg}" value="1" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="kihonBean.dnpyhasseiarinashiflg2">発生</label>
+                        </td>
+                        <th class="hissu">売上設定</th>
+                        <td colspan=3 class="b0505w02-radio rtlrknshukeikbn-seigyo">
+                            <!-- 「売上設定」ラジオボタン -->
+                            <input type="radio" th:field="*{kihonBean.rtlrknshukeikbn}" value="0" 
+                                th:readonly="*{(baseBean.authflag == 't' || kihonBean.teireikbn == '2'||kihonBean.teireikbn == '3'||kihonBean.teireikbn == '4')}"
+                            ><label for="kihonBean.rtlrknshukeikbn1">定例売上マスタ</label>
+                            <input type="radio" th:field="*{kihonBean.rtlrknshukeikbn}" value="1" 
+                                th:readonly="*{(baseBean.authflag == 't' || kihonBean.teireikbn == '2'||kihonBean.teireikbn == '3'||kihonBean.teireikbn == '4')}"
+                            ><label for="kihonBean.rtlrknshukeikbn2">得意先設置サーバーマスタ</label>
+                        </td>
+                    </tr>
+                </table>
+                </br>
+<!-- MeisaiBean -->
+                <h4>明細情報</h4>
+                <table class="border table-fixed" style="width: 616px; margin-bottom: -1px">
+                    <tr style="height: 16px;">
+                        <th class="hissu" style="width: 106px;">
+                            <!-- 「商品CD」リンク -->
+                            <th:block th:if="*{baseBean.authflag == 'f'}">
+                                <a id="refshncd" href="" tabindex="-1">商品CD</a>
+                            </th:block>
+                        </th>
+                        <th style="width: 262px;">商品名</th>
+                        <th style="width: 68px;">色</th>
+                        <th style="width: 68px;">サイズ</th>
+                        <th style="width: 112px;">型式</th>
+                    </tr>
+                </table>
+                <table class="border grid table-fixed" id="orderdetailbodytable" style="width: 616px; position: relative; margin-bottom: 5px;">
+                    <tr style="height: 22px;">
+                        <td class="code" style="width: 106px;">
+                            <!-- 「商品CD」テキストボックス -->
+                            <input type="text" th:field="*{meisaiBean.shncd}" size="4" maxlength="6" readonly="readonly" class="str_label" tabindex="-1" />
+                        </td>
+                        <td style="width: 262px;">
+                            <!-- 「商品名」テキストボックス -->
+                            <input type="text" th:field="*{meisaiBean.shnnm}" size="43" maxlength="50" readonly="readonly" class="str_label" tabindex="-1" style="margin-left: 2px;" />
+                        </td>
+                        <td style="width: 68px;">
+                            <!-- 「色」テキストボックス -->
+                            <input type="text" th:field="*{meisaiBean.iro}" size="8" maxlength="10" readonly="readonly" class="str_label" tabindex="-1" style="margin-left: 2px;" />
+                            </td>
+                        <td style="width: 68px;">
+                            <!-- 「サイズ」テキストボックス -->
+                            <input type="text" th:field="*{meisaiBean.sz}" size="8" maxlength="10" readonly="readonly" class="str_label" tabindex="-1" style="margin-left: 2px;" />
+                            </td>
+                        <td style="width: 112px;">
+                            <!-- 「型式」プルダウン -->
+                            <select th:disabled="*{baseBean.authflag == 't'}"
+                                name="meisaiBean.katasiki"
+                                id="meisaiBean.katasiki"
+                                class="aci-ajax-parts"
+                                style="margin-left: 2px; height: 18px;"
+                                data-template="template_select"
+                                th:data-default="*{meisaiBean.katasiki}"
+                                data-api="/api/parts/s02m012t/001/{meisaiBean.shncd}"
+                                data-params='{
+                                    "blank":"t"
+                                }'
+                                >
+                           </select>
+                        </td>
+                    </tr>
+                </table>
+                <!-- 明細M2のインクルード-->
+                <div id="b0505w02----m1" style="width: 1000px;">
+                    <th:block th:replace="b0505/b0505w02_m1 :: detail" />
+                </div>
+                <table class="border grid table-fixed" style="width: 1000px; margin-bottom: 10px;">
+                    <tr style="height: 24px">
+                        <th class="hissu" style="width: 88px;">有効区分</th>
+                        <td class="masterFooter b0505w02-radio">
+                            <!-- 「有効区分」ラジオボタン -->
+                            <input type="radio" th:field="*{footerBean.yukokbn}" value="1" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="footerBean.yukokbn1">有効</label>
+                            <input type="radio" th:field="*{footerBean.yukokbn}" value="0" 
+                                th:disabled="*{baseBean.authflag == 't'}"><label for="footerBean.yukokbn2">無効</label>
+                        </td>
+                        <th class="masterFooter" style="width: 88px;">登録者</th>
+                        <td class="masterFooter" style="width: 310px;">
+                            <!-- 「登録システム日付」ラベル --><!-- 「登録システム時間」ラベル -->
+                            <!-- 「登録者ａｐ基本コード」ラベル --><!-- 「登録者ショップコード」ラベル --><!-- 「登録者コード」ラベル -->
+                            <!-- 「登録者名」ラベル -->
+                            <th:block th:if="*{footerBean.inptsystmymd == null}">
+                                <span id="footerBean.inptsystmymd" th:text="*{footerBean.inptsystmymd}" class="ifm-mode-enable"
+                                />&nbsp;<span id="footerBean.inptsystmjikan" th:text="*{footerBean.inptsystmjikan}" class="ifm-mode-enable"
+                                />&nbsp;&nbsp;&nbsp;<span id="footerBean.toshaapkihoncd" th:text="*{footerBean.toshaapkihoncd}" class="ifm-mode-enable"
+                                /><span></span><span id="footerBean.toshashopcd" th:text="*{footerBean.toshashopcd}" class="ifm-mode-enable" /><span></span>
+                                <span id="footerBean.toshacd" th:text="*{footerBean.toshacd}" class="ifm-mode-enable"
+                                />&nbsp;<span id="footerBean.toshamei" th:text="*{footerBean.toshamei}" class="ifm-mode-enable" />
+                            </th:block>
+                            <th:block th:if="*{footerBean.inptsystmymd != null}">
+                                <span id="footerBean.inptsystmymd" th:text="*{footerBean.inptsystmymd}" class="ifm-mode-enable"
+                                />&nbsp;<span id="footerBean.inptsystmjikan" th:text="*{footerBean.inptsystmjikan}" class="ifm-mode-enable"
+                                />&nbsp;&nbsp;&nbsp;<span id="footerBean.toshaapkihoncd" th:text="*{footerBean.toshaapkihoncd}" class="ifm-mode-enable"
+                                /><span>-</span><span id="footerBean.toshashopcd" th:text="*{footerBean.toshashopcd}" class="ifm-mode-enable" /><span>-</span>
+                                <span id="footerBean.toshacd" th:text="*{footerBean.toshacd}" class="ifm-mode-enable"
+                                />&nbsp;<span id="footerBean.toshamei" th:text="*{footerBean.toshamei}" class="ifm-mode-enable" />
+                            </th:block>
+                        </td>
+                        <th class="masterFooter" style="width: 88px;">更新者</th>
+                        <td class="masterFooter" style="width: 310px;">
+                            <!--  「更新システム日付」ラベル --><!--  「更新システム時間」ラベル -->
+                            <!--  「更新者ａｐ基本コード」ラベル --><!--  「更新者ショップコード」ラベル --><!--  「更新者コード」ラベル -->
+                            <!--  「更新者名」ラベル -->
+                            <th:block th:if="*{footerBean.kshnsystmymd == null}">
+                                <span id="footerBean.kshnsystmymd" th:text="*{footerBean.kshnsystmymd}" class="ifm-mode-enable"
+                                />&nbsp;<span id="footerBean.kshnsystmjikan" th:text="*{footerBean.kshnsystmjikan}" class="ifm-mode-enable"
+                                />&nbsp;&nbsp;&nbsp;<span id="footerBean.koshaapkihoncd" th:text="*{footerBean.koshaapkihoncd}" class="ifm-mode-enable"
+                                /><span></span><span id="footerBean.koshashopcd" th:text="*{footerBean.koshashopcd}" class="ifm-mode-enable"
+                                /><span></span><span id="footerBean.koshacd" th:text="*{footerBean.koshacd}" class="ifm-mode-enable"
+                                />&nbsp;<span id="footerBean.koshamei" th:text="*{footerBean.koshamei}" class="ifm-mode-enable" />
+                            </th:block>
+                            <th:block th:if="*{footerBean.kshnsystmymd != null}">
+                                <span id="footerBean.kshnsystmymd" th:text="*{footerBean.kshnsystmymd}" class="ifm-mode-enable"
+                                />&nbsp;<span id="footerBean.kshnsystmjikan" th:text="*{footerBean.kshnsystmjikan}" class="ifm-mode-enable"
+                                />&nbsp;&nbsp;&nbsp;<span id="footerBean.koshaapkihoncd" th:text="*{footerBean.koshaapkihoncd}" class="ifm-mode-enable"
+                                /><span>-</span><span id="footerBean.koshashopcd" th:text="*{footerBean.koshashopcd}" class="ifm-mode-enable"
+                                /><span>-</span><span id="footerBean.koshacd" th:text="*{footerBean.koshacd}" class="ifm-mode-enable"
+                                />&nbsp;<span id="footerBean.koshamei" th:text="*{footerBean.koshamei}" class="ifm-mode-enable" />
+                            </th:block>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="buttonpanel" style="width: 1000px;">
+                <table class="full-size table-fixed">
+                    <tr>
+                        <td width="30%" align="left"></td>
+                        <td width="40%" align="center">
+                            <!-- // 「ボタン更新」ボタン -->
+                            <th:block th:if="*{baseBean.authflag == 'f'}">
+                                <button id="btnchk" th:name="btnchk" class="button" type="button"
+                                >更新</button>
+                                <input type="hidden" th:field="*{footerBean.confirmmess}" />
+                                <button id="btnkshn" th:name="btnkshn" class="button aci-put" type="button"
+                                    style="display: none;" th:data-api="@{/api/b0505w02/update}">
+                                </button>
+                            </th:block>
+                        </td>
+                        <td width="30%" align="right">
+                            <!-- // 「ボタン戻る」ボタン -->
+                            <th:block th:if="*{baseBean.origintokuisakicd}">
+                                <th:block th:replace="commons/parts/button-back :: basic(@{|/b0505w01/*{baseBean.apkihoncd}/*{baseBean.shopcd}/*{baseBean.origintokuisakicd}|},false)" />
+                            </th:block>
+                            <th:block th:unless="*{baseBean.origintokuisakicd}">
+                                <th:block th:replace="commons/parts/button-back :: basic(@{/b0505w01},false)" />
+                            </th:block>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

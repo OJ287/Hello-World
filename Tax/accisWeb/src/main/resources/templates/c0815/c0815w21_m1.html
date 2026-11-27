@@ -1,0 +1,595 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+</head>
+<!--
+   システム名:ACCIS2023
+   機能名:配達実績登録
+-->
+<!--
+//------------------------------------------------------------------
+// 明細部("M1")
+//------------------------------------------------------------------
+-->
+<!-- //----- 明細セクションヘッダ ----- -->
+<div th:fragment="detail">
+    <div id="meisaiarea" style="display: none;">
+        <!----
+        //------------------------------------------------------------------
+        //	2.明細部
+        //------------------------------------------------------------------
+        ---->
+        <div id="juchubody" style="position: relative; width:1378px;" class="block">
+            <h4 style="position: relative; top: 7px;">受注明細情報</h4>
+            <span id="juchukbn" style="position: relative; left: 100px; top: 7px;">
+                <label>受注区分：</label>
+                <span th:text="*{meisaiHeaderBean.acptkbn}"></span>
+                <input th:field="*{meisaiHeaderBean.hdnacptkbn}" type="hidden"></span>
+            </span>
+            <span style="position: absolute; right: 1px; margin-top:5px;">
+                <th:block th:if="*{baseBean.authflag == 'f'}">
+                    <button th:name="btnAddrowCheck" class="button aci-put" data-message="" type="button"
+                        th:data-api="@{/api/c0815w21/addrowCheckParam}" id="btnAddrowCheck">行追加</button>
+                    <button style="display: none;" th:name="btnAddrow" class="button aci-put" data-message="" type="button"
+                        th:data-api="@{/api/c0815w21/addrow}" id="btnAddrow"></button>
+                    <!-- // 「行追加用商品コード」隠しフィールド -->
+                    <input th:field="*{meisaiHeaderBean.shncdadd}" type="hidden" />
+                </th:block>
+            </span>
+            <div id="orderdetailbodyheadarea" class="aci-sticky-table-wrapper"
+                style="position: relative; margin-top: 12px; width: 1368px; overflow: hidden;">
+                <div class="aci-sticky-table-dataarea" style="height: 324px;">
+                    <template id="c0815w21_meisai_template">
+                        <tr height="27px">
+                            <td class="padding-left-3">
+                                <span name="meisaiSummaryBeanList[{index}].shncdmei">{shncdmei}</span>
+                                <input name="meisaiSummaryBeanList[{index}].shncdmei" value="{shncdmei}" type="hidden"
+                                    data-tablerow="{index}" />
+                            </td>
+                            <td class="padding-left-2">
+                                <span>{shnnmmei}</span>
+                                <input name="meisaiSummaryBeanList[{index}].shnnmmei" value="{shnnmmei}" type="hidden"
+                                    data-tablerow="{index}" />
+                            </td>
+                            <td>
+                                <span style="padding-left: 3px;">{ironmmei}</span>
+                                <input name="meisaiSummaryBeanList[{index}].ironmmei" value="{ironmmei}" type="hidden"
+                                    data-tablerow="{index}" />
+                            </td>
+                            <td>
+                                <span style="padding-left: 3px;">{sznmmei}</span>
+                                <input name="meisaiSummaryBeanList[{index}].sznmmei" value="{sznmmei}" type="hidden"
+                                    data-tablerow="{index}" />
+                            </td>
+                            <td class="padding-left-2">
+                                <select name="meisaiSummaryBeanList[{index}].katasiki" id="katasikimei[{index}]"
+                                    class="aci-load aci-ajax-parts katasikimei" data-template="template_select"
+                                    data-default="{katasiki}" data-api="/api/parts/s02m012t/{apkihoncd}/{shncdmei}"
+                                    data-cache="true" data-tablerow="{index}">
+                                </select>
+                            </td>
+                            <td class="padding-left-2">
+                                <select name="meisaiSummaryBeanList[{index}].keijokbn" id="keijokbn[{index}]"
+                                    class="aci-load aci-ajax-parts keijokbn" data-template="template_select"
+                                    data-default="{keijokbn}" data-api="/api/parts/s02m006t/000/000/009"
+                                    data-cache="true" data-tablerow="{index}">
+                                </select>
+                                <input id="keijokbnnmmei[{index}]" name="meisaiSummaryBeanList[{index}].keijokbnnmmei"
+                                    value="{keijokbnnmmei}" tabindex="-1" class="str_label input_label keijokbnnmmei"
+                                    type="text" size="10" maxlength="8" readonly data-tablerow="{index}" />
+                                <input id="keijokbn[{index}]" name="meisaiSummaryBeanList[{index}].keijokbn"
+                                    value="{keijokbn}" type="hidden" data-tablerow="{index}" />
+                                <input name="meisaiSummaryBeanList[{index}].keijokbnnmmei" value="{keijokbnnmmei}"
+                                    type="hidden" data-tablerow="{index}" />
+                            </td>
+                            <td class="padding-left-2">
+                                <input id="suryomei[{index}]" name="meisaiSummaryBeanList[{index}].suryomei"
+                                    value="{suryomei}" class="suryomei aci-amount-format"
+                                    data-allow-number-of-decimals="1" type="text" maxlength="7" size="7"
+                                    data-tablerow="{index}" />
+                                <span>{tanimei}</span>
+                                <input name="meisaiSummaryBeanList[{index}].tanimei" value="{tanimei}" type="hidden"
+                                    data-tablerow="{index}" />
+                            </td>
+                            <td>
+                                <input id="irisumei[{index}]" name="meisaiSummaryBeanList[{index}].irisumei"
+                                    value="{irisumei}" tabindex="-1" class="num input_label" type="text" size="5"
+                                    maxlength="9" readonly data-tablerow="{index}" />
+                                <span>{irisutanimei}</span>
+                                <input name="meisaiSummaryBeanList[{index}].irisutanimei" value="{irisutanimei}"
+                                    type="hidden" data-tablerow="{index}" />
+                            </td>
+                            <td>
+                                <input id="sokazumei[{index}]" name="meisaiSummaryBeanList[{index}].sokazumei"
+                                    value="{sokazumei}" tabindex="-1" class="num input_label" type="text" size="8"
+                                    maxlength="7" readonly data-tablerow="{index}" />
+                            </td>
+                            <td>
+                                <input id="hyojunpricemei[{index}]" name="meisaiSummaryBeanList[{index}].hyojunpricemei"
+                                    value="{hyojunpricemei}" tabindex="-1" class="num input_label aci-amount-format"
+                                    type="text" size="13" maxlength="8" readonly data-tablerow="{index}" />
+                            </td>
+                            <td class="padding-left-2">
+                                <input id="hanbaiprice[{index}]" class="num hanbaipricemei aci-amount-format"
+                                    name="meisaiSummaryBeanList[{index}].hanbaiprice" value="{hanbaipricemei}"
+                                    data-allow-number-of-decimals="2" type="text" size="12" maxlength="11"
+                                    data-tablerow="{index}" />
+                                <input id="hanbaipricemei[{index}]" name="meisaiSummaryBeanList[{index}].hanbaipricemei"
+                                    value="{hanbaipricemei}" type="hidden" data-tablerow="{index}" />
+                            </td>
+                            <td>
+                                <input id="kinmei[{index}]" name="meisaiSummaryBeanList[{index}].kinmei"
+                                    value="{kinmei}" tabindex="-1" class="num input_label aci-amount-format" type="text"
+                                    size="10" maxlength="9" readonly data-tablerow="{index}" />
+                            </td>
+                            <td class="padding-left-2">
+                                <button id="btnlink[{index}]" class="ifm-mode-enable" style="width: 55px;"
+                                    type="button">リンク</button>
+                                <input id="meisaibikono[{index}]" name="meisaiSummaryBeanList[{index}].meisaibikono"
+                                    value="{meisaibikono}" class="ifm-mode-enable" style="display: none;" type="hidden"
+                                    data-tablerow="{index}" />
+                            </td>
+                            <td class="padding-left-2">
+                                <input id="meisaibikomei[{index}]" name="meisaiSummaryBeanList[{index}].meisaibikomei"
+                                    value="{meisaibikomei}" class="str meisaibikomei" type="text" size="40"
+                                    maxlength="40" data-tablerow="{index}" />
+                                <input id="acptdnpymeisaiedano[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].acptdnpymeisaiedano"
+                                    value="{acptdnpymeisaiedano}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="acptdnpymeisaino[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].acptdnpymeisaino" value="{acptdnpymeisaino}"
+                                    style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="untshohitaxkin[{index}]" name="meisaiSummaryBeanList[{index}].untshohitaxkin"
+                                    value="{untshohitaxkin}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="shohitaxkin[{index}]" name="meisaiSummaryBeanList[{index}].shohitaxkin"
+                                    value="{shohitaxkin}" style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="shntaxkbn[{index}]" name="meisaiSummaryBeanList[{index}].shntaxkbn"
+                                    value="{shntaxkbn}" style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="hyojunpricekirikaedd[{index}}"
+                                    name="meisaiSummaryBeanList[{index}].hyojunpricekirikaedd"
+                                    value="{hyojunpricekirikaedd}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="genzhyojunprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].genzhyojunprice" value="{genzhyojunprice}"
+                                    style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="shinhyojunprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].shinhyojunprice" value="{shinhyojunprice}"
+                                    style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="genzhyojunmochikaeriprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].genzhyojunmochikaeriprice"
+                                    value="{genzhyojunmochikaeriprice}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="shinhyojunmochikaeriprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].shinhyojunmochikaeriprice"
+                                    value="{shinhyojunmochikaeriprice}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="shoppricekirikaedd[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].shoppricekirikaedd"
+                                    value="{shoppricekirikaedd}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="genzshopprice[{index}]" name="meisaiSummaryBeanList[{index}].genzshopprice"
+                                    value="{genzshopprice}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="shinshopprice[{index}]" name="meisaiSummaryBeanList[{index}].shinshopprice"
+                                    value="{shinshopprice}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="genzshopmochikaeriprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].genzshopmochikaeriprice"
+                                    value="{genzshopmochikaeriprice}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="shinshopmochikaeriprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].shinshopmochikaeriprice"
+                                    value="{shinshopmochikaeriprice}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="hansokustrtdd[{index}]" name="meisaiSummaryBeanList[{index}].hansokustrtdd"
+                                    value="{hansokustrtdd}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="hansokushrydd[{index}]" name="meisaiSummaryBeanList[{index}].hansokushrydd"
+                                    value="{hansokushrydd}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="hansokuprice[{index}]" name="meisaiSummaryBeanList[{index}].hansokuprice"
+                                    value="{hansokuprice}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="hansokumochikaeriprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].hansokumochikaeriprice"
+                                    value="{hansokumochikaeriprice}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="ttpricestrtdd[{index}]" name="meisaiSummaryBeanList[{index}].ttpricestrtdd"
+                                    value="{ttpricestrtdd}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="ttpriceshrydd[{index}]" name="meisaiSummaryBeanList[{index}].ttpriceshrydd"
+                                    value="{ttpriceshrydd}" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="ttprice[{index}]" name="meisaiSummaryBeanList[{index}].ttprice"
+                                    value="{ttprice}" style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="ttmochikaeriprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].ttmochikaeriprice" value="{ttmochikaeriprice}"
+                                    style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="hanbaipricemei[{index}]" name="meisaiSummaryBeanList[{index}].hanbaipricemei"
+                                    value="{hanbaipricemei}" class="hanbaipricemei" style="display: none" type="hidden"
+                                    data-tablerow="{index}" />
+                                <input id="shokidsplyprice[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].shokidsplyprice" value="{shokidsplyprice}"
+                                    style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="keijokbn2[{index}]" name="meisaiSummaryBeanList[{index}].keijokbn2"
+                                    value="{keijokbn2}" style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="pricekbn[{index}]" name="meisaiSummaryBeanList[{index}].pricekbn"
+                                    value="{pricekbn}" style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="tanpinmeisaiflg[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].tanpinmeisaiflg" value="{tanpinmeisaiflg}"
+                                    style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="addrowflg[{index}]" name="meisaiSummaryBeanList[{index}].addgyoflg"
+                                    value="{addgyoflg}" style="display: none" type="hidden" data-tablerow="{index}" />
+                                <input id="tokubetsuUntJson[{index}]"
+                                    name="meisaiSummaryBeanList[{index}].tokubetsuUntJson" value="{tokubetsu_unt_json}"
+                                    style="display: none" type="hidden" data-tablerow="{index}" />
+                            </td>
+                        </tr>
+                    </template>
+                    <table border="0" cellspacing="0" cellpadding="2" id="orderdetailhead"
+                        class="border grid aci-sticky-table aci-table-data scroll-tooltip"
+                        style="position: relative; height :19px ">
+                        <col width="40">
+                        <col width="250">
+                        <col width="60">
+                        <col width="59">
+                        <col width="115">
+                        <col width="80">
+                        <col width="100">
+                        <col width="75">
+                        <col width="60">
+                        <col width="80">
+                        <col width="80">
+                        <col width="70">
+                        <col width="65">
+                        <col width="220">
+                        <thead height="24px">
+                            <th class="center">商品CD</th>
+                            <th class="center">商品名</th>
+                            <th class="center">色</th>
+                            <th class="center">サイズ</th>
+                            <th class="center">型式</th>
+                            <th class="center">計上区分</th>
+                            <th class="center hissu">数量</th>
+                            <th class="center">入数</th>
+                            <th class="center">総数</th>
+                            <th class="center">標準価格</th>
+                            <th class="center hissu">販売価格</th>
+                            <th class="center">金額</th>
+                            <th></th>
+                            <th style="text-align: left;">明細備考</th>
+                        </thead>
+                        <tbody id="c0815w21_meisai_body" data-template="c0815w21_meisai_template"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!----
+            //------------------------------------------------------------------
+            //	3.カード部
+            //------------------------------------------------------------------
+            ---->
+            <div id="orderdetailtailheadarea" style="position: relative; width: 1343px; overflow: hidden; ">
+                <table border="0" cellspacing="0" cellpadding="2" id="orderdetailtail" class="border"
+                    style="position: relative; height : 24px; width: 1343px;">
+                    <col width="430">
+                    <col width="120">
+                    <col width="60">
+                    <col width="120">
+                    <col width="60">
+                    <col width="60">
+                    <col width="60">
+                    <col width="160">
+                    <tr>
+                        <span>
+                            <td style="background-color: #cccccc" bgcolor="#cccccc"> </td>
+                        </span>
+                        <th>税込み合計</th>
+                        <td>
+                            <input th:field="*{footerBean.kinsm}" tabindex="-1" class="num_label input_label"
+                                type="text" maxlength="9" size="15px" />
+                        </td>
+                        <th>消費税</th>
+                        <td>
+                            <input th:field="*{footerBean.uchishohitaxkin}" tabindex="-1" class="num_label input_label"
+                                type="text" maxlength="8" size="15px" />
+                        </td>
+                        <th>合計</th>
+                        <td>
+                            <input th:field="*{footerBean.sm}" tabindex="-1" class="num_label input_label" type="text"
+                                maxlength="11" size="15px" />
+                        </td>
+                        <td style="background-color: #cccccc" bgcolor="#cccccc"> </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <table border="0" cellspacing="0" cellpadding="0" width="1150px" class="blocksmall">
+            <tr>
+                <td valign="top" align="right" width="430" style="padding-bottom:24px">
+                    <div id="sonota" style="text-align: left; margin-right:10px;padding-bottom:20px">
+                        <table border="0" cellspacing="0" cellpadding="2" class="border"
+                            style="width: 432px ;padding-bottom:24px; height:52px;">
+                            <col width="20">
+                            <col width="430">
+                            <tr>
+                                <th style="text-align: center;">印<br>刷<br>メ<br>モ</th>
+                                <td class="padding-left-2">
+                                    <p>
+                                        <span th:text="*{footerBean.prntmemon1}"></span>
+                                    </p>
+                                    <p>
+                                        <span th:text="*{footerBean.prntmemon2}"></span>
+                                    </p>
+                                    <p>
+                                        <span th:text="*{footerBean.prntmemon3}"></span>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td valign="top" width="210">
+                    <div id="kaishu" style="padding-bottom: 39px;width: 184px;">
+                        <table border="0" cellspacing="0" cellpadding="2" class="border" style="height: 65px;">
+                            <col width="20">
+                            <col width="60">
+                            <col width="40">
+                            <col width="50">
+                            <tr>
+                                <th rowspan="3">回<br>収<br>ボ<br>ト<br>ル</th>
+                                <th colspan="2">お預けボトル</th>
+                                <th>回収本数</th>
+                            </tr>
+                            <tr>
+                                <td class="padding-left-2">ﾚｷﾞｭﾗｰ</td>
+                                <td style="padding-right: 2px;">
+                                    <input class="ifm-mode-enable kit-numeric-align-right str_label input_label"
+                                        id="kaishun1n2rittoruazuk" tabindex="-1"
+                                        th:field="*{footerBean.kaishun1n2rittoruazuk}"
+                                        style="width: 23px; text-align: right;"></input><span>本</span>
+                                </td>
+                                <td align="center">
+                                    <span>
+                                        <input th:field="*{footerBean.kaishun1n2rittorukaishu}"
+                                            th:readonly="*{baseBean.authflag == 't'}"
+                                            th:tabindex="*{baseBean.authflag == 't'} ? '-1' : ''"
+                                            data-allow-number-of-decimals="0"
+                                            th:class="*{baseBean.authflag == 't'} ? 'str_label input_label aci-amount-format' : 'str aci-amount-format'"
+                                            style="width: 28px; text-align: right;" type="text" size="5"
+                                            maxlength="6" /><span>本</span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="padding-left-2">ｽﾘﾑ</td>
+                                <td style="padding-right: 2px;">
+                                    <input class="ifm-mode-enable kit-numeric-align-right str_label input_label"
+                                        id="kaishun8rittoruazuk" data-allow-number-of-decimals="0" tabindex="-1"
+                                        th:field="*{footerBean.kaishun8rittoruazuk}"
+                                        style="width: 23px; text-align: right;"></input><span>本</span>
+                                </td>
+                                <td align="center">
+                                    <input th:field="*{footerBean.kaishun8rittorukaishu}"
+                                        th:readonly="*{baseBean.authflag == 't'}"
+                                        th:tabindex="*{baseBean.authflag == 't'} ? '-1' : ''"
+                                        th:class="*{baseBean.authflag == 't'} ? 'str_label input_label aci-amount-format' : 'str aci-amount-format'"
+                                        data-allow-number-of-decimals="0" style="width: 28px; text-align: right;"
+                                        type="text" size="5" maxlength="6" /><span>本</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+                <td valign="top" width="740px">
+                    <div id="juchuhaifu">
+                        <div style="width: 740px;">
+                            <table border="0" cellspacing="0" cellpadding="2" id="serverinfotitle" class="border"
+                                style="width: 740px;">
+                                <col width="20">
+                                <col width="20">
+                                <col width="50">
+                                <col width="30">
+                                <col width="200">
+                                <col width="20">
+                                <col width="50">
+                                <col width="30">
+                                <col width="200">
+                                <tr>
+                                    <th rowspan="2">配<br>布<br>物</th>
+                                    <td class="ITEM_C" align="center" width="">
+                                        <!-- // 「リンク連携配布物マスタ検索１」リンク -->
+                                        <th:block
+                                            th:if="*{baseBean.authflag == 't' || footerBean.jutakudenpyoflg == '1'}">
+                                            <span>(1)</span>
+                                        </th:block>
+                                        <th:block
+                                            th:if="*{baseBean.authflag != 't' && footerBean.jutakudenpyoflg != '1'}">
+                                            <a id="linkrenkeihmk1" class="ifm-mode-enable" href="javascript:void(0)">
+                                                <span style="text-decoration: underline; color: blue;">(1)</span>
+                                            </a>
+                                        </th:block>
+                                    </td>
+                                    <td height="25px">
+                                        <input th:field="*{footerBean.haifuflg1}"
+                                            th:disabled="*{(baseBean.authflag != 't' && footerBean.jutakudenpyoflg == '1') || footerBean.haifubutsucd1 == null}"
+                                            class="ifm-mode-enable" type="checkbox" value="1" />配布
+                                    </td>
+                                    <td class="code">
+                                        <input th:field="*{footerBean.haifubutsucd1}" tabindex="-1"
+                                            class="str_label input_label" type="text" size="5" maxlength="5" readonly />
+                                    </td>
+                                    <td>
+                                        <input th:field="*{footerBean.haifubutsunm1}" tabindex="-1"
+                                            class="str_label input_label" type="text" size="40" maxlength="40"
+                                            readonly />
+                                        <input th:field="*{footerBean.hdnmeisaino1}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.linkflg1}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.hdndatsksmotokbn1}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.haifubutsuapkihoncd1}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.haifubutsushopcd1}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                    </td>
+                                    <td class="ITEM_C" align="center" width="">
+                                        <!-- // 「リンク連携配布物マスタ検索３」リンク -->
+                                        <th:block
+                                            th:if="*{baseBean.authflag == 't' || footerBean.jutakudenpyoflg == '1'}">
+                                            <span>(3)</span>
+                                        </th:block>
+                                        <th:block
+                                            th:if="*{baseBean.authflag != 't' && footerBean.jutakudenpyoflg != '1'}">
+                                            <a id="linkrenkeihmk3" class="ifm-mode-enable" href="javascript:void(0)">
+                                                <span style="text-decoration: underline; color: blue;">(3)</span>
+                                            </a>
+                                        </th:block>
+                                    </td>
+                                    <td height="25px">
+                                        <input th:field="*{footerBean.haifuflg3}"
+                                            th:disabled="*{(baseBean.authflag != 't' && footerBean.jutakudenpyoflg == '1') || footerBean.haifubutsucd3 == null}"
+                                            class="ifm-mode-enable" type="checkbox" value="1" />配布
+                                    </td>
+                                    <td class="code">
+                                        <input th:field="*{footerBean.haifubutsucd3}" tabindex="-1"
+                                            class="str_label input_label" type="text" size="5" maxlength="5" readonly />
+                                    </td>
+                                    <td>
+                                        <input th:field="*{footerBean.haifubutsunm3}" tabindex="-1"
+                                            class="str_label input_label" type="text" size="40" maxlength="40"
+                                            readonly />
+                                        <input th:field="*{footerBean.hdnmeisaino3}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.linkflg3}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.hdndatsksmotokbn3}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.haifubutsuapkihoncd3}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.haifubutsushopcd3}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="ITEM_C" align="center" width="">
+                                        <!-- // 「リンク連携配布物マスタ検索２」リンク -->
+                                        <th:block
+                                            th:if="*{baseBean.authflag == 't' || footerBean.jutakudenpyoflg == '1'}">
+                                            <span>(2)</span>
+                                        </th:block>
+                                        <th:block
+                                            th:if="*{baseBean.authflag != 't' && footerBean.jutakudenpyoflg != '1'}">
+                                            <a id="linkrenkeihmk2" class="ifm-mode-enable" href="javascript:void(0)">
+                                                <span style="text-decoration: underline; color: blue;">(2)</span>
+                                            </a>
+                                        </th:block>
+                                    </td>
+                                    <td height="25px">
+                                        <input th:field="*{footerBean.haifuflg2}"
+                                            th:disabled="*{(baseBean.authflag != 't' && footerBean.jutakudenpyoflg == '1') || footerBean.haifubutsucd2 == null}"
+                                            class="ifm-mode-enable" type="checkbox" value="1" />配布
+                                    </td>
+                                    <td class="code">
+                                        <input th:field="*{footerBean.haifubutsucd2}" tabindex="-1"
+                                            class="str_label input_label" type="text" size="5" maxlength="5" readonly />
+                                    </td>
+                                    <td>
+                                        <input th:field="*{footerBean.haifubutsunm2}" tabindex="-1"
+                                            class="str_label input_label" type="text" size="40" maxlength="40"
+                                            readonly />
+                                        <input th:field="*{footerBean.hdnmeisaino2}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.linkflg2}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.hdndatsksmotokbn2}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.haifubutsuapkihoncd2}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.haifubutsushopcd2}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                    </td>
+                                    <td class="ITEM_C" align="center" width="">
+                                        <!-- // 「リンク連携配布物マスタ検索４」リンク -->
+                                        <th:block
+                                            th:if="*{baseBean.authflag == 't' || footerBean.jutakudenpyoflg == '1'}">
+                                            <span>(4)</span>
+                                        </th:block>
+                                        <th:block
+                                            th:if="*{baseBean.authflag != 't' && footerBean.jutakudenpyoflg != '1'}">
+                                            <a id="linkrenkeihmk4" class="ifm-mode-enable" href="javascript:void(0)">
+                                                <span style="text-decoration: underline; color: blue;">(4)</span>
+                                            </a>
+                                        </th:block>
+                                    </td>
+                                    <td height="25px">
+                                        <input th:field="*{footerBean.haifuflg4}"
+                                            th:disabled="*{(baseBean.authflag != 't' && footerBean.jutakudenpyoflg == '1') || footerBean.haifubutsucd4 == null}"
+                                            class="ifm-mode-enable" type="checkbox" value="1" />配布
+                                    </td>
+                                    <td class="code">
+                                        <input th:field="*{footerBean.haifubutsucd4}" tabindex="-1"
+                                            class="str_label input_label" type="text" size="5" maxlength="5" readonly />
+                                    </td>
+                                    <td>
+                                        <input th:field="*{footerBean.haifubutsunm4}" tabindex="-1"
+                                            class="str_label input_label" type="text" size="40" maxlength="40"
+                                            readonly />
+                                        <input th:field="*{footerBean.hdnmeisaino4}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.linkflg4}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.hdndatsksmotokbn4}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.haifubutsuapkihoncd4}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input th:field="*{footerBean.haifubutsushopcd4}" class="ifm-mode-enable"
+                                            style="display: none;" type="hidden" />
+                                        <input id="btnlinkindex" value="" type="hidden" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="buttonpanel" style="width: 740px">
+                        <table border="0" cellspacing="0" cellpadding="0" width="100%">
+                            <tr>
+                                <td width="30%" align="left">
+                                    <th:block th:if="*{baseBean.authflag == 'f'}">
+                                        <button id="btnkshn" th:name="btnkshn" class="button aci-put" data-message=""
+                                            type="button" th:data-check-api="@{/api/c0815w21/check}"
+                                            th:data-api="@{/api/c0815w21/update}">更新</button>
+                                    </th:block>
+                                </td>
+                                <td width="40%" align="center">
+                                </td>
+                                <td width="30%" align="right">
+                                    <button id="btnback" th:name="btnback" class="button aci-put" data-message=""
+                                        type="button" th:data-api="@{/api/c0815w21/back}">戻る</button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <button id="btnmeisai" th:name="btnmeisai" class="button aci-search" data-bind_target="c0815w21_meisai_body"
+        th:data-api="@{/api/c0815w21/meisai}" data-with-formdata='true' data-query-filters='[
+            "kttcd",
+            "baseBean.*" ,
+            "meisaiHeaderBean.*"
+        ]' style="display: none;" type="button"></button>
+    <div style="display: none;">
+        <th:block th:replace="commons/parts/button-back :: basic(@{/c0815w11},false)" />
+        <!-- <button id="btnmodoru" th:name="btnmodoru" type="button" style="display: none;" th:onclick="|location.href='@{/c0815w11}'|" class="button"></button> -->
+    </div>
+    <input th:field="*{footerBean.acptkbnshs}" style="display: none;" type="hidden" />
+</div>
+</body>
+
+</html>

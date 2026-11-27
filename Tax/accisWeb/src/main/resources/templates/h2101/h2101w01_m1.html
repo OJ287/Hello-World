@@ -1,0 +1,167 @@
+<!doctype HTML>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+</head>
+<body>
+    <div id="list" class="list" th:fragment="detail">
+        <div class="aci-sticky-table-wrapper" id="orderdetailbodyheadarea" style="position: relative; width: 1285px; overflow: hidden; ">
+            <div class="aci-sticky-table-dataarea " id="orderdetailbodyheadarea2" style="margin-top: 8px; position: relative; width: 1285px; height: 415px;">
+                <template id="h2101w01_meisai_template">
+                    <tr id="h2101w01_meisai_table[{index}]" style="height: 23px;">
+                        <!-- 次期では在庫行削除の為随時スタイルを修正 -->
+                        <td align="center" class="dtbl_1st_clm">
+                            <span>
+                                <span class="space">&nbsp;&nbsp;</span>
+                                <span class="btngyosonyu">
+                                    <button id="btngyosonyu" th:name="btngyosonyu" style="display:none; width:84px" type="button"></button>
+                                    <button id="btngyosonyu[{index}]" th:name="btngyosonyu_mno" class="button ifm-mode-enable"
+                                        style="width: 33px" data-tablerow="{index}" type="button">挿入</button>
+                                </span>
+                                <span class="space">&nbsp;&nbsp;</span>
+                                <span class="btnsakujo">
+                                    <button id="btnsakujo[{index}]" name="btnsakujo" style="width: 33px"
+                                        class="button btnsakujo"
+                                        data-tablerow="{index}" type="button">削除</button>
+                                </span>
+                            </span>
+                        </td>
+                        <td class="code">
+                            <!-- 現行表示に合わせてラベルに変更 -->
+                            <input id="meisaiBeanList[{index}].shncdmei" name="meisaiBeanList[{index}].shncdmei" value="{shncdmei}"
+                                style="width: 45px; text-align: center; border:none;pointer-events: none;" tabindex="-1" />
+                        </td>
+                        <td class="str">
+                            {shnnmryakushomei}
+                            <input id="meisaiBeanList[{index}].shnnmryakushomei" name="meisaiBeanList[{index}].shnnmryakushomei" value="{shnnmryakushomei}" style="display: none" />
+                        </td>
+                        <td class="str">
+                            {iromei}
+                            <input id="meisaiBeanList[{index}].iromei" name="meisaiBeanList[{index}].iromei" value="{iromei}" style="display: none" />
+                        </td>
+                        <td class="str">
+                            {szmei}
+                            <input id="meisaiBeanList[{index}].szmei" name="meisaiBeanList[{index}].szmei" value="{szmei}" style="display: none" />
+                        </td>
+                        <td class="str">
+                            <span class="katasiki1">
+                                <span>{katasikinmmei}</span
+                                ><input id="meisaiBeanList[{index}].katasikinmmei" name="meisaiBeanList[{index}].katasikinmmei" value="{katasikinmmei}" style="display: none" />
+                            </span>
+                            <select
+                                 name="meisaiBeanList[{index}].katasikimei"
+                                 id="meisaiBeanList[{index}].katasikimei"
+                                 class="aci-load katasiki2"
+                                 data-template="template_select"
+                                 data-default="{katasikimei}"
+                                 data-api="/api/parts/s02m012t/{shnapkihoncd}/{shncdmei}"
+                                 data-cache="true"
+                                 data-tablerow="{index}"
+                                 >
+                             </select>
+                        </td>
+                        <!-- 次期では在庫行削除のためコメントアウト -->
+                        <td class="num">
+                            <input type="text" id="meisaiBeanList[{index}].suryo2mei" name="meisaiBeanList[{index}].suryo2mei" value="{suryo2mei}"
+                                size="10" maxLength="10" class="num suryo2 aci-amount-format select-all" style="width: 50px;margin-left:5px;" data-tablerow="{index}"
+                            >&nbsp;<span style="width: 23px; text-align: left;">{uritani2mei}<input id="meisaiBeanList[{index}].uritani2mei" name="meisaiBeanList[{index}].uritani2mei" value="{uritani2mei}" style="display: none" /></span>
+                        </td>
+                        <td class="num">
+                            <span id="irisu">
+                                <input type="text" id="meisaiBeanList[{index}].irisu2mei" name="meisaiBeanList[{index}].irisu2mei" value="{irisu2mei}" size="6" maxLength="5"
+                                    readonly class="irisu num_label aci-amount-format" tabindex="-1" style="width: 35px;backGround-color: #ffffff;border:none;pointer-events: none;"
+                                ><span style="width: 26px; text-align: left;margin-left: 2px;margin-top: 2px !important;position: absolute;">{irisutani2mei}<input id="meisaiBeanList[{index}].irisutani2mei" name="meisaiBeanList[{index}].irisutani2mei" value="{irisutani2mei}" style="display: none" /></span>
+                            </span>
+                        </td>
+                        <td class="num">
+                            <span id="sokazu">
+                                <input type="text" id="meisaiBeanList[{index}].sokazu2mei" name="meisaiBeanList[{index}].sokazu2mei" value="{sokazu2mei}" size="12" maxLength="8"
+                                    readonly class="sokazu num_label aci-amount-format" tabindex="-1" style="width: 65px;backGround-color: #ffffff;border:none;pointer-events: none;">
+                            </span>
+                        </td>
+                        <td class="num right_alg">
+                            <input type="text" id="meisaiBeanList[{index}].unt2mei" name="meisaiBeanList[{index}].unt2mei" value="{unt2mei}"
+                                size="12" maxLength="12" class="num unt2 aci-amount-format select-all" style="width: 60px;" data-tablerow="{index}">
+                        </td>
+                        <td class="num right_alg">
+                            <input type="text" id="meisaiBeanList[{index}].kin2mei" name="meisaiBeanList[{index}].kin2mei" value="{kin2mei}"
+                                size="12" maxLength="12" class="num kin2 aci-amount-format select-all" data-allow-number-of-decimals="0" style="width: 55px;" data-tablerow="{index}">
+                        </td>
+                        <td class="str">
+                            <input type="text" id="meisaiBeanList[{index}].meisaibikomei" name="meisaiBeanList[{index}].meisaibikomei" value="{meisaibikomei}"
+                                size="40" maxLength="30" class="meisaibiko select-all" style="width: 205px;" data-tablerow="{index}">
+                            <input type="hidden" id="meisaiBeanList[{index}].lctgrycd" name="meisaiBeanList[{index}].lctgrycd" value="{lctgrycd}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].mctgrycd" name="meisaiBeanList[{index}].mctgrycd" value="{mctgrycd}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].sctgrycd" name="meisaiBeanList[{index}].sctgrycd" value="{sctgrycd}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].pricekbn" name="meisaiBeanList[{index}].pricekbn" value="{pricekbn}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].hyojunpricekirikaedd" name="meisaiBeanList[{index}].hyojunpricekirikaedd" value="{hyojunpricekirikaedd}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].genzhyojunprice" name="meisaiBeanList[{index}].genzhyojunprice" value="{genzhyojunprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].genzhyojunmochikaeriprice" name="meisaiBeanList[{index}].genzhyojunmochikaeriprice" value="{genzhyojunmochikaeriprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].shinhyojunprice" name="meisaiBeanList[{index}].shinhyojunprice" value="{shinhyojunprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].shinhyojunmochikaeriprice" name="meisaiBeanList[{index}].shinhyojunmochikaeriprice" value="{shinhyojunmochikaeriprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].shoppricekirikaedd" name="meisaiBeanList[{index}].shoppricekirikaedd" value="{shoppricekirikaedd}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].genzshopprice" name="meisaiBeanList[{index}].genzshopprice" value="{genzshopprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].genzshopmochikaeriprice" name="meisaiBeanList[{index}].genzshopmochikaeriprice" value="{genzshopmochikaeriprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].shinshopprice" name="meisaiBeanList[{index}].shinshopprice" value="{shinshopprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].shinshopmochikaeriprice" name="meisaiBeanList[{index}].shinshopmochikaeriprice" value="{shinshopmochikaeriprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].hansokustrtdd" name="meisaiBeanList[{index}].hansokustrtdd" value="{hansokustrtdd}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].hansokushrydd" name="meisaiBeanList[{index}].hansokushrydd" value="{hansokushrydd}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].hansokuprice" name="meisaiBeanList[{index}].hansokuprice" value="{hansokuprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].hansokumochikaeriprice" name="meisaiBeanList[{index}].hansokumochikaeriprice" value="{hansokumochikaeriprice}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].zaikount" name="meisaiBeanList[{index}].zaikount" value="{zaikount}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].shntaxkbn" name="meisaiBeanList[{index}].shntaxkbn" value="{shntaxkbn}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].zaikokanritrgtflg" name="meisaiBeanList[{index}].zaikokanritrgtflg" value="{zaikokanritrgtflg}" />
+                            <input type="hidden" id="meisaiBeanList[{index}].unt2meibefore" name="meisaiBeanList[{index}].unt2meibefore" />
+                            <input type="hidden" id="meisaiBeanList[{index}].suryo2meibefore" name="meisaiBeanList[{index}].suryo2meibefore" />
+                            <input type="hidden" id="meisaiBeanList[{index}].kin2meibefore" name="meisaiBeanList[{index}].kin2meibefore" />
+                        </td>
+                    </tr>
+                </template>
+                <table border="0" cellspacing="0" cellpadding="2" id="orderdetailhead" class="grid border aci-sticky-table aci-table-data"
+                    style="position: relative; ">
+                    <col width="85px">
+                    <col width="45px">
+                    <col width="165px">
+                    <col width="55px">
+                    <col width="55px">
+                    <col width="115px">
+                    <col width="90px">
+                    <col width="75px">
+                    <col width="75px">
+                    <col width="90px">
+                    <col width="75px">
+                    <col width="340px">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>商品CD</th>
+                            <th>商品略称名</th>
+                            <th>色</th>
+                            <th>サイズ</th>
+                            <th>型式</th>
+                            <th>数量</th>
+                            <th>入数</th>
+                            <th>総数</th>
+                            <th>単価</th>
+                            <th>金額</th>
+                            <th>備考&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody id="h2101w01_meisai_body"
+                        class="aci-load"
+                        data-api="/api/h2101w01/search/{apkihoncd}/{shopcd}"
+                        data-template="h2101w01_meisai_template"
+                        data-data_property="content"
+                        data-with-formdata="true"
+                        data-query-filters='[
+                            "baseBean.*",
+                            "slipBean.*"
+                        ]'
+                    >
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
