@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.aquaclara.accis.common.domain.repository.dao.Z1808B01Dao">
+    <select id="syohizeiKeisan" parameterType="jp.co.aquaclara.accis.common.domain.repository.entity.Z1808B01Entity" resultType="int" statementType="CALLABLE">
+        SELECT Z1808B01.SyohizeiKeisan(
+            #{simplefg, mode=IN, jdbcType=VARCHAR},
+            #{taxsetteikbn, mode=IN, jdbcType=VARCHAR},
+            #{taxkbn, mode=IN, jdbcType=VARCHAR},
+            #{taxkeisankbn, mode=IN, jdbcType=VARCHAR},
+            #{kirikaebi, mode=IN, jdbcType=VARCHAR},
+            #{apkihoncd, mode=IN, jdbcType=VARCHAR},
+            #{shopcd, mode=IN, jdbcType=VARCHAR},
+            #{siiresakicd, mode=IN, jdbcType=VARCHAR},
+            #{suryo, mode=IN, jdbcType=VARCHAR},
+            #{kin, mode=IN, jdbcType=VARCHAR}
+        )
+        FROM DUAL
+    </select>
+    <select id="roundValue" parameterType="jp.co.aquaclara.accis.common.domain.repository.entity.Z1808B01Entity" resultType="int" statementType="CALLABLE">
+        SELECT Z1808B01.roundValue(
+            #{value, mode=IN, jdbcType=INTEGER},
+            #{hasukeisankbn, mode=IN, jdbcType=VARCHAR}
+        )
+        FROM DUAL
+    </select>
+    <select id="setSyohizeiKeisan" parameterType="jp.co.aquaclara.accis.common.domain.repository.entity.Z1808B01Entity" statementType="CALLABLE">
+        {call Z1808B01.SetSyohizeiKeisan(
+            #{taxsetteikbn, mode=IN, jdbcType=VARCHAR},
+            #{taxkeisankbn, mode=IN, jdbcType=VARCHAR},
+            #{kirikaebi, mode=IN, jdbcType=VARCHAR},
+            #{apkihoncd, mode=IN, jdbcType=VARCHAR},
+            #{shopcd, mode=IN, jdbcType=VARCHAR},
+            #{suryo, mode=IN, jdbcType=VARCHAR},
+            #{syohincd, mode=IN, jdbcType=VARCHAR},
+            #{dlvrykbn, mode=IN, jdbcType=VARCHAR},
+            #{keijokbn, mode=IN, jdbcType=VARCHAR},
+            #{kidunttaxsum, mode=OUT, jdbcType=INTEGER},
+            #{kidtaxsum, mode=OUT, jdbcType=INTEGER}
+        )}
+    </select>
+</mapper>
